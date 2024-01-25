@@ -2,4 +2,6 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="pressed_plus_color">#295C2B</color>
+    <color name="pressed_minus_color">#5C2929</color>
 </resources>
