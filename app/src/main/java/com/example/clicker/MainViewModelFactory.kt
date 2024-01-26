@@ -4,13 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
-class MainViewModelFactory(
-    val urlString: String,
-    val plus: Int,
-    val minus: Int,
-    val total: Int
-    ) : ViewModelProvider.Factory {
+class MainViewModelFactory(): ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return MainViewModel(MutableLiveData(urlString), MutableLiveData(0), MutableLiveData(0), MutableLiveData(0)) as T
+        return MainViewModel(MutableLiveData(""), MutableLiveData(0), MutableLiveData(0), MutableLiveData(0), MutableLiveData(0f)) as T
     }
 }

@@ -8,11 +8,11 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTube
 
 object BindingAdapter {
     @JvmStatic
-    @BindingAdapter("setVideoId", "setStartPoint")
-    fun setVideoId(view: YouTubePlayerView?, videoId: String, startPoint : Float) {
+    @BindingAdapter("setVideoId")
+    fun setVideoId(view: YouTubePlayerView?, videoId: String) {
         view?.addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
             override fun onReady(youTubePlayer: YouTubePlayer) {
-                youTubePlayer.loadVideo(videoId, startPoint)
+                youTubePlayer.loadVideo(videoId, 0f)
             }
         })
     }

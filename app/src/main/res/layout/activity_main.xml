@@ -19,10 +19,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            setVideoId="@{viewModel.urlString}"/>
-
-
-
+            setVideoId="@{viewModel.urlString}" />
 
 
         <LinearLayout
@@ -42,6 +39,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/plus_selector"
                 android:text="+"
+                android:onClick="@{viewModel::plusPoint}"
                 android:textSize="60sp" />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -51,6 +49,7 @@
                 android:id="@+id/minusButton"
                 android:background="@drawable/minus_selector"
                 android:text="-"
+                android:onClick="@{viewModel.minusPoint}"
                 android:textSize="60sp" />
 
         </LinearLayout>

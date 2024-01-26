@@ -20,23 +20,15 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-        val viewModelFactory = MainViewModelFactory("", 0, 0, 0)
+        val viewModelFactory = MainViewModelFactory()
         viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
 
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
 
-        binding.plusButton.setOnClickListener {
-            viewModel.plus.value = viewModel.plus.value?.plus(1)
-            viewModel.total.value = viewModel.total.value?.plus(1)
-        }
 
-        binding.minusButton.setOnClickListener {
-            viewModel.minus.value = viewModel.minus.value?.plus(-1)
-            viewModel.total.value = viewModel.total.value?.plus(-1)
-        }
-
+        //인텐트 이벤트를 받아주는 곳 이걸 코드를 최적화를 하려면 어떻게 해야될까? 라는 고민을 할 필요가 있음.
         if (intent?.action == Intent.ACTION_SEND && intent.type == "text/plain") {
             val sharedText : String? = intent.getStringExtra(Intent.EXTRA_TEXT)
             viewModel.minus.value = 0
@@ -49,7 +41,6 @@ class MainActivity : AppCompatActivity() {
                 Log.d(TAG, "onCreate: ${sharedText}")
                 youtubeVideoID.value = viewModel.extractYouTubeVideoId(sharedText).value
             }
-            
             viewModel.urlString.value = youtubeVideoID.value
         }
     }
