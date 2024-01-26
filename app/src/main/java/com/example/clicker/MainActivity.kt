@@ -5,7 +5,9 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import com.example.clicker.databinding.ActivityMainBinding
 
@@ -36,16 +38,19 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (intent?.action == Intent.ACTION_SEND && intent.type == "text/plain") {
-            val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
+            val sharedText : String? = intent.getStringExtra(Intent.EXTRA_TEXT)
             viewModel.minus.value = 0
             viewModel.plus.value = 0
             viewModel.total.value = 0
-            //iewModel.
-            //viewModel.urlString.value = sharedText
-            if (sharedText != null) {
 
+
+            var youtubeVideoID: MutableLiveData<String> = MutableLiveData()
+            if (sharedText != null) {
+                Log.d(TAG, "onCreate: ${sharedText}")
+                youtubeVideoID.value = viewModel.extractYouTubeVideoId(sharedText).value
             }
-            Log.d(TAG, "onCreate: $sharedText")
+            
+            viewModel.urlString.value = youtubeVideoID.value
         }
     }
 }
