@@ -13,15 +13,13 @@
         tools:context=".MainActivity">
 
         <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
-            android:id="@+id/youtube_player_view"
+            android:id="@+id/youtubePlayer"
+            app:enableAutomaticInitialization="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            setVideoId="@{viewModel.urlString}" />
-
-
+            app:layout_constraintTop_toTopOf="parent"/>
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
@@ -30,7 +28,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/youtube_player_view">
+            app:layout_constraintTop_toBottomOf="@+id/youtubePlayer">
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/plusButton"
@@ -59,7 +57,7 @@
             android:layout_height="30dp"
             android:orientation="horizontal"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/youtube_player_view">
+            app:layout_constraintTop_toBottomOf="@+id/youtubePlayer">
 
             <TextView
                 android:id="@+id/plusTextView"

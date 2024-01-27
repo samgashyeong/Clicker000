@@ -13,7 +13,7 @@ class MainViewModel(val urlString : MutableLiveData<String>,
                     val plus : MutableLiveData<Int>,
                     val minus : MutableLiveData<Int>,
                     val total : MutableLiveData<Int>,
-    val startPoint : MutableLiveData<Float>) : ViewModel() {
+    val startPoint : MutableLiveData<Float?>) : ViewModel() {
 
 
 
