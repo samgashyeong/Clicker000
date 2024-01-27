@@ -5,12 +5,12 @@
     <data>
         <variable
             name="viewModel"
-            type="com.example.clicker.MainViewModel" />
+            type="com.example.clicker.viewmodel.MainViewModel" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MainActivity">
+        tools:context=".view.MainActivity">
 
         <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
             android:id="@+id/youtubePlayer"

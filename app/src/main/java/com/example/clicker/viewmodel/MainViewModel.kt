@@ -1,21 +1,25 @@
-package com.example.clicker
+package com.example.clicker.viewmodel
 
-import android.content.ContentValues
-import android.content.ContentValues.TAG
-import android.util.Log
 import android.view.View
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import java.util.regex.Pattern
+import com.example.clicker.model.data.youtube.Item
+import com.example.clicker.model.network.YoutubeServiceRepository
+import com.example.clicker.util.Utils
 
 class MainViewModel(val urlString : MutableLiveData<String>,
                     val plus : MutableLiveData<Int>,
                     val minus : MutableLiveData<Int>,
                     val total : MutableLiveData<Int>,
-    val startPoint : MutableLiveData<Float?>) : ViewModel() {
+                    val startPoint : MutableLiveData<Float?>,
+                    ) : ViewModel() {
 
+    val videoInfo : MutableLiveData<Item> = MutableLiveData()
+    private val youtubeServiceRepository : YoutubeServiceRepository = YoutubeServiceRepository()
 
+    fun getVideoInfo(id : String){
+        youtubeServiceRepository.searchYoutubeId("snippet", id, Utils.youtubeDataApiKey)
+    }
 
     fun minusPoint(view : View){
         minus.value = minus.value?.plus(-1)

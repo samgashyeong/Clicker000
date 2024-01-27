@@ -1,4 +1,4 @@
-package com.example.clicker
+package com.example.clicker.view.adapter
 
 import android.content.ContentValues
 import android.content.ContentValues.TAG

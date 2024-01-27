@@ -1,4 +1,4 @@
-package com.example.clicker
+package com.example.clicker.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

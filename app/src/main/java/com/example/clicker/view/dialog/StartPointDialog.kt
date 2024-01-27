@@ -1,4 +1,4 @@
-package com.example.clicker.dialog
+package com.example.clicker.view.dialog
 
 import android.app.Dialog
 import android.content.Context
@@ -9,7 +9,7 @@ import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import com.example.clicker.MainViewModel
+import com.example.clicker.viewmodel.MainViewModel
 import com.example.clicker.R
 
 class StartPointDialog(context: Context,
@@ -25,8 +25,6 @@ class StartPointDialog(context: Context,
             it?.setGravity(Gravity.BOTTOM)
             it?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         }
-
-
         val startPoint = findViewById<EditText>(R.id.startPointEditText)
         findViewById<Button>(R.id.saveButton).setOnClickListener {
             viewModel.startPoint?.value = startPoint.text.toString().toFloat()
