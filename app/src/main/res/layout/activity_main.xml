@@ -20,6 +20,15 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
+
+        <TextView
+            android:id="@+id/testString"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{viewModel.testString.toString()}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
@@ -53,6 +62,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/linearLayout2"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:orientation="horizontal"
@@ -63,28 +73,28 @@
                 android:id="@+id/plusTextView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="@{viewModel.plus.toString()}"
-                android:textSize="20sp"
+                android:layout_weight="1"
                 android:gravity="center"
-                android:layout_weight="1"/>
+                android:text="@{viewModel.plus.toString()}"
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/totalTextView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="@{viewModel.total.toString()}"
-                android:textSize="20sp"
+                android:layout_weight="1"
                 android:gravity="center"
-                android:layout_weight="1"/>
+                android:text="@{viewModel.total.toString()}"
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/minusTextView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="@{viewModel.minus.toString()}"
+                android:layout_weight="1"
                 android:gravity="center"
-                android:textSize="20sp"
-                android:layout_weight="1"/>
+                android:text="@{viewModel.minus.toString()}"
+                android:textSize="20sp" />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,4 +1,4 @@
-package com.example.clicker.model.network
+package com.example.clicker.data.remote.api.youtubeservice
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

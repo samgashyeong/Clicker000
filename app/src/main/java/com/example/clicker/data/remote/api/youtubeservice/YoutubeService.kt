@@ -1,7 +1,6 @@
-package com.example.clicker.model.network
+package com.example.clicker.data.remote.api.youtubeservice
 
-import android.telecom.Call
-import com.example.clicker.model.data.youtube.VideoList
+import com.example.clicker.data.remote.model.youtube.VideoList
 import retrofit2.http.GET
 import retrofit2.http.Query
 

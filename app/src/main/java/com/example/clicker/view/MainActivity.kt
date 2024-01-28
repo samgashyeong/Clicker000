@@ -15,18 +15,22 @@ import com.example.clicker.viewmodel.MainViewModel
 import com.example.clicker.viewmodel.MainViewModelFactory
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerTracker
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var viewModel: MainViewModel
     private lateinit var startPointDialog : StartPointDialog
+
+    private lateinit var tracker: YouTubePlayerTracker
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        tracker = YouTubePlayerTracker()
 
-        val viewModelFactory = MainViewModelFactory()
+        val viewModelFactory = MainViewModelFactory(tracker)
         var sharedText : String? = null
         viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
 
@@ -35,6 +39,7 @@ class MainActivity : AppCompatActivity() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
         lifecycle.addObserver(binding.youtubePlayer)
+
 
 
         //인텐트 이벤트를 받아주는 곳 이걸 코드를 최적화를 하려면 어떻게 해야될까? 라는 고민을 할 필요가 있음.
@@ -55,9 +60,10 @@ class MainActivity : AppCompatActivity() {
                     override fun onReady(youTubePlayer: YouTubePlayer) {
                         super.onReady(youTubePlayer)
                         youTubePlayer.loadVideo(viewModel.urlString.value!!, viewModel.startPoint.value!!)
+                        youTubePlayer.addListener(tracker)
                     }
                 })
-
+                //비디오 정보 가져오기
                 viewModel.getVideoInfo(viewModel.urlString.value!!)
             }
             else{
@@ -65,10 +71,10 @@ class MainActivity : AppCompatActivity() {
             }
         })
         
-        viewModel.videoInfo!!.observe(this, Observer {
-            //유튜브
-            Log.d(TAG, "onCreate: ${viewModel.videoInfo.value!!.snippet.title}")
-        })
+//        viewModel.videoInfo!!.observe(this, Observer {
+//            //유튜브
+//            Log.d(TAG, "onCreate: ${viewModel.videoInfo.value!!.snippet.title}")
+//        })
     }
 
     override fun onDestroy() {

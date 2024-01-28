@@ -1,4 +1,4 @@
-package com.example.clicker.model.data.youtube
+package com.example.clicker.data.remote.model.youtube
 
 data class PageInfo(
     val resultsPerPage: Int,
