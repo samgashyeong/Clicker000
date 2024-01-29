@@ -8,6 +8,10 @@ import com.example.clicker.data.remote.model.youtube.Item
 import com.example.clicker.data.repository.YoutubeServiceRepository
 import com.example.clicker.util.Utils
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerTracker
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 class MainViewModel(val urlString : MutableLiveData<String>,
                     val plus : MutableLiveData<Int>,
@@ -23,7 +27,9 @@ class MainViewModel(val urlString : MutableLiveData<String>,
     private val youtubeServiceRepository : YoutubeServiceRepository = YoutubeServiceRepository()
 
     fun getVideoInfo(id : String){
-        videoInfo.value = youtubeServiceRepository.searchYoutubeInfo("snippet", id, Utils.youtubeDataApiKey)
+        GlobalScope.launch(Dispatchers.IO) {
+            videoInfo.postValue(youtubeServiceRepository.searchYoutubeInfo("snippet", id, Utils.youtubeDataApiKey))
+        }
     }
 
     fun minusPoint(view : View){
