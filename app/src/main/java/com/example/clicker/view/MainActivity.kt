@@ -4,13 +4,19 @@ import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.clicker.R
+import com.example.clicker.data.database.ClickInfo
+import com.example.clicker.data.database.ClickVideo
+import com.example.clicker.data.database.ClickVideoListWithClickInfo
 import com.example.clicker.databinding.ActivityMainBinding
 import com.example.clicker.view.dialog.StartPointDialog
+import com.example.clicker.viewmodel.MainDatabaseViewModel
+import com.example.clicker.viewmodel.MainDatabaseViewModelFactory
 import com.example.clicker.viewmodel.MainViewModel
 import com.example.clicker.viewmodel.MainViewModelFactory
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
@@ -22,6 +28,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var startPointDialog : StartPointDialog
+    private lateinit var databaseViewModel : MainDatabaseViewModel
 
     private lateinit var tracker: YouTubePlayerTracker
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         val viewModelFactory = MainViewModelFactory(tracker)
         var sharedText : String? = null
         viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
+        databaseViewModel = ViewModelProvider(this, MainDatabaseViewModelFactory(application))[MainDatabaseViewModel::class.java]
 
         startPointDialog = StartPointDialog(this@MainActivity, viewModel)
 
@@ -70,7 +78,19 @@ class MainActivity : AppCompatActivity() {
                 Log.d(TAG, "onCreate: 예외실행")
             }
         })
-        
+
+        binding.saveButton.setOnClickListener {
+            databaseViewModel.insert(ClickVideoListWithClickInfo(viewModel.videoInfo.value!!,
+                    viewModel.urlString.value!!,
+                    viewModel.plus.value!!,
+                    viewModel.minus.value!!,
+                    viewModel.total.value!!,
+                viewModel.clickInfo.value!!
+            ))
+
+            databaseViewModel.getAll()
+            Log.d(TAG, "onCreate: ${databaseViewModel.clickVideos!!.value?.get(0)!!.videoInfo.snippet.title}")
+        }
 //        viewModel.videoInfo!!.observe(this, Observer {
 //            //유튜브
 //            Log.d(TAG, "onCreate: ${viewModel.videoInfo.value!!.snippet.title}")
