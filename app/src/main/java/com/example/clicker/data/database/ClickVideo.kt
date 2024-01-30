@@ -1,22 +1,16 @@
 package com.example.clicker.data.database
 
-import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.Relation
-import com.squareup.moshi.JsonClass
 
-
-@Entity(tableName = "ClickVideoInfo")
-data class ClickVideoListWithClickInfo(
+//@Entity(tableName = "clickVideoList")
+data class ClickVideo(
     val videoInfo : com.example.clicker.data.remote.model.youtube.Item,
     val videoId : String,
     val plusScore : Int,
     val minusScore : Int,
     val totalScore : Int,
-    val clickInfoList : List<ClickInfo>
 ){
     @PrimaryKey(autoGenerate = true)
-    var clickVideoListID : Int = 0
+    val clickVideoListID : Int = 0
 }
-
