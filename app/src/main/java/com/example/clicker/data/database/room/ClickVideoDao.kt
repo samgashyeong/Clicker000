@@ -1,6 +1,7 @@
 package com.example.clicker.data.database.room
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -14,9 +15,9 @@ interface ClickVideoDao {
 
     @Transaction
     @Query("SELECT * FROM ClickVideoInfo") // 오름차순 : ACS 내림차순 : DESC
-    fun getAll(): List<ClickVideoListWithClickInfo>
+    fun getAll(): LiveData<List<ClickVideoListWithClickInfo>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(contact: ClickVideoListWithClickInfo)
+    suspend fun insert(contact: ClickVideoListWithClickInfo)
 
 }

@@ -17,7 +17,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 
-@Database(entities = [ClickVideoListWithClickInfo::class], version = 5)
+@Database(entities = [ClickVideoListWithClickInfo::class], version = 7)
 @TypeConverters(ClickInfoTypeConverter::class)
 abstract class ClickVideoDatabase : RoomDatabase() {
 
@@ -30,6 +30,7 @@ abstract class ClickVideoDatabase : RoomDatabase() {
                 synchronized(ClickVideoDatabase::class) {
                     INSTANCE = Room.databaseBuilder(context.applicationContext,
                         ClickVideoDatabase::class.java, "click_video.db")
+                        .fallbackToDestructiveMigration()
                         .build()
                 }
             }

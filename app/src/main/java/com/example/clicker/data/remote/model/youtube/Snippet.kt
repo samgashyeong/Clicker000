@@ -1,5 +1,7 @@
 package com.example.clicker.data.remote.model.youtube
 
+import java.io.Serializable
+
 data class Snippet(
     val categoryId: String,
     val channelId: String,
@@ -11,4 +13,4 @@ data class Snippet(
     val publishedAt: String,
     val thumbnails: Thumbnails,
     val title: String
-)
+): Serializable

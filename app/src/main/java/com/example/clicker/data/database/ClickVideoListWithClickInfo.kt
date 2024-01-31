@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import com.squareup.moshi.JsonClass
+import java.io.Serializable
 
 
 @Entity(tableName = "ClickVideoInfo")
@@ -15,7 +16,7 @@ data class ClickVideoListWithClickInfo(
     val minusScore : Int,
     val totalScore : Int,
     val clickInfoList : List<ClickInfo>
-){
+): Serializable{
     @PrimaryKey(autoGenerate = true)
     var clickVideoListID : Int = 0
 }
