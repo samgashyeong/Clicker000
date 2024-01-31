@@ -36,9 +36,8 @@ class ClickVideoListActivity : AppCompatActivity() {
         binding.recycler.apply {
             layoutManager = LinearLayoutManager(this@ClickVideoListActivity)
             adapter = ClickVideoAdapter(data){
-                it.videoInfo.snippet.thumbnails.default.url
-                startActivity(Intent(this@ClickVideoListActivity, MainActivity::class.java).putExtra("data" ,it))
-                Toast.makeText(this@ClickVideoListActivity, it.videoInfo.snippet.title, Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this@ClickVideoListActivity, AnalyzeActivity::class.java).putExtra("data" ,it))
+                //Toast.makeText(this@ClickVideoListActivity, it.videoInfo.snippet.title, Toast.LENGTH_SHORT).show()
             }
         }
         setSupportActionBar(binding.toolbar)
@@ -56,7 +55,7 @@ class ClickVideoListActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    fun Intent.intentSerializable(key: String, data : ArrayList<ClickVideoListWithClickInfo>): ArrayList<ClickVideoListWithClickInfo>? {
+    private fun Intent.intentSerializable(key: String, data : ArrayList<ClickVideoListWithClickInfo>): ArrayList<ClickVideoListWithClickInfo>? {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             this.getSerializableExtra(key, data::class.java)
         } else {
