@@ -4,4 +4,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="pressed_plus_color">#295C2B</color>
     <color name="pressed_minus_color">#5C2929</color>
+    <color name="default_color">#141118</color>
+    <color name="default_text_color">#E1DCE3</color>
 </resources>
