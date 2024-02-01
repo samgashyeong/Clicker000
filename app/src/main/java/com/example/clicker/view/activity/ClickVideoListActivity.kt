@@ -2,11 +2,13 @@ package com.example.clicker.view.activity
 
 import android.content.ContentValues.TAG
 import android.content.Intent
+import android.opengl.Visibility
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
@@ -29,15 +31,21 @@ class ClickVideoListActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_click_video_list)
 
 
-        val data = intent.intentSerializable("clickdata", ArrayList()) as ArrayList<ClickVideoListWithClickInfo>
-        Log.d(TAG, "onCreate: ${data[0].videoInfo.snippet.title}")
+        val data = intent.intentSerializable("clickdata", ArrayList()) as ArrayList<ClickVideoListWithClickInfo>?
+
+
 
 
         binding.recycler.apply {
             layoutManager = LinearLayoutManager(this@ClickVideoListActivity)
-            adapter = ClickVideoAdapter(data){
-                startActivity(Intent(this@ClickVideoListActivity, AnalyzeActivity::class.java).putExtra("data" ,it))
-                //Toast.makeText(this@ClickVideoListActivity, it.videoInfo.snippet.title, Toast.LENGTH_SHORT).show()
+            adapter = data?.let {
+                ClickVideoAdapter(it){
+                    startActivity(Intent(this@ClickVideoListActivity, AnalyzeActivity::class.java).putExtra("data" ,it))
+                    //Toast.makeText(this@ClickVideoListActivity, it.videoInfo.snippet.title, Toast.LENGTH_SHORT).show()
+                }
+            }
+            if(data!!.size != 0){
+                binding.alarmText.visibility = View.INVISIBLE
             }
         }
         setSupportActionBar(binding.toolbar)

@@ -1,6 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="clickInfo"
+            type="com.example.clicker.data.database.ClickInfo" />
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginBottom="1dp"
+        android:background="@color/default_color">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+<!--        <TextView-->
+<!--            android:id="@+id/clickInfoTextView"-->
+<!--            android:layout_width="100dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:text="@{String.valueOf(clickInfo.clickScorePoint)}"-->
+<!--            android:gravity="center"-->
+<!--            android:textSize="30sp"-->
+<!--            app:plusOrMinusColor="@{clickInfo.clickScorePoint}"-->
+<!--            android:textColor="@color/default_text_color"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
+
+        <EditText
+            android:layout_marginLeft="10dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="memo"
+            android:layout_marginRight="10dp"
+            android:textColorHint="@color/default_text_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/textView3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@{String.valueOf(clickInfo.clickSecond)}"
+            android:textColor="@color/default_text_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:plusOrMinusColor="@{clickInfo.clickScorePoint}" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -82,16 +82,6 @@ class MainActivity : AppCompatActivity() {
                 Log.d(TAG, "onCreate: 예외실행")
             }
         })
-
-//        binding.saveButton.setOnClickListener {
-//            databaseViewModel.insert(ClickVideoListWithClickInfo(viewModel.videoInfo.value!!,
-//                    viewModel.urlString.value!!,
-//                    viewModel.plus.value!!,
-//                    viewModel.minus.value!!,
-//                    viewModel.total.value!!,
-//                viewModel.clickInfo.value!!
-//            ))
-//        }
     }
 
     override fun onDestroy() {
@@ -103,6 +93,7 @@ class MainActivity : AppCompatActivity() {
         when(item.itemId){
             R.id.save->{
                 databaseViewModel.insert(ClickVideoListWithClickInfo(viewModel.videoInfo.value!!,
+                    viewModel.startPoint.value!!.toInt(),
                     viewModel.urlString.value!!,
                     viewModel.plus.value!!,
                     viewModel.minus.value!!,
