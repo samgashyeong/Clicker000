@@ -6,8 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.clicker.R
+import com.example.clicker.databinding.FragmentClickInfoBinding
 
 class ClickInfoFragment : Fragment() {
+    private lateinit var binding: FragmentClickInfoBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -16,7 +18,8 @@ class ClickInfoFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        binding = FragmentClickInfoBinding.inflate(inflater, container, false)
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_click_info, container, false)
+        return binding.root
     }
 }

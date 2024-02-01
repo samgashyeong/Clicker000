@@ -3,24 +3,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_analyze"
-    app:startDestination="@id/clickInfoFragment">
-
+    app:startDestination="@id/clickInfoFragment2">
     <fragment
-        android:id="@+id/clickInfoFragment"
+        android:id="@+id/clickInfoFragment2"
         android:name="com.example.clicker.view.fragment.ClickInfoFragment"
         android:label="fragment_click_info"
         tools:layout="@layout/fragment_click_info" >
         <action
-            android:id="@+id/action_clickInfoFragment_to_statisticsFragment"
-            app:destination="@id/statisticsFragment" />
+            android:id="@+id/action_clickInfoFragment2_to_statisticsFragment2"
+            app:destination="@id/statisticsFragment2" />
     </fragment>
+    <action
+        android:id="@+id/action_clickInfoFragment2"
+        app:destination="@id/clickInfoFragment2" />
     <fragment
-        android:id="@+id/statisticsFragment"
+        android:id="@+id/statisticsFragment2"
         android:name="com.example.clicker.view.fragment.StatisticsFragment"
         android:label="fragment_statistics"
         tools:layout="@layout/fragment_statistics" >
         <action
-            android:id="@+id/action_statisticsFragment_to_clickInfoFragment"
-            app:destination="@id/clickInfoFragment" />
+            android:id="@+id/action_statisticsFragment2_to_clickInfoFragment2"
+            app:destination="@id/clickInfoFragment2" />
     </fragment>
 </navigation>
