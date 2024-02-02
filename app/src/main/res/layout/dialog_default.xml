@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#00000000"
+    android:background="#00FFFFFF"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -19,6 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="다이얼로그"
+            android:textColor="@color/default_text_color"
             android:layout_marginTop="25dp"
             android:fontFamily="sans-serif"
             android:textStyle="bold"
@@ -33,6 +34,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif"
             android:text="이것은 다이얼로그 입니다."
+            android:textColor="@color/default_text_color"
             android:gravity="center"
             android:padding="10dp"
             app:layout_constraintBottom_toTopOf="@+id/linearLayout"
@@ -56,7 +58,7 @@
                 android:layout_height="match_parent"
                 android:text="탈퇴하기"
                 android:layout_weight="1"
-                android:textColor="#b5b5b5"
+                android:textColor="@color/default_text_color"
                 android:textSize="15sp"
                 android:gravity="center"/>
 
@@ -66,7 +68,7 @@
                 android:layout_height="match_parent"
                 android:text="취소"
                 android:layout_weight="1"
-                android:textColor="#000"
+                android:textColor="#FF0000"
                 android:textSize="15sp"
                 android:layout_gravity="center_horizontal"
                 android:gravity="center"/>

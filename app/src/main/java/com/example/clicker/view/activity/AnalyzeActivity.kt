@@ -7,37 +7,42 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
-import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavHost
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.NavigationUI
 import com.example.clicker.R
 import com.example.clicker.data.database.ClickVideoListWithClickInfo
 import com.example.clicker.databinding.ActivityAnalyzeBinding
+import com.example.clicker.view.dialog.EditTextDialog
 import com.example.clicker.viewmodel.AnalyzeViewModel
 import com.example.clicker.viewmodel.AnalyzeViewModelFactory
-import com.example.clicker.viewmodel.MainViewModel
+import com.example.clicker.viewmodel.MainDatabaseViewModel
+import com.example.clicker.viewmodel.MainDatabaseViewModelFactory
 import com.google.android.material.tabs.TabLayout
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerTracker
 
 class AnalyzeActivity : AppCompatActivity() {
     private lateinit var binding : ActivityAnalyzeBinding
     private lateinit var viewModel: AnalyzeViewModel
+    private lateinit var databaseViewModel: MainDatabaseViewModel
+    private lateinit var editDialog : EditTextDialog
+    private lateinit var tracker: YouTubePlayerTracker
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_analyze)
         setContentView(binding.root)
         val data = intent.intentSerializable("data", ClickVideoListWithClickInfo::class.java)
-        viewModel = ViewModelProvider(this, AnalyzeViewModelFactory(data!!, data.clickInfoList, data.videoId ))[AnalyzeViewModel::class.java]
+        viewModel = ViewModelProvider(this, AnalyzeViewModelFactory(data!!, data.clickInfoList, data.videoId, tracker, 0))[AnalyzeViewModel::class.java]
         viewModel.videoInfo.value = data
+        databaseViewModel = ViewModelProvider(this, MainDatabaseViewModelFactory(application))[MainDatabaseViewModel::class.java]
 
+        //editDialog = StartPointDialog(this)
+        databaseViewModel.readAllData.observe(this, Observer {
+            Log.d(TAG, "onCreate: 데이터베이스 2차${databaseViewModel.readAllData.value?.size}")
+        })
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         viewModel.videoId.observe(this, Observer {
@@ -46,6 +51,7 @@ class AnalyzeActivity : AppCompatActivity() {
                 override fun onReady(youTubePlayer: YouTubePlayer) {
                     super.onReady(youTubePlayer)
                     youTubePlayer.loadVideo(viewModel.videoId.value!!, viewModel.videoInfo.value!!.startPoint.toFloat())
+                    youTubePlayer.addListener(tracker)
                     //youTubePlayer.addListener(tracker)
                 }
             })

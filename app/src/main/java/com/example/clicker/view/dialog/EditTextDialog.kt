@@ -9,11 +9,11 @@ import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import com.example.clicker.viewmodel.MainViewModel
+import android.widget.TextView
 import com.example.clicker.R
 
-class StartPointDialog(context: Context,
-                       private val viewModel: MainViewModel,
+class EditTextDialog(context: Context, private val uiText : EditTextDialogDto,
+                     private val clickListener: (editTextString : String) -> Unit,
                        ) : Dialog(context) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,12 +25,14 @@ class StartPointDialog(context: Context,
             it?.setGravity(Gravity.BOTTOM)
             it?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         }
-        val startPoint = findViewById<EditText>(R.id.startPointEditText)
+
+        val editText = findViewById<EditText>(R.id.subEditText)
+        editText.hint = uiText.subText
+        findViewById<TextView>(R.id.mainTextView).text = uiText.mainText
         findViewById<Button>(R.id.saveButton).setOnClickListener {
-            viewModel.startPoint?.value = startPoint.text.toString().toFloat()
+            clickListener.invoke(editText.text.toString())
             this.cancel()
         }
-
 
     }
 }

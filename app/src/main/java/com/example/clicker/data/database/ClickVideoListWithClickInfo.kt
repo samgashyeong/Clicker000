@@ -16,7 +16,7 @@ data class ClickVideoListWithClickInfo(
     val plusScore : Int,
     val minusScore : Int,
     val totalScore : Int,
-    val clickInfoList : List<ClickInfo>
+    var clickInfoList : List<ClickInfo>
 ): Serializable{
     @PrimaryKey(autoGenerate = true)
     var clickVideoListID : Int = 0

@@ -11,17 +11,22 @@ import android.view.ViewGroup
 import androidx.activity.viewModels
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.clicker.R
 import com.example.clicker.databinding.FragmentClickInfoBinding
 import com.example.clicker.view.activity.AnalyzeActivity
 import com.example.clicker.view.adapter.ClickInfoAdapter
 import com.example.clicker.view.adapter.ClickVideoAdapter
+import com.example.clicker.view.dialog.EditTextDialog
 import com.example.clicker.viewmodel.AnalyzeViewModel
+import com.example.clicker.viewmodel.MainDatabaseViewModel
 
 class ClickInfoFragment : Fragment() {
     private lateinit var binding: FragmentClickInfoBinding
     private val viewModel: AnalyzeViewModel by activityViewModels()
+    private val databaseViewModel : MainDatabaseViewModel by activityViewModels()
+    private lateinit var editTextDialog: EditTextDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -31,6 +36,9 @@ class ClickInfoFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentClickInfoBinding.inflate(inflater, container, false)
+//        editTextDialog = EditTextDialog(requireContext()){
+//            databaseViewModel.update()
+//        }
         // Inflate the layout for this fragment
         return binding.root
     }
@@ -38,13 +46,19 @@ class ClickInfoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        var dataChangeIndex : Int? = null
         viewModel.videoInfo?.observe(viewLifecycleOwner, Observer {
             binding.recycler.apply {
                 layoutManager = LinearLayoutManager(context)
-                adapter = ClickInfoAdapter(viewModel.videoInfo.value!!.clickInfoList){
-                    startActivity(Intent(context, AnalyzeActivity::class.java).putExtra("data" ,it))
-                    //Toast.makeText(this@ClickVideoListActivity, it.videoInfo.snippet.title, Toast.LENGTH_SHORT).show()
+                adapter = ClickInfoAdapter(databaseViewModel, requireContext() , viewModel.videoInfo.value!!){
+                    dataChangeIndex = it
                 }
+            }
+        })
+
+        databaseViewModel.readAllData.observe(viewLifecycleOwner, Observer {
+            binding.recycler.apply {
+                dataChangeIndex?.let { it1 -> adapter?.notifyItemChanged(it1) }
             }
         })
     }

@@ -13,7 +13,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.clicker.R
 import com.example.clicker.data.database.ClickVideoListWithClickInfo
 import com.example.clicker.databinding.ActivityMainBinding
-import com.example.clicker.view.dialog.StartPointDialog
+import com.example.clicker.view.dialog.EditTextDialog
+import com.example.clicker.view.dialog.EditTextDialogDto
 import com.example.clicker.viewmodel.MainDatabaseViewModel
 import com.example.clicker.viewmodel.MainDatabaseViewModelFactory
 import com.example.clicker.viewmodel.MainViewModel
@@ -27,7 +28,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var viewModel: MainViewModel
-    private lateinit var startPointDialog : StartPointDialog
+    private lateinit var startPointDialog : EditTextDialog
     private lateinit var databaseViewModel : MainDatabaseViewModel
 
     private lateinit var tracker: YouTubePlayerTracker
@@ -41,7 +42,12 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
         databaseViewModel = ViewModelProvider(this, MainDatabaseViewModelFactory(application))[MainDatabaseViewModel::class.java]
 
-        startPointDialog = StartPointDialog(this@MainActivity, viewModel)
+        Log.d(TAG, "onCreate: 데이터베이스${databaseViewModel.getAll()}")
+        startPointDialog = EditTextDialog(this@MainActivity,
+            EditTextDialogDto("Please enter the start point", "only use integer ex)10")){
+            viewModel.startPoint.value = it.toFloat()
+            startPointDialog.cancel()
+        }
 
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
@@ -62,11 +68,11 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        viewModel.startPoint!!.observe(this, Observer {
+        viewModel.startPoint.observe(this, Observer {
             if (sharedText != null && viewModel.startPoint.value != null) {
-                viewModel.urlString!!.value = viewModel.extractYouTubeVideoId(sharedText).value
+                viewModel.urlString.value = viewModel.extractYouTubeVideoId(sharedText).value
 
-                Log.d(TAG, "${viewModel.urlString!!.value!!}+${viewModel.startPoint!!.value!!}")
+                Log.d(TAG, "${viewModel.urlString.value!!}+${viewModel.startPoint!!.value!!}")
 
                 binding.youtubePlayer.initialize(object : AbstractYouTubePlayerListener() {
                     override fun onReady(youTubePlayer: YouTubePlayer) {

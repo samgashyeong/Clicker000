@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#00000000"
+    android:background="@color/default_color"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -16,9 +16,10 @@
 
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/mainTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/default_text_color"
             android:text="Please enter the start point"
             android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
@@ -34,14 +35,15 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/startPointEditText"
+            android:id="@+id/subEditText"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:textColor="@color/default_text_color"
             android:hint="only use integer ex)10"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/saveButton"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView" />
+            app:layout_constraintTop_toBottomOf="@+id/mainTextView" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

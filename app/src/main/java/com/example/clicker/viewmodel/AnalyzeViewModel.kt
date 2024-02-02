@@ -5,10 +5,13 @@ import androidx.lifecycle.ViewModel
 import com.example.clicker.data.database.ClickInfo
 import com.example.clicker.data.database.ClickVideoListWithClickInfo
 import com.github.mikephil.charting.data.Entry
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerTracker
 
 class AnalyzeViewModel(val videoInfo: MutableLiveData<ClickVideoListWithClickInfo>,
                        val clickInfo : MutableLiveData<List<ClickInfo>>,
-    val videoId : MutableLiveData<String>) : ViewModel() {
+    val videoId : MutableLiveData<String>,
+    val tracker: YouTubePlayerTracker,
+    val nowPosition : Int) : ViewModel() {
 
         fun dataToEntry(): ArrayList<Entry>{
             val listEntry : ArrayList<Entry> = ArrayList()

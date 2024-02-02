@@ -27,11 +27,13 @@
 <!--            app:layout_constraintStart_toStartOf="parent"-->
 <!--            app:layout_constraintTop_toTopOf="parent" />-->
 
-        <EditText
+        <TextView
+            android:id="@+id/memoEditText"
             android:layout_marginLeft="10dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="memo"
+            android:hint="Please click on this text to take a memo."
+            android:text="@{clickInfo.clickDescription}"
             android:layout_marginRight="10dp"
             android:textColorHint="@color/default_text_color"
             app:layout_constraintBottom_toBottomOf="parent"

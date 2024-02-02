@@ -23,11 +23,21 @@ class MainDatabaseViewModel(application: Application) : AndroidViewModel(applica
 
     init {
         val userDao = ClickVideoDatabase.getInstance(application)!!.clickVideoDao()
-        repository = ClickVideoRepository(userDao) //이니셜라이즈 해줍니다.
-        readAllData = repository.readAll // readAlldata는 repository에서 만들어줬던 livedata입니다.
+        repository = ClickVideoRepository(userDao)
+        readAllData = repository.readAll
+    }
+
+    fun getAll() : List<ClickVideoListWithClickInfo>? {
+        return readAllData.value
     }
 
     fun insert(clickVideoListWithClickInfo: ClickVideoListWithClickInfo){
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.insert(clickVideoListWithClickInfo)
+        }
+    }
+
+    fun update(clickVideoListWithClickInfo: ClickVideoListWithClickInfo){
         viewModelScope.launch(Dispatchers.IO) {
             repository.insert(clickVideoListWithClickInfo)
         }

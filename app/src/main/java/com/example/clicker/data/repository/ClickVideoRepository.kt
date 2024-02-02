@@ -15,10 +15,12 @@ class ClickVideoRepository(private val clickVideoDao: ClickVideoDao) {
     val readAll = clickVideoDao.getAll()
 
     suspend fun insert(clickVideoListWithClickInfo: ClickVideoListWithClickInfo){
-        try {
-            GlobalScope.launch(Dispatchers.IO) {
-                clickVideoDao.insert(clickVideoListWithClickInfo)
-            }
-        }catch (e: Exception){}
+        clickVideoDao.insert(clickVideoListWithClickInfo)
     }
+
+    suspend fun update(clickVideoListWithClickInfo: ClickVideoListWithClickInfo){
+        clickVideoDao.update(clickVideoListWithClickInfo)
+    }
+
+
 }
