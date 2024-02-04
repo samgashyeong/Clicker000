@@ -37,7 +37,7 @@ class MainViewModel(val urlString : MutableLiveData<String>,
         total.value = total.value?.plus(-1)
 
         testString.value += "-1, ${tracker.currentSecond}초\n"
-        clickInfo.value!!.add(ClickInfo(clickSecond = tracker.currentSecond, clickScorePoint = -1, null))
+        clickInfo.value!!.add(ClickInfo(clickSecond = tracker.currentSecond, clickScorePoint = -1, null, plus.value!!, minus.value!!, total.value!!))
     }
 
     fun plusPoint(view : View){
@@ -45,7 +45,7 @@ class MainViewModel(val urlString : MutableLiveData<String>,
         total.value = total.value?.plus(1)
 
         testString.value += "+1, ${tracker.currentSecond}초\n"
-        clickInfo.value!!.add(ClickInfo(clickSecond = tracker.currentSecond, clickScorePoint = +1, null))
+        clickInfo.value!!.add(ClickInfo(clickSecond = tracker.currentSecond, clickScorePoint = +1, null, plus.value!!, minus.value!!, total.value!!))
     }
 
 

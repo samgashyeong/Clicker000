@@ -17,7 +17,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 
-@Database(entities = [ClickVideoListWithClickInfo::class], version = 8)
+@Database(entities = [ClickVideoListWithClickInfo::class], version = 9)
 @TypeConverters(ClickInfoTypeConverter::class)
 abstract class ClickVideoDatabase : RoomDatabase() {
 
