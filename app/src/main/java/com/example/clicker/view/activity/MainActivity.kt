@@ -2,10 +2,12 @@ package com.example.clicker.view.activity
 
 import android.content.ContentValues.TAG
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -54,15 +56,18 @@ class MainActivity : AppCompatActivity() {
         }
 
         saveDataDialog = DefaultDialog(this, DefaultDialogDto("Save Score Data", "Do you want to save the scored data?", "Save", "cancel")){
-                databaseViewModel.insert(ClickVideoListWithClickInfo(viewModel.videoInfo.value!!,
-                    viewModel.startPoint.value!!.toInt(),
-                    viewModel.urlString.value!!,
-                    viewModel.plus.value!!,
-                    viewModel.minus.value!!,
-                    viewModel.total.value!!,
-                    viewModel.clickInfo.value!!
-                ))
-            Toast.makeText(this, "The data has been saved.", Toast.LENGTH_SHORT).show()
+                if(binding.youtubePlayer.isActivated){
+                    databaseViewModel.insert(ClickVideoListWithClickInfo(viewModel.videoInfo.value!!,
+                        viewModel.startPoint.value!!.toInt(),
+                        viewModel.urlString.value!!,
+                        viewModel.plus.value!!,
+                        viewModel.minus.value!!,
+                        viewModel.total.value!!,
+                        viewModel.clickInfo.value!!
+                    ))
+                }else{
+                    Toast.makeText(this, "Bring on the Youtube video and Score them", Toast.LENGTH_SHORT).show()
+                }
         }
 
         binding.viewModel = viewModel
@@ -70,6 +75,7 @@ class MainActivity : AppCompatActivity() {
         lifecycle.addObserver(binding.youtubePlayer)
 
         setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayUseLogoEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         databaseViewModel.readAllData.observe(this, Observer {
             Log.d(TAG, "onCreate: ${databaseViewModel.readAllData.value?.size}")
@@ -84,6 +90,18 @@ class MainActivity : AppCompatActivity() {
 
 
 
+        binding.youtubeButton.setOnClickListener {
+            val url = "https://www.youtube.com"
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = Uri.parse(url)
+
+            intent.setPackage("com.google.android.youtube")
+            if (intent.resolveActivity(packageManager) == null) {
+                intent.setPackage(null)
+            }
+
+            startActivity(intent)
+        }
         viewModel.startPoint.observe(this, Observer {
             if (sharedText != null && viewModel.startPoint.value != null) {
                 viewModel.urlString.value = viewModel.extractYouTubeVideoId(sharedText).value
@@ -93,6 +111,8 @@ class MainActivity : AppCompatActivity() {
                 binding.youtubePlayer.initialize(object : AbstractYouTubePlayerListener() {
                     override fun onReady(youTubePlayer: YouTubePlayer) {
                         super.onReady(youTubePlayer)
+                        binding.youtubeVideoTextView.visibility = View.INVISIBLE
+                        binding.youtubeButton.visibility = View.INVISIBLE
                         youTubePlayer.loadVideo(viewModel.urlString.value!!, viewModel.startPoint.value!!)
                         youTubePlayer.addListener(tracker)
                     }

@@ -7,6 +7,7 @@
             name="viewModel"
             type="com.example.clicker.viewmodel.MainViewModel" />
     </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -17,27 +18,75 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:menu="@menu/main_menu"
             android:background="@color/default_color"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:menu="@menu/main_menu">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/app_logo" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:text="Clicker000"
+                android:textColor="@color/default_text_color"
+                android:textSize="20sp"
+                android:textStyle="bold" />
         </androidx.appcompat.widget.Toolbar>
 
-<!--        <androidx.appcompat.widget.AppCompatButton-->
-<!--            android:id="@+id/saveButton"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="테스트버튼"-->
-<!--            app:layout_constraintStart_toStartOf="@id/youtubePlayer"-->
-<!--            app:layout_constraintTop_toTopOf="@id/youtubePlayer" />-->
+        <!--        <androidx.appcompat.widget.AppCompatButton-->
+        <!--            android:id="@+id/saveButton"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:text="테스트버튼"-->
+        <!--            app:layout_constraintStart_toStartOf="@id/youtubePlayer"-->
+        <!--            app:layout_constraintTop_toTopOf="@id/youtubePlayer" />-->
         <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
             android:id="@+id/youtubePlayer"
-            app:enableAutomaticInitialization="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:enableAutomaticInitialization="false"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolbar"/>
+            app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+        <TextView
+            android:id="@+id/youtubeVideoTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="Bring on the YouTube video!"
+            android:textColor="@color/default_text_color"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/youtubeButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/youtubePlayer"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/youtubeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/button_round"
+            android:padding="10dp"
+            android:text="Start YouTube app"
+            android:textColor="@color/default_color"
+            android:textSize="12dp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/youtubePlayer"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/youtubeVideoTextView" />
+
 
         <TextView
             android:id="@+id/testString"
@@ -47,6 +96,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
@@ -63,18 +113,20 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@drawable/plus_selector"
-                android:text="+"
                 android:onClick="@{viewModel::plusPoint}"
+                android:text="+"
+                android:textColor="@color/default_text_color"
                 android:textSize="60sp" />
 
             <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/minusButton"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:id="@+id/minusButton"
                 android:background="@drawable/minus_selector"
-                android:text="-"
                 android:onClick="@{viewModel::minusPoint}"
+                android:text="-"
+                android:textColor="@color/default_text_color"
                 android:textSize="60sp" />
 
         </LinearLayout>
@@ -93,8 +145,8 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:textColor="@color/default_text_color"
                 android:text="@{viewModel.plus.toString()}"
+                android:textColor="@color/default_text_color"
                 android:textSize="20sp" />
 
             <TextView
@@ -103,8 +155,8 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:textColor="@color/default_text_color"
                 android:text="@{viewModel.total.toString()}"
+                android:textColor="@color/default_text_color"
                 android:textSize="20sp" />
 
             <TextView
@@ -113,8 +165,8 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:textColor="@color/default_text_color"
                 android:text="@{viewModel.minus.toString()}"
+                android:textColor="@color/default_text_color"
                 android:textSize="20sp" />
         </LinearLayout>
 
