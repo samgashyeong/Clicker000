@@ -11,7 +11,7 @@ class AnalyzeViewModel(val videoInfo: MutableLiveData<ClickVideoListWithClickInf
                        val clickInfo : MutableLiveData<List<ClickInfo>>,
     val videoId : MutableLiveData<String>,
     val tracker: YouTubePlayerTracker,
-    val nowPosition : Int) : ViewModel() {
+    val nowPosition : MutableLiveData<Int>) : ViewModel() {
 
         fun dataToEntry(): ArrayList<Entry>{
             val listEntry : ArrayList<Entry> = ArrayList()

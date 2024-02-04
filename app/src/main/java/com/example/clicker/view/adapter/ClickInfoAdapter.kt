@@ -28,8 +28,6 @@ class ClickInfoAdapter(private val databaseViewModel: MainDatabaseViewModel, pri
             Log.d(TAG, "데이터 테스트 ${data.clickInfoList[editScoreInfoPosition!!].clickDescription} ")
             Log.d(TAG, "데이터 room ID 테스트 ${data.clickVideoListID} ")
             databaseViewModel.update(data)
-            //databaseViewModel.update()
-            //databaseViewModel.update(data)
         }
         items = data.clickInfoList
     }

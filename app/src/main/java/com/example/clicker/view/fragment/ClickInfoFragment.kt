@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
 import com.example.clicker.R
 import com.example.clicker.databinding.FragmentClickInfoBinding
 import com.example.clicker.view.activity.AnalyzeActivity
@@ -56,6 +57,31 @@ class ClickInfoFragment : Fragment() {
             }
         })
 
+        viewModel.nowPosition.observe(viewLifecycleOwner, Observer { position ->
+            val smoothScroller = object : LinearSmoothScroller(context) {
+                override fun getVerticalSnapPreference(): Int {
+                    return SNAP_TO_START // 아이템을 상단에 맞춤
+                }
+
+                override fun calculateDyToMakeVisible(view: View, snapPreference: Int): Int {
+                    val layoutManager = layoutManager as? LinearLayoutManager
+                    return if (layoutManager != null) {
+                        super.calculateDyToMakeVisible(view, snapPreference)
+                    } else {
+                        super.calculateDyToMakeVisible(view, snapPreference)
+                    }
+                }
+            }.apply {
+                targetPosition = position
+            }
+
+            binding.recycler.layoutManager?.startSmoothScroll(smoothScroller)
+        })
+//        viewModel.nowPosition.observe(viewLifecycleOwner, Observer {
+//            binding.recycler.apply {
+//                (this.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(viewModel.nowPosition.value!!, 0)
+//            }
+//        })
         databaseViewModel.readAllData.observe(viewLifecycleOwner, Observer {
             binding.recycler.apply {
                 dataChangeIndex?.let { it1 -> adapter?.notifyItemChanged(it1) }

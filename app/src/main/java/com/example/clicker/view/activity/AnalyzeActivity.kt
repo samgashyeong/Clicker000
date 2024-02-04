@@ -20,29 +20,34 @@ import com.example.clicker.viewmodel.AnalyzeViewModelFactory
 import com.example.clicker.viewmodel.MainDatabaseViewModel
 import com.example.clicker.viewmodel.MainDatabaseViewModelFactory
 import com.google.android.material.tabs.TabLayout
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerTracker
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class AnalyzeActivity : AppCompatActivity() {
     private lateinit var binding : ActivityAnalyzeBinding
     private lateinit var viewModel: AnalyzeViewModel
     private lateinit var databaseViewModel: MainDatabaseViewModel
-    private lateinit var editDialog : EditTextDialog
     private lateinit var tracker: YouTubePlayerTracker
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_analyze)
         setContentView(binding.root)
         val data = intent.intentSerializable("data", ClickVideoListWithClickInfo::class.java)
+        tracker = YouTubePlayerTracker()
         viewModel = ViewModelProvider(this, AnalyzeViewModelFactory(data!!, data.clickInfoList, data.videoId, tracker, 0))[AnalyzeViewModel::class.java]
         viewModel.videoInfo.value = data
         databaseViewModel = ViewModelProvider(this, MainDatabaseViewModelFactory(application))[MainDatabaseViewModel::class.java]
 
         //editDialog = StartPointDialog(this)
-        databaseViewModel.readAllData.observe(this, Observer {
-            Log.d(TAG, "onCreate: 데이터베이스 2차${databaseViewModel.readAllData.value?.size}")
-        })
+//        databaseViewModel.readAllData.observe(this, Observer {
+//            Log.d(TAG, "onCreate: 데이터베이스 2차${databaseViewModel.readAllData.value?.size}")
+//        })
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         viewModel.videoId.observe(this, Observer {
@@ -52,7 +57,7 @@ class AnalyzeActivity : AppCompatActivity() {
                     super.onReady(youTubePlayer)
                     youTubePlayer.loadVideo(viewModel.videoId.value!!, viewModel.videoInfo.value!!.startPoint.toFloat())
                     youTubePlayer.addListener(tracker)
-                    //youTubePlayer.addListener(tracker)
+                    startTracking()
                 }
             })
         })
@@ -87,6 +92,21 @@ class AnalyzeActivity : AppCompatActivity() {
             }
 
         })
+    }
+
+    private fun startTracking() {
+        GlobalScope.launch(Dispatchers.IO) {
+            val secondList = viewModel.clickInfo.value!!.map { it.clickSecond.toInt() }
+            while(true){
+                val second = tracker.currentSecond
+                //Log.d(TAG, "startTracking: ${second}")
+                if(secondList.contains(second.toInt())){
+                    val nowPosition = secondList.indexOf(second.toInt())
+                    viewModel.nowPosition.postValue(nowPosition)
+                }
+                delay(150L)
+            }
+        }
     }
 
     private fun Intent.intentSerializable(key: String, data: Class<ClickVideoListWithClickInfo>): ClickVideoListWithClickInfo? {

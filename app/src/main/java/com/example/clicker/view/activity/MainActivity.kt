@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -13,6 +14,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.clicker.R
 import com.example.clicker.data.database.ClickVideoListWithClickInfo
 import com.example.clicker.databinding.ActivityMainBinding
+import com.example.clicker.view.dialog.DefaultDialog
+import com.example.clicker.view.dialog.DefaultDialogDto
 import com.example.clicker.view.dialog.EditTextDialog
 import com.example.clicker.view.dialog.EditTextDialogDto
 import com.example.clicker.viewmodel.MainDatabaseViewModel
@@ -30,6 +33,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
     private lateinit var startPointDialog : EditTextDialog
     private lateinit var databaseViewModel : MainDatabaseViewModel
+    private lateinit var saveDataDialog : DefaultDialog
 
     private lateinit var tracker: YouTubePlayerTracker
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,6 +51,18 @@ class MainActivity : AppCompatActivity() {
             EditTextDialogDto("Please enter the start point", "only use integer ex)10")){
             viewModel.startPoint.value = it.toFloat()
             startPointDialog.cancel()
+        }
+
+        saveDataDialog = DefaultDialog(this, DefaultDialogDto("Save Score Data", "Do you want to save the scored data?", "Save", "cancel")){
+                databaseViewModel.insert(ClickVideoListWithClickInfo(viewModel.videoInfo.value!!,
+                    viewModel.startPoint.value!!.toInt(),
+                    viewModel.urlString.value!!,
+                    viewModel.plus.value!!,
+                    viewModel.minus.value!!,
+                    viewModel.total.value!!,
+                    viewModel.clickInfo.value!!
+                ))
+            Toast.makeText(this, "The data has been saved.", Toast.LENGTH_SHORT).show()
         }
 
         binding.viewModel = viewModel
@@ -98,14 +114,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.save->{
-                databaseViewModel.insert(ClickVideoListWithClickInfo(viewModel.videoInfo.value!!,
-                    viewModel.startPoint.value!!.toInt(),
-                    viewModel.urlString.value!!,
-                    viewModel.plus.value!!,
-                    viewModel.minus.value!!,
-                    viewModel.total.value!!,
-                    viewModel.clickInfo.value!!
-                ))
+                saveDataDialog.show()
             }
             R.id.list->{
                 val a  = databaseViewModel.readAllData.value
