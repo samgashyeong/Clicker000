@@ -54,6 +54,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
+        <View
+            android:id="@+id/youtubeBlackView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/black"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar" />
         <TextView
             android:id="@+id/youtubeVideoTextView"
             android:layout_width="wrap_content"

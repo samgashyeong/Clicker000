@@ -38,15 +38,20 @@ class MainActivity : AppCompatActivity() {
     private lateinit var saveDataDialog : DefaultDialog
 
     private lateinit var tracker: YouTubePlayerTracker
+
+    private lateinit var youtubePlayer : YouTubePlayer
+
+    var sharedText : String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         tracker = YouTubePlayerTracker()
         val viewModelFactory = MainViewModelFactory(tracker)
-        var sharedText : String? = null
+
         viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
         databaseViewModel = ViewModelProvider(this, MainDatabaseViewModelFactory(application))[MainDatabaseViewModel::class.java]
+
 
         Log.d(TAG, "onCreate: 데이터베이스${databaseViewModel.getAll()}")
         startPointDialog = EditTextDialog(this@MainActivity,
@@ -55,8 +60,9 @@ class MainActivity : AppCompatActivity() {
             startPointDialog.cancel()
         }
 
+
         saveDataDialog = DefaultDialog(this, DefaultDialogDto("Save Score Data", "Do you want to save the scored data?", "Save", "cancel")){
-                if(binding.youtubePlayer.isActivated){
+                if(viewModel.urlString.value != null){
                     databaseViewModel.insert(ClickVideoListWithClickInfo(viewModel.videoInfo.value!!,
                         viewModel.startPoint.value!!.toInt(),
                         viewModel.urlString.value!!,
@@ -65,9 +71,11 @@ class MainActivity : AppCompatActivity() {
                         viewModel.total.value!!,
                         viewModel.clickInfo.value!!
                     ))
+                    Toast.makeText(this, "유튜브 영상 가져옴", Toast.LENGTH_SHORT).show()
                 }else{
                     Toast.makeText(this, "Bring on the Youtube video and Score them", Toast.LENGTH_SHORT).show()
                 }
+            Toast.makeText(this, "Data has been saved.", Toast.LENGTH_SHORT).show()
         }
 
         binding.viewModel = viewModel
@@ -81,10 +89,19 @@ class MainActivity : AppCompatActivity() {
             Log.d(TAG, "onCreate: ${databaseViewModel.readAllData.value?.size}")
         })
 
+        binding.youtubePlayer.initialize(object : AbstractYouTubePlayerListener() {
+            override fun onReady(youTubePlayer: YouTubePlayer) {
+                super.onReady(youTubePlayer)
+                youtubePlayer = youTubePlayer
+//                binding.youtubeVideoTextView.visibility = View.INVISIBLE
+//                binding.youtubeButton.visibility = View.INVISIBLE
+//                youTubePlayer.loadVideo(viewModel.urlString.value!!, viewModel.startPoint.value!!)
+                youTubePlayer.addListener(tracker)
+            }
+        })
         //인텐트 이벤트를 받아주는 곳 이걸 코드를 최적화를 하려면 어떻게 해야될까? 라는 고민을 할 필요가 있음.
         if (intent?.action == Intent.ACTION_SEND && intent.type == "text/plain") {
             sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
-
             startPointDialog.show()
         }
 
@@ -102,23 +119,22 @@ class MainActivity : AppCompatActivity() {
 
             startActivity(intent)
         }
+
         viewModel.startPoint.observe(this, Observer {
             if (sharedText != null && viewModel.startPoint.value != null) {
-                viewModel.urlString.value = viewModel.extractYouTubeVideoId(sharedText).value
+                viewModel.urlString.value = viewModel.extractYouTubeVideoId(sharedText!!).value
 
                 Log.d(TAG, "${viewModel.urlString.value!!}+${viewModel.startPoint!!.value!!}")
-
-                binding.youtubePlayer.initialize(object : AbstractYouTubePlayerListener() {
-                    override fun onReady(youTubePlayer: YouTubePlayer) {
-                        super.onReady(youTubePlayer)
-                        binding.youtubeVideoTextView.visibility = View.INVISIBLE
-                        binding.youtubeButton.visibility = View.INVISIBLE
-                        youTubePlayer.loadVideo(viewModel.urlString.value!!, viewModel.startPoint.value!!)
-                        youTubePlayer.addListener(tracker)
-                    }
-                })
+                binding.youtubeVideoTextView.visibility = View.INVISIBLE
+                binding.youtubeButton.visibility = View.INVISIBLE
+                binding.youtubeBlackView.visibility = View.INVISIBLE
+                youtubePlayer.loadVideo(viewModel.urlString.value!!, viewModel.startPoint.value!!)
                 //비디오 정보 가져오기
                 viewModel.getVideoInfo(viewModel.urlString.value!!)
+
+                viewModel.plus.value = 0
+                viewModel.minus.value = 0
+                viewModel.total.value = 0
             }
             else{
                 Log.d(TAG, "onCreate: 예외실행")
@@ -150,5 +166,16 @@ class MainActivity : AppCompatActivity() {
         val inflater = menuInflater
         inflater.inflate(com.example.clicker.R.menu.main_menu , menu)
         return true
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (intent != null) {
+            if (intent.getAction().equals(Intent.ACTION_SEND) && "text/plain".equals(intent.getType())) {
+                sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+                // startPointDialog 관련 처리
+                startPointDialog.show()
+            }
+        }
     }
 }
