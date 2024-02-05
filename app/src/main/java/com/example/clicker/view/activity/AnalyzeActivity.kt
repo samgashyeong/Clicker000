@@ -42,13 +42,12 @@ class AnalyzeActivity : AppCompatActivity() {
         tracker = YouTubePlayerTracker()
         viewModel = ViewModelProvider(this, AnalyzeViewModelFactory(data!!, data.clickInfoList, data.videoId, tracker, 0))[AnalyzeViewModel::class.java]
         viewModel.videoInfo.value = data
+        binding.data = viewModel.videoInfo.value
         databaseViewModel = ViewModelProvider(this, MainDatabaseViewModelFactory(application))[MainDatabaseViewModel::class.java]
 
-        //editDialog = StartPointDialog(this)
-//        databaseViewModel.readAllData.observe(this, Observer {
-//            Log.d(TAG, "onCreate: 데이터베이스 2차${databaseViewModel.readAllData.value?.size}")
-//        })
+
         setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         viewModel.videoId.observe(this, Observer {
             Log.d(TAG, "onCreate: activity")
@@ -100,7 +99,7 @@ class AnalyzeActivity : AppCompatActivity() {
             while(true){
                 val second = tracker.currentSecond
                 //Log.d(TAG, "startTracking: ${second}")
-                if(secondList.contains(second.toInt())){
+                if(tracker.state == PlayerConstants.PlayerState.PLAYING && secondList.contains(second.toInt())){
                     val nowPosition = secondList.indexOf(second.toInt())
                     viewModel.nowPosition.postValue(nowPosition)
                 }

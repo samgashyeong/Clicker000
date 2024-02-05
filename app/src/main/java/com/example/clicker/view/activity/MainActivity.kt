@@ -71,11 +71,10 @@ class MainActivity : AppCompatActivity() {
                         viewModel.total.value!!,
                         viewModel.clickInfo.value!!
                     ))
-                    Toast.makeText(this, "유튜브 영상 가져옴", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Data has been saved.", Toast.LENGTH_SHORT).show()
                 }else{
                     Toast.makeText(this, "Bring on the Youtube video and Score them", Toast.LENGTH_SHORT).show()
                 }
-            Toast.makeText(this, "Data has been saved.", Toast.LENGTH_SHORT).show()
         }
 
         binding.viewModel = viewModel

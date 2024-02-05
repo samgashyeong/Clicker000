@@ -42,35 +42,35 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-<!--        <TextView-->
-<!--            android:id="@+id/plusScoreTextView"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginRight="5dp"-->
-<!--            android:text="@{String.valueOf(score.plusData)}"-->
-<!--            android:textColor="@color/pressed_plus_color"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintEnd_toStartOf="@+id/minusScoreTextView" />-->
+        <TextView
+            android:id="@+id/plusScoreTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:text="@{String.valueOf(clickInfo.plus)}"
+            android:textColor="@color/pressed_plus_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/minusScoreTextView" />
 
-<!--        <TextView-->
-<!--            android:id="@+id/minusScoreTextView"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="@{String.valueOf(score.minusScore)}"-->
-<!--            android:textColor="@color/pressed_minus_color"-->
-<!--            android:layout_marginRight="5dp"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintEnd_toStartOf="@+id/totalScoreTextView" />-->
+        <TextView
+            android:id="@+id/minusScoreTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{String.valueOf(clickInfo.minus)}"
+            android:textColor="@color/pressed_minus_color"
+            android:layout_marginRight="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/totalScoreTextView" />
 
-<!--        <TextView-->
-<!--            android:id="@+id/totalScoreTextView"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginRight="5dp"-->
-<!--            android:text="@{String.valueOf(score.totalScore)}"-->
-<!--            android:textColor="@color/default_text_color"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintEnd_toStartOf="@+id/textView3" />-->
+        <TextView
+            android:id="@+id/totalScoreTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:text="@{String.valueOf(clickInfo.total)}"
+            android:textColor="@color/default_text_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/textView3" />
 
         <TextView
             android:id="@+id/textView3"
