@@ -36,6 +36,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var startPointDialog : EditTextDialog
     private lateinit var databaseViewModel : MainDatabaseViewModel
     private lateinit var saveDataDialog : DefaultDialog
+    private lateinit var initializeDialog : DefaultDialog
 
     private lateinit var tracker: YouTubePlayerTracker
 
@@ -52,14 +53,11 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
         databaseViewModel = ViewModelProvider(this, MainDatabaseViewModelFactory(application))[MainDatabaseViewModel::class.java]
 
-
-        Log.d(TAG, "onCreate: 데이터베이스${databaseViewModel.getAll()}")
         startPointDialog = EditTextDialog(this@MainActivity,
             EditTextDialogDto("Please enter the start point", "only use integer ex)10")){
             viewModel.startPoint.value = it.toFloat()
             startPointDialog.cancel()
         }
-
 
         saveDataDialog = DefaultDialog(this, DefaultDialogDto("Save Score Data", "Do you want to save the scored data?", "Save", "cancel")){
                 if(viewModel.urlString.value != null){
@@ -77,6 +75,11 @@ class MainActivity : AppCompatActivity() {
                 }
         }
 
+        initializeDialog = DefaultDialog(this, DefaultDialogDto("Reset Scored Video", "Do you want to reset the scored data?", "Yes", "No")){
+            viewModel.clickInfo.value?.clear()
+            startPointDialog.show()
+        }
+
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
         lifecycle.addObserver(binding.youtubePlayer)
@@ -92,9 +95,6 @@ class MainActivity : AppCompatActivity() {
             override fun onReady(youTubePlayer: YouTubePlayer) {
                 super.onReady(youTubePlayer)
                 youtubePlayer = youTubePlayer
-//                binding.youtubeVideoTextView.visibility = View.INVISIBLE
-//                binding.youtubeButton.visibility = View.INVISIBLE
-//                youTubePlayer.loadVideo(viewModel.urlString.value!!, viewModel.startPoint.value!!)
                 youTubePlayer.addListener(tracker)
             }
         })
@@ -148,6 +148,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
+            R.id.InitializingButton->{
+                initializeDialog.show()
+            }
             R.id.save->{
                 saveDataDialog.show()
             }

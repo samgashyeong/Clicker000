@@ -2,6 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+
+    <item
+        android:title="InitButton"
+        android:id="@+id/InitializingButton"
+        android:icon="@drawable/baseline_rotate_left_24"
+        app:showAsAction="always"
+        />
+
     <item
         android:title="saveButton"
         android:id="@+id/save"
@@ -15,4 +23,11 @@
         android:icon="@drawable/baseline_view_list_24"
         app:showAsAction="ifRoom"
         />
+
+<!--    <item-->
+<!--        android:title="settingButton"-->
+<!--        android:id="@+id/setting"-->
+<!--        android:icon="@drawable/baseline_settings_24"-->
+<!--        app:showAsAction="ifRoom"-->
+<!--        />-->
 </menu>
