@@ -14,21 +14,26 @@ import com.example.clicker.data.database.ClickVideoListWithClickInfo
 import com.example.clicker.data.database.room.ClickVideoDatabase
 import com.example.clicker.data.repository.ClickVideoRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.io.Serializable
 
 class MainDatabaseViewModel(application: Application) : AndroidViewModel(application), Serializable {
-    val readAllData:LiveData<List<ClickVideoListWithClickInfo>>
+    val readAllData:MutableLiveData<List<ClickVideoListWithClickInfo>> = MutableLiveData();
     private val repository:ClickVideoRepository
 
     init {
         val userDao = ClickVideoDatabase.getInstance(application)!!.clickVideoDao()
         repository = ClickVideoRepository(userDao)
-        readAllData = repository.readAll
+        getAll()
     }
 
-    fun getAll() : List<ClickVideoListWithClickInfo>? {
-        return readAllData.value
+    private fun getAll() {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.getAll().collect{
+                readAllData.postValue(it)
+            }
+        }
     }
 
     fun insert(clickVideoListWithClickInfo: ClickVideoListWithClickInfo){

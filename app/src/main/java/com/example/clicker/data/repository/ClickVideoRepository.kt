@@ -9,11 +9,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import java.util.concurrent.Flow
 import kotlin.coroutines.resume
 
 class ClickVideoRepository(private val clickVideoDao: ClickVideoDao) {
-    val readAll = clickVideoDao.getAll()
+    //val readAll = clickVideoDao.getAll()
 
+    fun getAll() : kotlinx.coroutines.flow.Flow<List<ClickVideoListWithClickInfo>>{
+        return clickVideoDao.getAll()
+    }
     suspend fun insert(clickVideoListWithClickInfo: ClickVideoListWithClickInfo){
         clickVideoDao.insert(clickVideoListWithClickInfo)
     }
