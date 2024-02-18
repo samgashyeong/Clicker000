@@ -35,7 +35,6 @@ class ClickVideoListActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_click_video_list)
         databaseViewModel = ViewModelProvider(this, MainDatabaseViewModelFactory(application))[MainDatabaseViewModel::class.java]
         databaseViewModel.readAllData.observe(this, Observer {
-            Log.d(TAG, "onCreate: 데이터베이스 2차${databaseViewModel.readAllData.value?.size}")
             binding.recycler.apply {
                 layoutManager = LinearLayoutManager(this@ClickVideoListActivity)
                 adapter = it?.let {

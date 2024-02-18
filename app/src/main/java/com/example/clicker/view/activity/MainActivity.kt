@@ -148,7 +148,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
-            R.id.InitializingButton->{
+            R.id.SettingButton->{
                 initializeDialog.show()
             }
             R.id.save->{
@@ -156,8 +156,7 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.list->{
                 val a  = databaseViewModel.readAllData.value
-                startActivity(Intent(this, ClickVideoListActivity::class.java)
-                    .putExtra("clickdata",a as ArrayList<ClickVideoListWithClickInfo>))
+                startActivity(Intent(this, ClickVideoListActivity::class.java))
             }
         }
         return super.onOptionsItemSelected(item)

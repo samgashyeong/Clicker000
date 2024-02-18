@@ -3,6 +3,7 @@ package com.example.clicker.viewmodel
 import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.clicker.data.database.ClickInfo
 import com.example.clicker.data.remote.model.youtube.Item
 import com.example.clicker.data.repository.YoutubeServiceRepository
@@ -27,7 +28,7 @@ class MainViewModel(val urlString : MutableLiveData<String>,
     private val youtubeServiceRepository : YoutubeServiceRepository = YoutubeServiceRepository()
 
     fun getVideoInfo(id : String){
-        GlobalScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             videoInfo.postValue(youtubeServiceRepository.searchYoutubeInfo("snippet", id, Utils.youtubeDataApiKey))
         }
     }

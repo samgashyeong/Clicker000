@@ -11,9 +11,18 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/default_color"
         tools:context=".view.activity.MainActivity">
 
+
+        <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+            android:id="@+id/youtubePlayer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:enableAutomaticInitialization="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -46,21 +55,13 @@
         <!--            android:text="테스트버튼"-->
         <!--            app:layout_constraintStart_toStartOf="@id/youtubePlayer"-->
         <!--            app:layout_constraintTop_toTopOf="@id/youtubePlayer" />-->
-        <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
-            android:id="@+id/youtubePlayer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:enableAutomaticInitialization="false"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
         <View
             android:id="@+id/youtubeBlackView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="@color/black"
-            app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
+            app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/toolbar" />
         <TextView
@@ -114,14 +115,15 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/youtubePlayer">
+            app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/plusButton"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/plus_selector"
+                android:layout_marginRight="130dp"
+                android:background="@drawable/land_plus_selector"
                 android:onClick="@{viewModel::plusPoint}"
                 android:text="+"
                 android:textColor="@color/default_text_color"
@@ -132,7 +134,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/minus_selector"
+                android:layout_marginLeft="130dp"
+                android:background="@drawable/land_minus_selector"
                 android:onClick="@{viewModel::minusPoint}"
                 android:text="-"
                 android:textColor="@color/default_text_color"
@@ -145,8 +148,9 @@
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/youtubePlayer">
+            app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
             <TextView
                 android:id="@+id/plusTextView"

@@ -21,36 +21,64 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
             android:fontFamily="sans-serif"
-            android:text="Setting"
+            android:text="Save"
             android:textColor="@color/default_text_color"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@id/btnInversionButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <CheckBox
-            android:id="@+id/btnInversionButton"
+        <LinearLayout
+            android:id="@+id/linearLayout3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="button left and right inversion"
-            android:textColor="@color/default_text_color"
-            app:layout_constraintBottom_toTopOf="@+id/vibrateButton"
+            android:layout_marginHorizontal="10dp"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintVertical_chainStyle="packed" />
+            app:layout_constraintTop_toBottomOf="@+id/mainTv">
 
-        <CheckBox
-            android:id="@+id/vibrateButton"
+            <ImageView
+                android:id="@+id/saveButton"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginRight="30dp"
+                android:src="@drawable/baseline_save_24" />
+
+            <ImageView
+                android:id="@+id/InitializeButton"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/baseline_rotate_left_24" />
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/saveScoredDataTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Make the device vibrate for each scoring event"
+
+            android:text="Save scored data"
             android:textColor="@color/default_text_color"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+            app:layout_constraintEnd_toStartOf="@+id/InitializeTextView"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnInversionButton" />
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
+
+        <TextView
+            android:id="@+id/InitializeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Initialize scored data"
+            android:textColor="@color/default_text_color"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/saveScoredDataTextView"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
 
 
         <!--        <androidx.appcompat.widget.AppCompatButton-->
@@ -80,9 +108,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginHorizontal="100dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:layout_marginHorizontal="100dp"
                 android:text="Close"
                 android:textColor="@color/default_text_color"
                 android:textSize="15sp" />

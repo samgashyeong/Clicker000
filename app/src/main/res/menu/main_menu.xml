@@ -3,12 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
-    <item
-        android:title="InitButton"
-        android:id="@+id/InitializingButton"
-        android:icon="@drawable/baseline_rotate_left_24"
-        app:showAsAction="always"
-        />
 
     <item
         android:title="saveButton"
@@ -24,6 +18,13 @@
         app:showAsAction="ifRoom"
         />
 
+
+    <item
+        android:title="Setting"
+        android:id="@+id/SettingButton"
+        android:icon="@drawable/baseline_settings_24"
+        app:showAsAction="always"
+        />
 <!--    <item-->
 <!--        android:title="settingButton"-->
 <!--        android:id="@+id/setting"-->
