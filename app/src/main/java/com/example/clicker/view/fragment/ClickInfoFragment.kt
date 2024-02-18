@@ -60,7 +60,7 @@ class ClickInfoFragment : Fragment() {
         viewModel.nowPosition.observe(viewLifecycleOwner, Observer { position ->
             val smoothScroller = object : LinearSmoothScroller(context) {
                 override fun getVerticalSnapPreference(): Int {
-                    return SNAP_TO_START // 아이템을 상단에 맞춤
+                    return SNAP_TO_START
                 }
 
                 override fun calculateDyToMakeVisible(view: View, snapPreference: Int): Int {
@@ -77,11 +77,7 @@ class ClickInfoFragment : Fragment() {
 
             binding.recycler.layoutManager?.startSmoothScroll(smoothScroller)
         })
-//        viewModel.nowPosition.observe(viewLifecycleOwner, Observer {
-//            binding.recycler.apply {
-//                (this.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(viewModel.nowPosition.value!!, 0)
-//            }
-//        })
+
         databaseViewModel.readAllData.observe(viewLifecycleOwner, Observer {
             binding.recycler.apply {
                 dataChangeIndex?.let { it1 -> adapter?.notifyItemChanged(it1) }

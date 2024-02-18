@@ -10,6 +10,7 @@ import android.view.MenuItem
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.clicker.R
 import com.example.clicker.data.database.ClickVideoListWithClickInfo
@@ -94,16 +95,19 @@ class AnalyzeActivity : AppCompatActivity() {
     }
 
     private fun startTracking() {
-        GlobalScope.launch(Dispatchers.IO) {
-            val secondList = viewModel.clickInfo.value!!.map { it.clickSecond.toInt() }
+        lifecycleScope.launch(Dispatchers.IO) {
+            val secondList = viewModel.clickInfo.value!!.map {
+                String.format("%.1f", it.clickSecond.toDouble()).toDouble()
+            }
+            //val secondList = viewModel.clickInfo.value!!.map { it.clickSecond.toInt() }
             while(true){
-                val second = tracker.currentSecond
+                val second = String.format("%.1f", tracker.currentSecond.toDouble()).toDouble()
                 //Log.d(TAG, "startTracking: ${second}")
-                if(tracker.state == PlayerConstants.PlayerState.PLAYING && secondList.contains(second.toInt())){
-                    val nowPosition = secondList.indexOf(second.toInt())
+                if(tracker.state == PlayerConstants.PlayerState.PLAYING && secondList.contains(second)){
+                    val nowPosition = secondList.indexOf(second)
                     viewModel.nowPosition.postValue(nowPosition)
                 }
-                delay(150L)
+                delay(100L)
             }
         }
     }
