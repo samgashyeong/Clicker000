@@ -11,11 +11,19 @@ import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
+import androidx.datastore.dataStore
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import com.example.clicker.R
+import com.example.clicker.data.database.Setting
+import com.example.clicker.viewmodel.SettingDataStoreViewModel
 
 class SettingDialog(context: Context,
-                    private val clickListener: () -> Unit,
+                    val dataStoreViewModel: SettingDataStoreViewModel,
 ) : Dialog(context) {
+
+    private val lifeCycleOwner: MyLifeCycleOwner by lazy { MyLifeCycleOwner() }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,14 +31,21 @@ class SettingDialog(context: Context,
         this.setCancelable(false)
         this.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
+        val btnInversionButton = findViewById<CheckBox>(R.id.btnInversionButton)
+        val vibrateButton = findViewById<CheckBox>(R.id.vibrateButton)
 
-        findViewById<CheckBox>(R.id.btnInversionButton).setOnCheckedChangeListener { compoundButton, b ->
+
+        dataStoreViewModel.isSwitchOn.observe(lifeCycleOwner, Observer {
+            btnInversionButton.isChecked = it?.isChangeButton ?: false
+            vibrateButton.isChecked = it?.isVarivarte ?: false
+        })
+        btnInversionButton.setOnCheckedChangeListener { compoundButton, b ->
             //데이터 관련코드
-            clickListener.invoke()
-            this.cancel()
+            dataStoreViewModel.saveData(Setting(b, vibrateButton.isChecked))
         }
-        findViewById<CheckBox>(R.id.vibrateButton).setOnCheckedChangeListener { compoundButton, b ->
+        vibrateButton.setOnCheckedChangeListener { compoundButton, b ->
             //데이터 코드
+            dataStoreViewModel.saveData(Setting(btnInversionButton.isChecked, b))
         }
         findViewById<TextView>(R.id.cancelBtn).setOnClickListener {
             this.cancel()

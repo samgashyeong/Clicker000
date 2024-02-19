@@ -15,15 +15,18 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.clicker.R
 import com.example.clicker.data.database.ClickVideoListWithClickInfo
+import com.example.clicker.data.database.Setting
 import com.example.clicker.databinding.ActivityMainBinding
 import com.example.clicker.view.dialog.DefaultDialog
 import com.example.clicker.view.dialog.DefaultDialogDto
 import com.example.clicker.view.dialog.EditTextDialog
 import com.example.clicker.view.dialog.EditTextDialogDto
+import com.example.clicker.view.dialog.SettingDialog
 import com.example.clicker.viewmodel.MainDatabaseViewModel
 import com.example.clicker.viewmodel.MainDatabaseViewModelFactory
 import com.example.clicker.viewmodel.MainViewModel
 import com.example.clicker.viewmodel.MainViewModelFactory
+import com.example.clicker.viewmodel.SettingDataStoreViewModel
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerTracker
@@ -35,6 +38,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
     private lateinit var startPointDialog : EditTextDialog
     private lateinit var databaseViewModel : MainDatabaseViewModel
+    private lateinit var dataStoreViewModel: SettingDataStoreViewModel
     private lateinit var saveDataDialog : DefaultDialog
     private lateinit var initializeDialog : DefaultDialog
 
@@ -42,6 +46,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var youtubePlayer : YouTubePlayer
 
+    private lateinit var settingDialog: SettingDialog
     var sharedText : String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,12 +57,14 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
         databaseViewModel = ViewModelProvider(this, MainDatabaseViewModelFactory(application))[MainDatabaseViewModel::class.java]
-
+        dataStoreViewModel = ViewModelProvider(this, SettingDataStoreViewModel.Factory(application))[SettingDataStoreViewModel::class.java]
         startPointDialog = EditTextDialog(this@MainActivity,
             EditTextDialogDto("Please enter the start point", "only use integer ex)10")){
             viewModel.startPoint.value = it.toFloat()
             startPointDialog.cancel()
         }
+
+        settingDialog = SettingDialog(this, dataStoreViewModel)
 
         saveDataDialog = DefaultDialog(this, DefaultDialogDto("Save Score Data", "Do you want to save the scored data?", "Save", "cancel")){
                 if(viewModel.urlString.value != null){
@@ -87,9 +94,6 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayUseLogoEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-        databaseViewModel.readAllData.observe(this, Observer {
-            Log.d(TAG, "onCreate: ${databaseViewModel.readAllData.value?.size}")
-        })
 
         binding.youtubePlayer.initialize(object : AbstractYouTubePlayerListener() {
             override fun onReady(youTubePlayer: YouTubePlayer) {
@@ -98,12 +102,9 @@ class MainActivity : AppCompatActivity() {
                 youTubePlayer.addListener(tracker)
             }
         })
-        //인텐트 이벤트를 받아주는 곳 이걸 코드를 최적화를 하려면 어떻게 해야될까? 라는 고민을 할 필요가 있음.
-        if (intent?.action == Intent.ACTION_SEND && intent.type == "text/plain") {
-            sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
-            startPointDialog.show()
-        }
 
+        setObserve()
+        intentEvent()
 
 
         binding.youtubeButton.setOnClickListener {
@@ -118,6 +119,15 @@ class MainActivity : AppCompatActivity() {
 
             startActivity(intent)
         }
+
+
+    }
+
+    private fun setObserve(){
+        databaseViewModel.readAllData.observe(this, Observer {
+            Log.d(TAG, "onCreate: ${databaseViewModel.readAllData.value?.size}")
+        })
+
 
         viewModel.startPoint.observe(this, Observer {
             if (sharedText != null && viewModel.startPoint.value != null) {
@@ -141,6 +151,14 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    private fun intentEvent() {
+        //인텐트 이벤트를 받아주는 곳 이걸 코드를 최적화를 하려면 어떻게 해야될까? 라는 고민을 할 필요가 있음.
+        if (intent?.action == Intent.ACTION_SEND && intent.type == "text/plain") {
+            sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
+            startPointDialog.show()
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         binding.youtubePlayer.release()
@@ -149,7 +167,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.SettingButton->{
-                initializeDialog.show()
+                settingDialog.show()
             }
             R.id.save->{
                 saveDataDialog.show()

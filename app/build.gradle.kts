@@ -48,6 +48,7 @@ android {
 
 dependencies {
 
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.6")
     implementation("androidx.navigation:navigation-ui-ktx:2.7.6")
