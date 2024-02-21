@@ -14,9 +14,9 @@ import retrofit2.Response
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-class YoutubeServiceRepository {
-    private var youtubeService
-    = YoutubeServiceRetrofit.retrofit.create(YoutubeService::class.java)
+class YoutubeServiceRepository(private val youtubeService: YoutubeService) {
+//    private var youtubeService
+//    = YoutubeServiceRetrofit.retrofit.create(YoutubeService::class.java)
 
     suspend fun searchYoutubeInfo(part : String, id : String, key : String) : Item{
         val response = suspendCancellableCoroutine{ cancellableContinuation ->

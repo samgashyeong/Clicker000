@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -20,12 +21,13 @@ import com.example.clicker.data.database.ClickVideoListWithClickInfo
 import com.example.clicker.databinding.ActivityClickVideoListBinding
 import com.example.clicker.view.adapter.ClickVideoAdapter
 import com.example.clicker.viewmodel.MainDatabaseViewModel
-import com.example.clicker.viewmodel.MainDatabaseViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ClickVideoListActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityClickVideoListBinding
-    private lateinit var databaseViewModel: MainDatabaseViewModel
+    private val databaseViewModel: MainDatabaseViewModel by viewModels()
     private var clickVideo : List<ClickVideoListWithClickInfo>? = null
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -33,7 +35,7 @@ class ClickVideoListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_click_video_list)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_click_video_list)
-        databaseViewModel = ViewModelProvider(this, MainDatabaseViewModelFactory(application))[MainDatabaseViewModel::class.java]
+        //databaseViewModel = ViewModelProvider(this, MainDatabaseViewModelFactory(application))[MainDatabaseViewModel::class.java]
         databaseViewModel.readAllData.observe(this, Observer {
             binding.recycler.apply {
                 layoutManager = LinearLayoutManager(this@ClickVideoListActivity)

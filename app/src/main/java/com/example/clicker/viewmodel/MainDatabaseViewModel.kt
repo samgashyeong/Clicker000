@@ -11,20 +11,23 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.clicker.data.database.ClickVideoListWithClickInfo
+import com.example.clicker.data.database.room.ClickVideoDao
 import com.example.clicker.data.database.room.ClickVideoDatabase
 import com.example.clicker.data.repository.ClickVideoRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.io.Serializable
+import javax.inject.Inject
 
-class MainDatabaseViewModel(application: Application) : AndroidViewModel(application), Serializable {
+@HiltViewModel
+class MainDatabaseViewModel @Inject constructor(private val repository:ClickVideoRepository) : ViewModel(), Serializable {
     val readAllData:MutableLiveData<List<ClickVideoListWithClickInfo>> = MutableLiveData();
-    private val repository:ClickVideoRepository
 
     init {
-        val userDao = ClickVideoDatabase.getInstance(application)!!.clickVideoDao()
-        repository = ClickVideoRepository(userDao)
+        //val userDao = ClickVideoDatabase.getInstance(application)!!.clickVideoDao()
+        //repository = ClickVideoRepository(userDao)
         getAll()
     }
 

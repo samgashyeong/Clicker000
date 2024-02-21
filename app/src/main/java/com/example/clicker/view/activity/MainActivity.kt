@@ -9,6 +9,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -23,41 +24,40 @@ import com.example.clicker.view.dialog.EditTextDialog
 import com.example.clicker.view.dialog.EditTextDialogDto
 import com.example.clicker.view.dialog.SettingDialog
 import com.example.clicker.viewmodel.MainDatabaseViewModel
-import com.example.clicker.viewmodel.MainDatabaseViewModelFactory
 import com.example.clicker.viewmodel.MainViewModel
 import com.example.clicker.viewmodel.MainViewModelFactory
 import com.example.clicker.viewmodel.SettingDataStoreViewModel
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerTracker
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
-    private lateinit var viewModel: MainViewModel
+    private val viewModel: MainViewModel by viewModels()
     private lateinit var startPointDialog : EditTextDialog
-    private lateinit var databaseViewModel : MainDatabaseViewModel
-    private lateinit var dataStoreViewModel: SettingDataStoreViewModel
+    private val databaseViewModel : MainDatabaseViewModel by viewModels()
+    private val dataStoreViewModel: SettingDataStoreViewModel by viewModels()
     private lateinit var saveDataDialog : DefaultDialog
     private lateinit var initializeDialog : DefaultDialog
-
-    private lateinit var tracker: YouTubePlayerTracker
 
     private lateinit var youtubePlayer : YouTubePlayer
 
     private lateinit var settingDialog: SettingDialog
+
     var sharedText : String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        tracker = YouTubePlayerTracker()
-        val viewModelFactory = MainViewModelFactory(tracker)
+//        val viewModelFactory = MainViewModelFactory(tracker)
+//        viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
 
-        viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
-        databaseViewModel = ViewModelProvider(this, MainDatabaseViewModelFactory(application))[MainDatabaseViewModel::class.java]
-        dataStoreViewModel = ViewModelProvider(this, SettingDataStoreViewModel.Factory(application))[SettingDataStoreViewModel::class.java]
         startPointDialog = EditTextDialog(this@MainActivity,
             EditTextDialogDto("Please enter the start point", "only use integer ex)10")){
             viewModel.startPoint.value = it.toFloat()
@@ -99,7 +99,7 @@ class MainActivity : AppCompatActivity() {
             override fun onReady(youTubePlayer: YouTubePlayer) {
                 super.onReady(youTubePlayer)
                 youtubePlayer = youTubePlayer
-                youTubePlayer.addListener(tracker)
+                youTubePlayer.addListener(viewModel.tracker)
             }
         })
 

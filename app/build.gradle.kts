@@ -2,8 +2,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    kotlin("kapt")
-    id("com.google.devtools.ksp").version("1.6.10-1.0.4")
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -41,12 +41,19 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    kapt {
+        correctErrorTypes=true
+    }
 
 }
 
 
 
 dependencies {
+
+
+    implementation("com.google.dagger:hilt-android:2.48.1")
+    kapt("com.google.dagger:hilt-compiler:2.48.1")
 
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")

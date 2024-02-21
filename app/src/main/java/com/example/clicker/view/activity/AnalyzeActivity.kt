@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -19,21 +20,23 @@ import com.example.clicker.view.dialog.EditTextDialog
 import com.example.clicker.viewmodel.AnalyzeViewModel
 import com.example.clicker.viewmodel.AnalyzeViewModelFactory
 import com.example.clicker.viewmodel.MainDatabaseViewModel
-import com.example.clicker.viewmodel.MainDatabaseViewModelFactory
 import com.google.android.material.tabs.TabLayout
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerTracker
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class AnalyzeActivity : AppCompatActivity() {
     private lateinit var binding : ActivityAnalyzeBinding
     private lateinit var viewModel: AnalyzeViewModel
-    private lateinit var databaseViewModel: MainDatabaseViewModel
+    private val databaseViewModel: MainDatabaseViewModel by viewModels()
     private lateinit var tracker: YouTubePlayerTracker
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +47,7 @@ class AnalyzeActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this, AnalyzeViewModelFactory(data!!, data.clickInfoList, data.videoId, tracker, 0))[AnalyzeViewModel::class.java]
         viewModel.videoInfo.value = data
         binding.data = viewModel.videoInfo.value
-        databaseViewModel = ViewModelProvider(this, MainDatabaseViewModelFactory(application))[MainDatabaseViewModel::class.java]
+        //databaseViewModel = ViewModelProvider(this, MainDatabaseViewModelFactory(application))[MainDatabaseViewModel::class.java]
 
 
         setSupportActionBar(binding.toolbar)
