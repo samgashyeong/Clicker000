@@ -35,17 +35,21 @@ class SettingDialog(context: Context,
         val vibrateButton = findViewById<CheckBox>(R.id.vibrateButton)
 
 
-        dataStoreViewModel.isSwitchOn.observe(lifeCycleOwner, Observer {
-            btnInversionButton.isChecked = it?.isChangeButton ?: false
-            vibrateButton.isChecked = it?.isVarivarte ?: false
+        dataStoreViewModel.isChagneButton.observe(lifeCycleOwner, Observer {
+            btnInversionButton.isChecked = it ?: false
         })
+
+        dataStoreViewModel.isVibButton.observe(lifeCycleOwner, Observer {
+            vibrateButton.isChecked = it ?: false
+        })
+
         btnInversionButton.setOnCheckedChangeListener { compoundButton, b ->
             //데이터 관련코드
-            dataStoreViewModel.saveData(Setting(b, vibrateButton.isChecked))
+            dataStoreViewModel.saveIsChangeButton(b)
         }
         vibrateButton.setOnCheckedChangeListener { compoundButton, b ->
             //데이터 코드
-            dataStoreViewModel.saveData(Setting(btnInversionButton.isChecked, b))
+            dataStoreViewModel.saveIsvibButton(b)
         }
         findViewById<TextView>(R.id.cancelBtn).setOnClickListener {
             this.cancel()

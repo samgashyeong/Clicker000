@@ -3,6 +3,6 @@
     <!-- 버튼이 눌렸을 때의 배경 -->
     <item android:drawable="@color/pressed_minus_land_color" android:state_pressed="true"/>
 
-    <item android:drawable="@color/default_scroebtn_color"/>
+    <item android:drawable="@color/default_color"/>
     <!-- 기본 배경 -->
 </selector>

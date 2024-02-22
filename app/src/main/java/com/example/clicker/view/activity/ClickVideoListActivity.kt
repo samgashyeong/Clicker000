@@ -35,14 +35,12 @@ class ClickVideoListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_click_video_list)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_click_video_list)
-        //databaseViewModel = ViewModelProvider(this, MainDatabaseViewModelFactory(application))[MainDatabaseViewModel::class.java]
         databaseViewModel.readAllData.observe(this, Observer {
             binding.recycler.apply {
                 layoutManager = LinearLayoutManager(this@ClickVideoListActivity)
                 adapter = it?.let {
                     ClickVideoAdapter(it){
                         startActivity(Intent(this@ClickVideoListActivity, AnalyzeActivity::class.java).putExtra("data" ,it))
-                        //Toast.makeText(this@ClickVideoListActivity, it.videoInfo.snippet.title, Toast.LENGTH_SHORT).show()
                     }
                 }
                 if(it!!.size != 0){
@@ -50,8 +48,6 @@ class ClickVideoListActivity : AppCompatActivity() {
                 }
             }
         })
-
-        //val data = intent.intentSerializable("clickdata", ArrayList()) as ArrayList<ClickVideoListWithClickInfo>?
 
 
 
@@ -70,13 +66,5 @@ class ClickVideoListActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun Intent.intentSerializable(key: String, data : ArrayList<ClickVideoListWithClickInfo>): ArrayList<ClickVideoListWithClickInfo>? {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            this.getSerializableExtra(key, data::class.java)
-        } else {
-            this.getSerializableExtra(key) as ArrayList<ClickVideoListWithClickInfo>
-        }
     }
 }

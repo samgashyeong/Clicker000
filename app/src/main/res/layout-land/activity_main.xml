@@ -14,15 +14,27 @@
         tools:context=".view.activity.MainActivity">
 
 
+
+        <FrameLayout
+            android:id="@+id/frameLayout"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:enableAutomaticInitialization="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/minusButton"
+            app:layout_constraintStart_toEndOf="@+id/plusButton"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar"/>
+
         <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
             android:id="@+id/youtubePlayer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="invisible"
             app:enableAutomaticInitialization="false"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolbar"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/minusButton"
+            app:layout_constraintStart_toEndOf="@+id/plusButton"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -61,7 +73,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="@color/black"
-            app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/toolbar" />
         <TextView
@@ -98,50 +110,40 @@
             app:layout_constraintTop_toBottomOf="@+id/youtubeVideoTextView" />
 
 
-        <TextView
-            android:id="@+id/testString"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@{viewModel.testString.toString()}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+<!--        <TextView-->
+<!--            android:id="@+id/testString"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="@{viewModel.testString.toString()}"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />-->
 
-        <LinearLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="match_parent"
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/plusButton"
+            android:layout_width="100dp"
             android:layout_height="0dp"
-            android:orientation="horizontal"
+            android:layout_weight="1"
+            app:setLeftButtonView="@{databaseStore.isSwitchOn()}"
+            android:onClick="@{(v) -> viewModel.leftButton(v, databaseStore.isSwitchOn())}"
+            android:textColor="@color/default_text_color"
+            android:textSize="60sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/minusButton"
+            android:layout_width="100dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:setRightButton="@{databaseStore.isSwitchOn()}"
+            android:onClick="@{(v) -> viewModel.rightButton(v, databaseStore.isSwitchOn())}"
+            android:textColor="@color/default_text_color"
+            android:textSize="60sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar">
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/plusButton"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginRight="130dp"
-                android:background="@drawable/land_plus_selector"
-                android:onClick="@{viewModel::plusPoint}"
-                android:text="+"
-                android:textColor="@color/default_text_color"
-                android:textSize="60sp" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/minusButton"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginLeft="130dp"
-                android:background="@drawable/land_minus_selector"
-                android:onClick="@{viewModel::minusPoint}"
-                android:text="-"
-                android:textColor="@color/default_text_color"
-                android:textSize="60sp" />
-
-        </LinearLayout>
+            app:layout_constraintTop_toBottomOf="@id/toolbar"/>
 
         <LinearLayout
             android:id="@+id/linearLayout2"

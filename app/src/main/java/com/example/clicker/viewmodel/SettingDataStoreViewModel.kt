@@ -3,6 +3,7 @@ package com.example.clicker.viewmodel
 import android.app.Application
 import android.content.ContentValues
 import android.util.Log
+import android.widget.Button
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,17 +22,33 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingDataStoreViewModel @Inject constructor(private val dataRepo : SettingRepository) : ViewModel(){
     var isSwitchOn : MutableLiveData<Setting?> = MutableLiveData()
+    var isChagneButton : MutableLiveData<Boolean?> = MutableLiveData()
+    var isVibButton : MutableLiveData<Boolean?> = MutableLiveData()
 
     init {
+
+        getIsChangeButton()
+        getIsvibButton()
         getData()
     }
 
-//    class Factory(val application: Application) : ViewModelProvider.Factory {
-//        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-//            return SettingDataStoreViewModel(application) as T
-//        }
-//    }
+    fun getIsChangeButton(){
+        viewModelScope.launch(Dispatchers.IO) {
+            dataRepo.getIsChangeButton().collect(){
+                Log.d(ContentValues.TAG, "getData: ${it}")
+                isChagneButton.postValue(it)
+            }
+        }
+    }
 
+    fun getIsvibButton(){
+        viewModelScope.launch(Dispatchers.IO) {
+            dataRepo.getIsVibButton().collect(){
+                Log.d(ContentValues.TAG, "getData: ${it}")
+                isVibButton.postValue(it)
+            }
+        }
+    }
     fun getData(){
         viewModelScope.launch(Dispatchers.IO) {
             dataRepo.getSetting().collect(){
@@ -40,9 +57,15 @@ class SettingDataStoreViewModel @Inject constructor(private val dataRepo : Setti
             }
         }
     }
-    fun saveData(isSwitchOn: Setting){
+
+    fun saveIsChangeButton(isSwitchOn: Boolean){
         viewModelScope.launch(Dispatchers.IO) {
-            dataRepo.saveSWITCH(isSwitchOn)
+            dataRepo.saveIsChangeButton(isSwitchOn)
+        }
+    }
+    fun saveIsvibButton(isSwitchOn: Boolean){
+        viewModelScope.launch(Dispatchers.IO) {
+            dataRepo.saveIsVibButton(isSwitchOn)
         }
     }
 }

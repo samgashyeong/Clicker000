@@ -6,6 +6,9 @@
         <variable
             name="viewModel"
             type="com.example.clicker.viewmodel.MainViewModel" />
+        <variable
+            name="databaseStore"
+            type="com.example.clicker.viewmodel.SettingDataStoreViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -45,10 +48,22 @@
         <!--            android:text="테스트버튼"-->
         <!--            app:layout_constraintStart_toStartOf="@id/youtubePlayer"-->
         <!--            app:layout_constraintTop_toTopOf="@id/youtubePlayer" />-->
+
+        <FrameLayout
+            android:id="@+id/frameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:enableAutomaticInitialization="false"
+            app:layout_constraintBottom_toBottomOf="@+id/youtubePlayer"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
         <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
             android:id="@+id/youtubePlayer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="invisible"
             app:enableAutomaticInitialization="false"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -96,14 +111,14 @@
             app:layout_constraintTop_toBottomOf="@+id/youtubeVideoTextView" />
 
 
-        <TextView
-            android:id="@+id/testString"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@{viewModel.testString.toString()}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+<!--        <TextView-->
+<!--            android:id="@+id/testString"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="@{viewModel.testString.toString()}"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />-->
 
         <LinearLayout
             android:id="@+id/linearLayout"
@@ -120,9 +135,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/plus_selector"
-                android:onClick="@{viewModel::plusPoint}"
-                android:text="+"
+                app:setLeftButtonView="@{databaseStore.isSwitchOn()}"
+                android:onClick="@{(v) -> viewModel.leftButton(v, databaseStore.isSwitchOn())}"
                 android:textColor="@color/default_text_color"
                 android:textSize="60sp" />
 
@@ -131,9 +145,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/minus_selector"
-                android:onClick="@{viewModel::minusPoint}"
-                android:text="-"
+                app:setRightButton="@{databaseStore.isSwitchOn()}"
+                android:onClick="@{(v) -> viewModel.rightButton(v, databaseStore.isSwitchOn())}"
                 android:textColor="@color/default_text_color"
                 android:textSize="60sp" />
 

@@ -7,14 +7,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.clicker.data.database.ClickInfo
+import com.example.clicker.data.database.Setting
 import com.example.clicker.data.remote.model.youtube.Item
 import com.example.clicker.data.repository.YoutubeServiceRepository
 import com.example.clicker.util.Utils
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerTracker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,9 +29,13 @@ class MainViewModel @Inject constructor(
     val minus : MutableLiveData<Int> = MutableLiveData(0)
     val total : MutableLiveData<Int> = MutableLiveData(0)
     val startPoint : MutableLiveData<Float?> = MutableLiveData(null)
-    var testString : MutableLiveData<String> = MutableLiveData("")
     val clickInfo : MutableLiveData<ArrayList<ClickInfo>> = MutableLiveData(ArrayList())
     var videoInfo : MutableLiveData<Item> = MutableLiveData()
+    var youTubePlayer : MutableLiveData<YouTubePlayer> = MutableLiveData()
+    val stopActivityVideoSecond : MutableLiveData<Int> = MutableLiveData(0)
+    val isStartVideo : MutableLiveData<Boolean> = MutableLiveData(false)
+
+    val vib : MutableLiveData<Boolean> = MutableLiveData(false)
 
     fun getVideoInfo(id : String){
         viewModelScope.launch(Dispatchers.IO) {
@@ -39,26 +43,44 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun minusPoint(view : View){
-        minus.value = minus.value?.plus(-1)
-        total.value = total.value?.plus(-1)
+    fun rightButton(view : View, isChangeButton : MutableLiveData<Setting?>){
+        if(isChangeButton.value?.isChangeButton == true){
+            minus.value = minus.value?.plus(1)
+            total.value = total.value?.plus(1)
 
-        testString.value += "-1, ${tracker.currentSecond}초\n"
-        clickInfo.value!!.add(ClickInfo(clickSecond = tracker.currentSecond, clickScorePoint = -1, null, plus.value!!, minus.value!!, total.value!!))
+            Log.d(TAG, "plusPoint: ${tracker.currentSecond}")
+            clickInfo.value!!.add(ClickInfo(clickSecond = tracker.currentSecond, clickScorePoint = +1, null, minus.value!!, plus.value!!, total.value!!))
+        }
+        else{
+            minus.value = minus.value?.plus(-1)
+            total.value = total.value?.plus(-1)
+
+            clickInfo.value!!.add(ClickInfo(clickSecond = tracker.currentSecond, clickScorePoint = -1, null, plus.value!!, minus.value!!, total.value!!))
+        }
+
+        if(isChangeButton.value?.isVarivarte == true && vib.value == false){
+            vib.value = true
+        }
     }
 
-    fun plusPoint(view : View){
-        plus.value = plus.value?.plus(1)
-        total.value = total.value?.plus(1)
+    fun leftButton(view : View, isChangeButton : MutableLiveData<Setting?>){
 
-        testString.value += "+1, ${tracker.currentSecond}초\n"
-        Log.d(TAG, "plusPoint: ${tracker.currentSecond}")
-        clickInfo.value!!.add(ClickInfo(clickSecond = tracker.currentSecond, clickScorePoint = +1, null, plus.value!!, minus.value!!, total.value!!))
-    }
+        if(isChangeButton.value?.isChangeButton == true){
+            plus.value = plus.value?.plus(-1)
+            total.value = total.value?.plus(-1)
 
+            clickInfo.value!!.add(ClickInfo(clickSecond = tracker.currentSecond, clickScorePoint = -1, null, minus.value!!, plus.value!!, total.value!!))
+        }
+        else{
+            plus.value = plus.value?.plus(1)
+            total.value = total.value?.plus(1)
 
-    fun saveData(view : View){
-
+            Log.d(TAG, "plusPoint: ${tracker.currentSecond}")
+            clickInfo.value!!.add(ClickInfo(clickSecond = tracker.currentSecond, clickScorePoint = +1, null, plus.value!!, minus.value!!, total.value!!))
+        }
+        if(isChangeButton.value?.isVarivarte == true && vib.value == false){
+            vib.value = true
+        }
     }
     fun extractYouTubeVideoId(url: String): MutableLiveData<String> {
         val basePart = url.substringAfterLast( "v=")

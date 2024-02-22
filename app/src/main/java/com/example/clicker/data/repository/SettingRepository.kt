@@ -22,10 +22,38 @@ class SettingRepository(private val context: Context) {
         } }
     }
 
-    suspend fun saveSWITCH(setting : Setting){
+    suspend fun getIsChangeButton() : Flow<Boolean> = context.dataStore.data.map { it->
+        return@map it[SettingDataStoreKey.IS_CHANGE_BUTTON] ?: false
+
+    }
+
+    suspend fun getIsVibButton() : Flow<Boolean> = context.dataStore.data.map { it->
+        return@map it[SettingDataStoreKey.IS_VIBRATE] ?: false
+    }
+
+
+
+//    suspend fun saveIsChangeButton(setting : Boolean){
+//        context.dataStore.edit { it->
+//            it[SettingDataStoreKey.IS_CHANGE_BUTTON] = setting
+//        }
+//    }
+
+    suspend fun saveIsChangeButton(setting : Boolean){
         context.dataStore.edit { it->
-            it[SettingDataStoreKey.IS_CHANGE_BUTTON] = setting.isChangeButton
-            it[SettingDataStoreKey.IS_VIBRATE] = setting.isVarivarte
+            it[SettingDataStoreKey.IS_CHANGE_BUTTON] = setting
         }
     }
+    suspend fun saveIsVibButton(setting : Boolean){
+        context.dataStore.edit { it->
+            it[SettingDataStoreKey.IS_VIBRATE] = setting
+        }
+    }
+//    suspend fun saveSWITCH(setting : Setting){
+//        context.dataStore.edit { it->
+//            it[SettingDataStoreKey.IS_CHANGE_BUTTON] = setting.isChangeButton
+//            it[SettingDataStoreKey.IS_VIBRATE] = setting.isVarivarte
+//        }
+//    }
+
 }

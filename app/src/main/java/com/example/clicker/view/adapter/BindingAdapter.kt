@@ -5,30 +5,56 @@ import android.content.ContentValues.TAG
 import android.graphics.drawable.Drawable
 import android.media.Image
 import android.util.Log
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
+import androidx.lifecycle.MutableLiveData
 import com.bumptech.glide.Glide
 import com.example.clicker.R
+import com.example.clicker.data.database.Setting
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 
 
 object BindingAdapter {
-//    @JvmStatic
-//    @BindingAdapter("video_id", "start_point")
-//    fun setVideoId(view: YouTubePlayerView?, videoId: String?, startPoint : Float?) {
-//        if(startPoint !=  null && videoId != null){
-//            view?.addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
-//                override fun onReady(youTubePlayer: YouTubePlayer) {
-//                    Log.d(TAG, "onReady: ")
-//                    youTubePlayer.loadVideo(videoId, startPoint)
-//                }
-//            })
-//        }
-//    }
+
+    @JvmStatic
+    @BindingAdapter("app:setLeftButtonView")
+    fun setLeftButtonView(button : Button, isChangeButton: MutableLiveData<Setting?>){
+        if(isChangeButton.value?.isChangeButton == true){
+            button.apply {
+                text="-"
+                setBackgroundResource(R.drawable.minus_selector)
+            }
+        }
+        else{
+            button.apply {
+                text="+"
+                setBackgroundResource(R.drawable.plus_selector)
+            }
+        }
+    }
+
+    @JvmStatic
+    @BindingAdapter("app:setRightButton")
+    fun setRightButton(button : Button, isChangeButton: MutableLiveData<Setting?>){
+        if(isChangeButton.value?.isChangeButton == true){
+            button.apply {
+                text="+"
+                setBackgroundResource(R.drawable.plus_selector)
+            }
+        }
+        else{
+            button.apply {
+                text="-"
+                setBackgroundResource(R.drawable.minus_selector)
+            }
+        }
+    }
+
 
     @JvmStatic
     @BindingAdapter("app:plusOrMinusColor")
