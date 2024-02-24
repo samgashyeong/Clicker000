@@ -50,6 +50,7 @@ class AnalyzeActivity : AppCompatActivity() {
             if(viewModel.videoInfo.value != null){
                 viewModel.clickInfo.value = data.clickInfoList
                 viewModel.videoId.value = data.videoId
+                viewModel.dataToEntry()
                 binding.analyzeYoutubePlayer.initialize(object : AbstractYouTubePlayerListener() {
                     override fun onReady(youTubePlayer: YouTubePlayer) {
                         super.onReady(youTubePlayer)
@@ -62,6 +63,7 @@ class AnalyzeActivity : AppCompatActivity() {
                     }
                 })
                 viewModel.startTracking()
+                viewModel.startAddDataEntry()
             }
         })
 

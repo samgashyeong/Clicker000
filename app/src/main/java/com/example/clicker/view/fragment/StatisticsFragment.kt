@@ -1,6 +1,7 @@
 package com.example.clicker.view.fragment
 
 import android.content.ContentValues
+import android.content.ContentValues.TAG
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -14,8 +15,10 @@ import com.example.clicker.R
 import com.example.clicker.databinding.FragmentStatisticsBinding
 import com.example.clicker.viewmodel.AnalyzeViewModel
 import com.github.mikephil.charting.components.YAxis
+import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 
 
 class StatisticsFragment : Fragment() {
@@ -39,36 +42,58 @@ class StatisticsFragment : Fragment() {
 
         viewModel.videoInfo?.observe(viewLifecycleOwner, Observer {
             binding.yourChartName.apply {
-                val dataset = LineDataSet(viewModel.dataToEntry(),"Score")
+                val dataset = LineDataSet(arrayListOf(Entry(0f, 0f)),"Score")
                 dataset.apply {
                     color = Color.WHITE
                     setCircleColor(Color.rgb(208, 187, 254))
                 }
                 data = LineData(dataset)
+                setChart()
                 invalidate()
                 description = null
             }
 
-            binding.yourChartName.xAxis.apply {
-                textColor = Color.WHITE
-                axisLineColor = R.color.default_text_color
-            }
-            binding.yourChartName.axisRight.apply {
-                textColor = Color.WHITE
-                axisLineColor = R.color.default_text_color
-            }
-            binding.yourChartName.axisLeft.apply {
-                textColor = Color.WHITE
-                axisLineColor = R.color.default_text_color
-            }
-            binding.yourChartName.legend.apply {
-                textColor = Color.WHITE
-            }
+        })
+        viewModel.listChartLiveData.observe(viewLifecycleOwner, Observer {
+            binding.yourChartName.apply {
+                val dataSetIndex : ILineDataSet = data.getDataSetByIndex(0)
+                //val dataset = LineDataSet(viewModel.listChartLiveData.value)
+                if(viewModel.listChartLiveData.value!!.size != 0){
+                    //Log.d(TAG, "onViewCreated: ${dataSetIndex.label} ${viewModel.listChartLiveData.value?.size!!}")
+                    for(i in 0..viewModel.listChartLiveData.value?.size!!.minus(1)){
+                        data.addEntry(viewModel.listChartLiveData.value!![i], 0)
+                    }
+                }
+                data.notifyDataChanged()
+                binding.yourChartName.notifyDataSetChanged()
+                invalidate()
+                setChart()
+                description = null
 
-            binding.yourChartName.data.apply {
-                setValueTextColor(Color.WHITE)
             }
         })
     }
 
+
+    fun setChart(){
+        binding.yourChartName.xAxis.apply {
+            textColor = Color.WHITE
+            axisLineColor = R.color.default_text_color
+        }
+        binding.yourChartName.axisRight.apply {
+            textColor = Color.WHITE
+            axisLineColor = R.color.default_text_color
+        }
+        binding.yourChartName.axisLeft.apply {
+            textColor = Color.WHITE
+            axisLineColor = R.color.default_text_color
+        }
+        binding.yourChartName.legend.apply {
+            textColor = Color.WHITE
+        }
+
+        binding.yourChartName.data.apply {
+            setValueTextColor(Color.WHITE)
+        }
+    }
 }
