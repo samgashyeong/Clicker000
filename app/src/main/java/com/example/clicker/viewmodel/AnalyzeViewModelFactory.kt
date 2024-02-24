@@ -12,8 +12,8 @@ class AnalyzeViewModelFactory(private val data : ClickVideoListWithClickInfo,
     private val videoId : String,
     private val tracker: YouTubePlayerTracker,
     private val nowPosition: Int) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return AnalyzeViewModel(MutableLiveData(data), MutableLiveData(clickInfo), MutableLiveData(videoId), tracker, MutableLiveData(nowPosition)) as T
-
-    }
+//    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+//        return AnalyzeViewModel(MutableLiveData(data), MutableLiveData(clickInfo), MutableLiveData(videoId), tracker, MutableLiveData(nowPosition)) as T
+//
+//    }
 }

@@ -26,7 +26,7 @@ class MainViewModel @Inject constructor(
 
     val urlString : MutableLiveData<String> = MutableLiveData("")
     val plus : MutableLiveData<Int> = MutableLiveData(0)
-    val minus : MutableLiveData<Int> = MutableLiveData(0)
+    val minus : MutableLiveData<Int?> = MutableLiveData(0)
     val total : MutableLiveData<Int> = MutableLiveData(0)
     val startPoint : MutableLiveData<Float?> = MutableLiveData(null)
     val clickInfo : MutableLiveData<ArrayList<ClickInfo>> = MutableLiveData(ArrayList())
@@ -85,6 +85,13 @@ class MainViewModel @Inject constructor(
     fun extractYouTubeVideoId(url: String): MutableLiveData<String> {
         val basePart = url.substringAfterLast( "v=")
         return MutableLiveData(basePart.substringBefore("&si="))
+    }
+
+
+    fun swapPlusAndMinus(){
+        val tmp = plus.value
+        plus.value = minus.value
+        minus.value = tmp
     }
 
 }

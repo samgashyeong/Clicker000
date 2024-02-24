@@ -35,34 +35,34 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class AnalyzeActivity : AppCompatActivity() {
     private lateinit var binding : ActivityAnalyzeBinding
-    private lateinit var viewModel: AnalyzeViewModel
+    private val viewModel: AnalyzeViewModel by viewModels()
     private val databaseViewModel: MainDatabaseViewModel by viewModels()
-    private lateinit var tracker: YouTubePlayerTracker
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_analyze)
         setContentView(binding.root)
         val data = intent.intentSerializable("data", ClickVideoListWithClickInfo::class.java)
-        tracker = YouTubePlayerTracker()
-        viewModel = ViewModelProvider(this, AnalyzeViewModelFactory(data!!, data.clickInfoList, data.videoId, tracker, 0))[AnalyzeViewModel::class.java]
         viewModel.videoInfo.value = data
         binding.data = viewModel.videoInfo.value
-        //databaseViewModel = ViewModelProvider(this, MainDatabaseViewModelFactory(application))[MainDatabaseViewModel::class.java]
 
-
-        setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayShowTitleEnabled(false)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        viewModel.videoId.observe(this, Observer {
-            Log.d(TAG, "onCreate: activity")
-            binding.analyzeYoutubePlayer.initialize(object : AbstractYouTubePlayerListener() {
-                override fun onReady(youTubePlayer: YouTubePlayer) {
-                    super.onReady(youTubePlayer)
-                    youTubePlayer.loadVideo(viewModel.videoId.value!!, viewModel.videoInfo.value!!.startPoint.toFloat())
-                    youTubePlayer.addListener(tracker)
-                    startTracking()
-                }
-            })
+        viewModel.videoInfo.value = data!!
+        viewModel.videoInfo.observe(this, Observer {
+            if(viewModel.videoInfo.value != null){
+                viewModel.clickInfo.value = data.clickInfoList
+                viewModel.videoId.value = data.videoId
+                binding.analyzeYoutubePlayer.initialize(object : AbstractYouTubePlayerListener() {
+                    override fun onReady(youTubePlayer: YouTubePlayer) {
+                        super.onReady(youTubePlayer)
+                        viewModel.youtubePlayer.value = youTubePlayer
+                        youTubePlayer.loadVideo(
+                            viewModel.videoId.value!!,
+                            viewModel.videoInfo.value!!.startPoint.toFloat()
+                        )
+                        youTubePlayer.addListener(viewModel.tracker)
+                    }
+                })
+                viewModel.startTracking()
+            }
         })
 
 
@@ -95,24 +95,10 @@ class AnalyzeActivity : AppCompatActivity() {
             }
 
         })
-    }
 
-    private fun startTracking() {
-        lifecycleScope.launch(Dispatchers.IO) {
-            val secondList = viewModel.clickInfo.value!!.map {
-                String.format("%.1f", it.clickSecond.toDouble()).toDouble()
-            }
-            //val secondList = viewModel.clickInfo.value!!.map { it.clickSecond.toInt() }
-            while(true){
-                val second = String.format("%.1f", tracker.currentSecond.toDouble()).toDouble()
-                //Log.d(TAG, "startTracking: ${second}")
-                if(tracker.state == PlayerConstants.PlayerState.PLAYING && secondList.contains(second)){
-                    val nowPosition = secondList.indexOf(second)
-                    viewModel.nowPosition.postValue(nowPosition)
-                }
-                delay(100L)
-            }
-        }
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     private fun Intent.intentSerializable(key: String, data: Class<ClickVideoListWithClickInfo>): ClickVideoListWithClickInfo? {
@@ -122,7 +108,6 @@ class AnalyzeActivity : AppCompatActivity() {
             this.getSerializableExtra(key) as ClickVideoListWithClickInfo
         }
     }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             android.R.id.home->{

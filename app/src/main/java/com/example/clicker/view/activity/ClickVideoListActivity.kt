@@ -49,9 +49,6 @@ class ClickVideoListActivity : AppCompatActivity() {
             }
         })
 
-
-
-
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)

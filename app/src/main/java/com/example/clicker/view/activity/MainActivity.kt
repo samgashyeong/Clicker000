@@ -148,9 +148,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun setObserve(){
         dataStoreViewModel.isChagneButton.observe(this, Observer {
-            val tmp = viewModel.plus.value
-            viewModel.plus.value = viewModel.minus.value
-            viewModel.minus.value = tmp
+            if(dataStoreViewModel.isChagneButton.value == true){
+                viewModel.swapPlusAndMinus()
+            }
         })
 
         viewModel.vib.observe(this, Observer {
@@ -231,7 +231,6 @@ class MainActivity : AppCompatActivity() {
                 saveDataDialog.show()
             }
             R.id.list->{
-                //val a  = databaseViewModel.readAllData.value
                 startActivity(Intent(this, ClickVideoListActivity::class.java))
             }
         }
@@ -260,19 +259,15 @@ class MainActivity : AppCompatActivity() {
         super.onStop()
         if(viewModel.isStartVideo.value == true){
             viewModel.stopActivityVideoSecond.value = viewModel.tracker.currentSecond.toInt()
-
         }
-
         viewModel.youTubePlayer.value!!.pause()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "onDestroy: 호출")
-
-        val tmp = viewModel.plus.value
-        viewModel.plus.value = viewModel.minus.value
-        viewModel.minus.value = tmp
+        if(dataStoreViewModel.isChagneButton.value == true){
+            viewModel.swapPlusAndMinus()
+        }
         youtubePlayerView.release()
     }
 }

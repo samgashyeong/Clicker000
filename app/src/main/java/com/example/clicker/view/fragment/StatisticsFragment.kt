@@ -61,8 +61,6 @@ class StatisticsFragment : Fragment() {
                 textColor = Color.WHITE
                 axisLineColor = R.color.default_text_color
             }
-
-
             binding.yourChartName.legend.apply {
                 textColor = Color.WHITE
             }
