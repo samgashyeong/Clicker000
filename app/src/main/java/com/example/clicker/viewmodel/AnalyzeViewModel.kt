@@ -35,12 +35,6 @@ class AnalyzeViewModel @Inject constructor(
     var nowChartIndex : Int = 1
     var checkList : ArrayList<Entry> = ArrayList()
 
-//    init {
-//        listEntry.value?.add(Entry(0f, 0f))
-//    }
-    init {
-
-    }
     fun dataToEntry(){
 
         for(i in clickInfo.value!!){
