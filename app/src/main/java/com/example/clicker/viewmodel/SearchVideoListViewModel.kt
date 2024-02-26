@@ -8,10 +8,6 @@ class SearchVideoListViewModel : ViewModel() {
     var databaseScoredList : MutableLiveData<List<ClickVideoListWithClickInfo>?> = MutableLiveData()
     var searchList : MutableLiveData<List<ClickVideoListWithClickInfo>?> = MutableLiveData()
 
-
-//    private fun databaseListToTitle() = searchList.value?.map {
-//        it.videoInfo.snippet.title
-//    }
     fun findVideo(searchText : String){
 
         searchList.value = databaseScoredList.value?.filter {

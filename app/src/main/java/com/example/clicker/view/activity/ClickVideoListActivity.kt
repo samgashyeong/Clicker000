@@ -61,12 +61,6 @@ class ClickVideoListActivity : AppCompatActivity() {
         binding.toolbarEditText.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
             when (actionId) {
                 IME_ACTION_SEARCH -> {
-//                    Toast.makeText(
-//                        this@ClickVideoListActivity,
-//                        "editText ACTION_SEARCH 이벤트 호출",
-//                        Toast.LENGTH_SHORT
-//                    ).show()
-//                    Log.e("MainActivity", "입력 내용 : " + binding.toolbarEditText.getText().toString())
 
                     if(binding.toolbarEditText.text.toString().isEmpty()){
                         searchVideoListViewModel.getAllVideos(databaseViewModel.readAllData.value)

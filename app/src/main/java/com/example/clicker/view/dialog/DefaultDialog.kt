@@ -32,7 +32,6 @@ class DefaultDialog(context: Context, private val uiText : DefaultDialogDto,
         findViewById<TextView>(R.id.cancelBtn).text = uiText.cancelButton
         findViewById<TextView>(R.id.checkBtn2).setOnClickListener {
             clickListener.invoke()
-            this.cancel()
         }
         findViewById<TextView>(R.id.cancelBtn).setOnClickListener {
             this.cancel()

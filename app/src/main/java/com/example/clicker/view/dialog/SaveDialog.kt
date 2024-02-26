@@ -5,17 +5,12 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.Gravity
-import android.view.ViewGroup
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import com.example.clicker.R
 
-class SaveDialog(context: Context,
-                 private val clickListener: () -> Unit,
+class SaveDialog(
+    context: Context, private val initializeDialog: DefaultDialog, private val saveDataDialog: DefaultDialog,
 ) : Dialog(context) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,10 +21,10 @@ class SaveDialog(context: Context,
 
 
         findViewById<ImageView>(R.id.saveButton).setOnClickListener {
-            //데이터 코드
+            saveDataDialog.show()
         }
         findViewById<ImageView>(R.id.InitializeButton).setOnClickListener {
-            //데이터 관련코드
+            initializeDialog.show()
         }
         findViewById<TextView>(R.id.cancelBtn).setOnClickListener {
             this.cancel()

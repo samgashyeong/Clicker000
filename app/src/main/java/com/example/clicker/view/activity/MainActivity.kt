@@ -13,20 +13,21 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
-import android.webkit.WebView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.example.clicker.R
 import com.example.clicker.data.database.ClickVideoListWithClickInfo
 import com.example.clicker.databinding.ActivityMainBinding
 import com.example.clicker.view.dialog.DefaultDialog
 import com.example.clicker.view.dialog.DefaultDialogDto
+import com.example.clicker.view.dialog.DialogManager
 import com.example.clicker.view.dialog.EditTextDialog
 import com.example.clicker.view.dialog.EditTextDialogDto
+import com.example.clicker.view.dialog.SaveDialog
 import com.example.clicker.view.dialog.SettingDialog
 import com.example.clicker.viewmodel.MainDatabaseViewModel
 import com.example.clicker.viewmodel.MainViewModel
@@ -34,9 +35,9 @@ import com.example.clicker.viewmodel.SettingDataStoreViewModel
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.loadOrCueVideo
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -45,10 +46,15 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
     private val databaseViewModel : MainDatabaseViewModel by viewModels()
     private val dataStoreViewModel: SettingDataStoreViewModel by viewModels()
+
     private lateinit var startPointDialog : EditTextDialog
     private lateinit var saveDataDialog : DefaultDialog
     private lateinit var initializeDialog : DefaultDialog
     private lateinit var settingDialog: SettingDialog
+    private lateinit var saveDialog: SaveDialog
+
+    @Inject
+    lateinit var dialogManager: DialogManager
 
     private lateinit var youtubePlayerView : YouTubePlayerView
     private lateinit var vibrator: Vibrator
@@ -58,46 +64,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-        startPointDialog = EditTextDialog(this@MainActivity,
-            EditTextDialogDto("Please enter the start point", "only use integer ex)10")){
-            viewModel.startPoint.value = it.toFloat()
-            startPointDialog.cancel()
-        }
-
-        settingDialog = SettingDialog(this, dataStoreViewModel)
-
-        saveDataDialog = DefaultDialog(this, DefaultDialogDto("Save Score Data", "Do you want to save the scored data?", "Save", "cancel")){
-                if(viewModel.urlString.value != null && dataStoreViewModel.isSwitchOn.value?.isChangeButton == true){
-                    databaseViewModel.insert(ClickVideoListWithClickInfo(viewModel.videoInfo.value!!,
-                        viewModel.startPoint.value!!.toInt(),
-                        viewModel.urlString.value!!,
-                        viewModel.minus.value!!,
-                        viewModel.plus.value!!,
-                        viewModel.total.value!!,
-                        viewModel.clickInfo.value!!
-                    ))
-                    Toast.makeText(this, "Data has been saved.", Toast.LENGTH_SHORT).show()
-                }
-                else if(viewModel.urlString.value != null && (dataStoreViewModel.isSwitchOn.value?.isChangeButton == false || dataStoreViewModel.isSwitchOn.value?.isChangeButton == true)){
-                    databaseViewModel.insert(ClickVideoListWithClickInfo(viewModel.videoInfo.value!!,
-                        viewModel.startPoint.value!!.toInt(),
-                        viewModel.urlString.value!!,
-                        viewModel.plus.value!!,
-                        viewModel.minus.value!!,
-                        viewModel.total.value!!,
-                        viewModel.clickInfo.value!!
-                    ))
-                    Toast.makeText(this, "Data has been saved.", Toast.LENGTH_SHORT).show()
-                }
-                else{
-                    Toast.makeText(this, "Bring on the Youtube video and Score them", Toast.LENGTH_SHORT).show()
-                }
-        }
-
-        initializeDialog = DefaultDialog(this, DefaultDialogDto("Reset Scored Video", "Do you want to reset the scored data?", "Yes", "No")){
-            viewModel.clickInfo.value?.clear()
-            startPointDialog.show()
-        }
+        setDialog()
 
         vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val vibratorManager =
@@ -142,8 +109,59 @@ class MainActivity : AppCompatActivity() {
 
             startActivity(intent)
         }
+    }
 
+    private fun setDialog() {
+        startPointDialog = EditTextDialog(this@MainActivity,
+            EditTextDialogDto("Please enter the start point", "only use integer ex)10")){
+            dialogManager.closeAllDialog()
+            viewModel.startPoint.value = it.toFloat()
+        }
 
+        settingDialog = SettingDialog(this, dataStoreViewModel)
+
+        saveDataDialog = DefaultDialog(this, DefaultDialogDto("Save Score Data", "Do you want to save the scored data?", "Save", "cancel")){
+            if(viewModel.urlString.value != null && dataStoreViewModel.isSwitchOn.value?.isChangeButton == true){
+                databaseViewModel.insert(ClickVideoListWithClickInfo(viewModel.videoInfo.value!!,
+                    viewModel.startPoint.value!!.toInt(),
+                    viewModel.urlString.value!!,
+                    viewModel.minus.value!!,
+                    viewModel.plus.value!!,
+                    viewModel.total.value!!,
+                    viewModel.clickInfo.value!!
+                ))
+                Toast.makeText(this, "Data has been saved.", Toast.LENGTH_SHORT).show()
+            }
+            else if(viewModel.urlString.value != null && (dataStoreViewModel.isSwitchOn.value?.isChangeButton == false || dataStoreViewModel.isSwitchOn.value?.isChangeButton == true)){
+                databaseViewModel.insert(ClickVideoListWithClickInfo(viewModel.videoInfo.value!!,
+                    viewModel.startPoint.value!!.toInt(),
+                    viewModel.urlString.value!!,
+                    viewModel.plus.value!!,
+                    viewModel.minus.value!!,
+                    viewModel.total.value!!,
+                    viewModel.clickInfo.value!!
+                ))
+                Toast.makeText(this, "Data has been saved.", Toast.LENGTH_SHORT).show()
+            }
+            else{
+                Toast.makeText(this, "Bring on the Youtube video and Score them", Toast.LENGTH_SHORT).show()
+            }
+            dialogManager.closeAllDialog()
+        }
+
+        initializeDialog = DefaultDialog(this, DefaultDialogDto("Reset Scored Video", "Do you want to reset the scored data?", "Yes", "No")){
+            viewModel.clickInfo.value?.clear()
+            dialogManager.closeAllDialog()
+            startPointDialog.show()
+        }
+
+        saveDialog = SaveDialog(this, initializeDialog, saveDataDialog)
+
+        dialogManager.dialogs.add(saveDialog)
+        dialogManager.dialogs.add(initializeDialog)
+        dialogManager.dialogs.add(saveDataDialog)
+        dialogManager.dialogs.add(startPointDialog)
+        dialogManager.dialogs.add(settingDialog)
     }
 
     private fun setObserve(){
@@ -198,10 +216,6 @@ class MainActivity : AppCompatActivity() {
         viewModel.startPoint.observe(this, Observer {
             if (sharedText != null && viewModel.startPoint.value != null) {
                 viewModel.urlString.value = viewModel.extractYouTubeVideoId(sharedText!!).value
-
-
-                Log.d(TAG, "setObserve: 테스트 ")
-                Log.d(TAG, "${viewModel.urlString.value!!}+${viewModel.startPoint!!.value!!}")
                 binding.youtubeVideoTextView.visibility = View.INVISIBLE
                 binding.youtubeButton.visibility = View.INVISIBLE
                 binding.youtubeBlackView.visibility = View.INVISIBLE
@@ -228,14 +242,13 @@ class MainActivity : AppCompatActivity() {
                 settingDialog.show()
             }
             R.id.save->{
-                saveDataDialog.show()
+                saveDialog.show()
             }
             R.id.list->{
                 startActivity(Intent(this, ClickVideoListActivity::class.java))
             }
         }
         return super.onOptionsItemSelected(item)
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
