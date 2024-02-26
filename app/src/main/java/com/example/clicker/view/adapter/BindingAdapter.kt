@@ -2,8 +2,12 @@ package com.example.clicker.view.adapter
 
 import android.content.ContentValues
 import android.content.ContentValues.TAG
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.media.Image
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
@@ -36,6 +40,21 @@ object BindingAdapter {
                 setBackgroundResource(R.drawable.plus_selector)
             }
         }
+    }
+
+    @JvmStatic
+    @BindingAdapter("app:setScoredTextColor")
+    fun setScoredTextColor(textView: TextView, string: String){
+        val spannable = SpannableString(string)
+        val stringArr = string.split(' ')
+
+        spannable.setSpan(R.color.pressed_plus_color, 0, stringArr[0].length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        spannable.setSpan(R.color.pressed_minus_color, stringArr[0].length, stringArr[0].length+stringArr[1].length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        spannable.setSpan(R.color.default_text_color, stringArr[0].length+stringArr[1].length, string.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        textView.text = spannable
     }
 
     @JvmStatic

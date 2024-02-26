@@ -5,7 +5,7 @@
     <data>
         <variable
             name="data"
-            type="com.example.clicker.data.database.ClickVideoListWithClickInfo" />
+            type="com.example.clicker.viewmodel.AnalyzeViewModel" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -22,22 +22,21 @@
             app:layout_constraintTop_toTopOf="parent">
 
 
-                <TextView
-                    android:id="@+id/toolbarVideoTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@{data.videoInfo.snippet.title}"
-                    android:textColor="@color/default_text_color"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+<!--                <TextView-->
+<!--                    android:id="@+id/toolbarVideoTitle"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="@{data.videoInfo.snippet.title}"-->
+<!--                    android:textColor="@color/default_text_color"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent" />-->
             <TextView
                 android:id="@+id/toolbarTotal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:textStyle="bold"
-                android:text="@{String.valueOf(data.totalScore)}"
-                android:textColor="@color/default_text_color"
+                app:setScoredTextColor="@{data.scoredText.toString()}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.appcompat.widget.Toolbar>

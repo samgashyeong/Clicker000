@@ -29,11 +29,15 @@ class AnalyzeViewModel @Inject constructor(
 
     val youtubePlayer : MutableLiveData<YouTubePlayer> = MutableLiveData()
     val listEntry : ArrayList<Entry> = arrayListOf(Entry(0f, 0f))
-    val checkEntry : ArrayList<Boolean> = arrayListOf(true)
+
     val listChartData : ArrayList<Entry> = arrayListOf(Entry(0f, 0f))
     val listChartLiveData : MutableLiveData<ArrayList<Entry>> = MutableLiveData(arrayListOf(Entry(0f, 0f)))
+
     var nowChartIndex : Int = 1
+    val checkEntry : ArrayList<Boolean> = arrayListOf(true)
     var checkList : ArrayList<Entry> = ArrayList()
+
+    val scoredText : MutableLiveData<String> =  MutableLiveData()
 
     fun dataToEntry(){
 
@@ -71,10 +75,6 @@ class AnalyzeViewModel @Inject constructor(
                 if(tracker.state == PlayerConstants.PlayerState.PLAYING){
                     val second = String.format("%.1f", tracker.currentSecond.toDouble()).toDouble()
 
-
-//                    checkList = listEntry.subList(nowChartIndex, listEntry.size-1).filterIndexed { index, entry ->
-//                        entry.x <= second && !checkEntry[index]
-//                    } as ArrayList<Entry>
                     val checkList_ : ArrayList<Entry> = ArrayList()
 
                     for(i in nowChartIndex..<listEntry.size){

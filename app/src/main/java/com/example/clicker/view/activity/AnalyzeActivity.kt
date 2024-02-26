@@ -43,11 +43,12 @@ class AnalyzeActivity : AppCompatActivity() {
         setContentView(binding.root)
         val data = intent.intentSerializable("data", ClickVideoListWithClickInfo::class.java)
         viewModel.videoInfo.value = data
-        binding.data = viewModel.videoInfo.value
+        binding.data = viewModel
 
         viewModel.videoInfo.value = data!!
         viewModel.videoInfo.observe(this, Observer {
             if(viewModel.videoInfo.value != null){
+                viewModel.scoredText.value = viewModel.videoInfo.value!!.plusScore.toString() + " " + viewModel.videoInfo.value!!.minusScore.toString() + " " + viewModel.videoInfo.value!!.totalScore.toString()
                 viewModel.clickInfo.value = data.clickInfoList
                 viewModel.videoId.value = data.videoId
                 viewModel.dataToEntry()
