@@ -1,0 +1,15 @@
+package com.clicker000.clicker.data.database
+
+import androidx.room.PrimaryKey
+
+//@Entity(tableName = "clickVideoList")
+data class ClickVideo(
+    val videoInfo : com.clicker000.clicker.data.remote.model.youtube.Item,
+    val videoId : String,
+    val plusScore : Int,
+    val minusScore : Int,
+    val totalScore : Int,
+){
+    @PrimaryKey(autoGenerate = true)
+    val clickVideoListID : Int = 0
+}

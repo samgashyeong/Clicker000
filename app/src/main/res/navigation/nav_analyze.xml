@@ -6,7 +6,7 @@
     app:startDestination="@id/clickInfoFragment2">
     <fragment
         android:id="@+id/clickInfoFragment2"
-        android:name="com.example.clicker.view.fragment.ClickInfoFragment"
+        android:name="com.clicker000.clicker.view.fragment.ClickInfoFragment"
         android:label="fragment_click_info"
         tools:layout="@layout/fragment_click_info" >
         <action
@@ -18,7 +18,7 @@
         app:destination="@id/clickInfoFragment2" />
     <fragment
         android:id="@+id/statisticsFragment2"
-        android:name="com.example.clicker.view.fragment.StatisticsFragment"
+        android:name="com.clicker000.clicker.view.fragment.StatisticsFragment"
         android:label="fragment_statistics"
         tools:layout="@layout/fragment_statistics" >
         <action

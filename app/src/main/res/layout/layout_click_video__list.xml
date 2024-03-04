@@ -3,7 +3,7 @@
     <data>
         <variable
             name="clickVideo"
-            type="com.example.clicker.data.database.ClickVideoListWithClickInfo" />
+            type="com.clicker000.clicker.data.database.ClickVideoListWithClickInfo" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"

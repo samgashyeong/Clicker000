@@ -5,7 +5,7 @@
     <data>
         <variable
             name="data"
-            type="com.example.clicker.viewmodel.AnalyzeViewModel" />
+            type="com.clicker000.clicker.viewmodel.AnalyzeViewModel" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

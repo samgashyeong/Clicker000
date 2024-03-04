@@ -7,11 +7,12 @@ plugins {
 }
 
 android {
-    namespace = "com.example.clicker"
+    namespace = "com.clicker000.clicker"
     compileSdk = 34
 
+
     defaultConfig {
-        applicationId = "com.example.clicker"
+        applicationId = "com.clicker000.clicker"
         minSdk = 26
         targetSdk = 33
         versionCode = 1
@@ -24,6 +25,12 @@ android {
         dataBinding = true
         viewBinding = true
     }
+
+    lint {
+        baseline = file("lint-baseline.xml")
+        abortOnError = false
+    }
+
 
     buildTypes {
         release {
