@@ -1,7 +1,9 @@
 package com.clicker000.clicker.view.adapter
 
+import android.content.ContentValues.TAG
 import android.text.Spannable
 import android.text.SpannableString
+import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -16,8 +18,9 @@ object BindingAdapter {
 
     @JvmStatic
     @BindingAdapter("app:setLeftButtonView")
-    fun setLeftButtonView(button : Button, isChangeButton: MutableLiveData<Setting?>){
-        if(isChangeButton.value?.isChangeButton == true){
+    fun setLeftButtonView(button : Button, isChangeButton: MutableLiveData<Boolean>){
+        Log.d(TAG, "setLeftButtonView: ${isChangeButton.value}")
+        if(isChangeButton.value == true){
             button.apply {
                 text="-"
                 setBackgroundResource(R.drawable.minus_selector)
@@ -27,6 +30,23 @@ object BindingAdapter {
             button.apply {
                 text="+"
                 setBackgroundResource(R.drawable.plus_selector)
+            }
+        }
+    }
+
+    @JvmStatic
+    @BindingAdapter("app:setRightButton")
+    fun setRightButton(button : Button, isChangeButton: MutableLiveData<Boolean>){
+        if(isChangeButton.value == true){
+            button.apply {
+                text="+"
+                setBackgroundResource(R.drawable.plus_selector)
+            }
+        }
+        else{
+            button.apply {
+                text="-"
+                setBackgroundResource(R.drawable.minus_selector)
             }
         }
     }
@@ -44,23 +64,6 @@ object BindingAdapter {
         spannable.setSpan(R.color.default_text_color, stringArr[0].length+stringArr[1].length, string.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 
         textView.text = spannable
-    }
-
-    @JvmStatic
-    @BindingAdapter("app:setRightButton")
-    fun setRightButton(button : Button, isChangeButton: MutableLiveData<Setting?>){
-        if(isChangeButton.value?.isChangeButton == true){
-            button.apply {
-                text="+"
-                setBackgroundResource(R.drawable.plus_selector)
-            }
-        }
-        else{
-            button.apply {
-                text="-"
-                setBackgroundResource(R.drawable.minus_selector)
-            }
-        }
     }
 
 

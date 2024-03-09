@@ -32,7 +32,6 @@ class EditTextDialog(context: Context, private val uiText : EditTextDialogDto,
         findViewById<Button>(R.id.saveButton).setOnClickListener {
             clickListener.invoke(editText.text.toString())
             editText.text = null
-            this.cancel()
         }
 
     }

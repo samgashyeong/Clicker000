@@ -135,8 +135,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                app:setLeftButtonView="@{databaseStore.isSwitchOn()}"
-                android:onClick="@{(v) -> viewModel.leftButton(v, databaseStore.isSwitchOn())}"
+                app:setLeftButtonView="@{databaseStore.isChangeButton()}"
+                android:onClick="@{(v) -> viewModel.leftButton(v, databaseStore.isChangeButton(), databaseStore.isVibButton())}"
                 android:textColor="@color/default_text_color"
                 android:textSize="60sp" />
 
@@ -145,10 +145,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                app:setRightButton="@{databaseStore.isSwitchOn()}"
-                android:onClick="@{(v) -> viewModel.rightButton(v, databaseStore.isSwitchOn())}"
+                android:onClick="@{(v) -> viewModel.rightButton(v, databaseStore.isChangeButton(), databaseStore.isVibButton())}"
                 android:textColor="@color/default_text_color"
-                android:textSize="60sp" />
+                android:textSize="60sp"
+                app:setRightButton="@{databaseStore.isChangeButton()}" />
 
         </LinearLayout>
 

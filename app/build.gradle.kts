@@ -1,29 +1,59 @@
+import java.util.Properties
 
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
+
+
+val properties = Properties()
+val localPropertiesFile = project.rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use { properties.load(it) }
+}
+
 
 android {
     namespace = "com.clicker000.clicker"
     compileSdk = 34
 
 
+
+    buildTypes{
+        debug {
+            buildConfigField("String", "YOUTUBE_API_KEY", properties.getProperty("YOUTUBE_API_KEY"))
+
+            buildConfigField("int", "AAAAKEY", "50")
+        }
+        release {
+            buildConfigField("String", "YOUTUBE_API_KEY", properties.getProperty("YOUTUBE_API_KEY"))
+
+            buildConfigField("int", "AAAAKEY", "50")
+        }
+    }
+
     defaultConfig {
         applicationId = "com.clicker000.clicker"
         minSdk = 26
         targetSdk = 33
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 6
+        versionName = "6.0"
+
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+
+
     }
 
     buildFeatures {
         dataBinding = true
         viewBinding = true
+        buildConfig = true
+
     }
 
     lint {
@@ -52,11 +82,15 @@ android {
         correctErrorTypes=true
     }
 
+
+
+
 }
 
 
 
 dependencies {
+
 
 
     implementation("com.google.dagger:hilt-android:2.48.1")

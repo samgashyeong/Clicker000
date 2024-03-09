@@ -3,6 +3,7 @@ package com.clicker000.clicker.view.activity
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -64,7 +65,6 @@ class MainActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         setDialog()
-
         vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val vibratorManager =
                 getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
@@ -113,14 +113,21 @@ class MainActivity : AppCompatActivity() {
     private fun setDialog() {
         startPointDialog = EditTextDialog(this@MainActivity,
             EditTextDialogDto("Please enter the start point", "only use integer ex)10")){
-            dialogManager.closeAllDialog()
-            viewModel.startPoint.value = it.toFloat()
+            if(it.toIntOrNull() == null){
+                Toast.makeText(this, "Please enter an integer!", Toast.LENGTH_SHORT).show()
+            }
+            else{
+                dialogManager.closeAllDialog()
+                viewModel.startPoint.value = it.toFloat()
+                startPointDialog.cancel()
+            }
         }
 
         settingDialog = SettingDialog(this, dataStoreViewModel)
 
         saveDataDialog = DefaultDialog(this, DefaultDialogDto("Save Score Data", "Do you want to save the scored data?", "Save", "cancel")){
-            if(viewModel.urlString.value != null && dataStoreViewModel.isSwitchOn.value?.isChangeButton == true){
+            Log.d(TAG, "setDialog: ${viewModel.urlString.value}")
+            if(viewModel.urlString.value!!.isNotEmpty() && dataStoreViewModel.isChangeButton.value == true){
                 databaseViewModel.insert(ClickVideoListWithClickInfo(viewModel.videoInfo.value!!,
                     viewModel.startPoint.value!!.toInt(),
                     viewModel.urlString.value!!,
@@ -131,7 +138,7 @@ class MainActivity : AppCompatActivity() {
                 ))
                 Toast.makeText(this, "Data has been saved.", Toast.LENGTH_SHORT).show()
             }
-            else if(viewModel.urlString.value != null && (dataStoreViewModel.isSwitchOn.value?.isChangeButton == false || dataStoreViewModel.isSwitchOn.value?.isChangeButton == true)){
+            else if(viewModel.urlString.value!!.isNotEmpty() && (dataStoreViewModel.isChangeButton.value == false || dataStoreViewModel.isChangeButton.value == null)){
                 databaseViewModel.insert(ClickVideoListWithClickInfo(viewModel.videoInfo.value!!,
                     viewModel.startPoint.value!!.toInt(),
                     viewModel.urlString.value!!,
@@ -149,9 +156,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         initializeDialog = DefaultDialog(this, DefaultDialogDto("Reset Scored Video", "Do you want to reset the scored data?", "Yes", "No")){
-            viewModel.clickInfo.value?.clear()
-            dialogManager.closeAllDialog()
-            startPointDialog.show()
+            if(viewModel.urlString.value?.isNotEmpty() == true){
+                viewModel.clickInfo.value?.clear()
+                dialogManager.closeAllDialog()
+                startPointDialog.show()
+            }
+            else{
+                Toast.makeText(this, "Please bring the Youtube video!", Toast.LENGTH_SHORT).show()
+                dialogManager.closeAllDialog()
+            }
         }
 
         saveDialog = SaveDialog(this, initializeDialog, saveDataDialog)
@@ -164,12 +177,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setObserve(){
-        dataStoreViewModel.isChagneButton.observe(this, Observer {
-            if(dataStoreViewModel.isChagneButton.value == true){
-                viewModel.swapPlusAndMinus()
-            }
+        dataStoreViewModel.isChangeButton.observe(this, Observer {
+            viewModel.swapPlusAndMinus()
+            Log.e(TAG, "setObserve: 에러처리", )
+//            if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+//                // 현재 세로 모드입니다.
+//            } else if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+//                // 현재 가로 모드입니다.
+//            }
         })
-
+        
+        
         viewModel.vib.observe(this, Observer {
             if(viewModel.vib.value == true){
                 if(Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1)
@@ -207,7 +225,6 @@ class MainActivity : AppCompatActivity() {
                         youTubePlayer.loadVideo(viewModel.urlString.value!!,
                             viewModel.stopActivityVideoSecond.value!!.toFloat())
                     }
-
                 })
             }
         })
@@ -272,14 +289,15 @@ class MainActivity : AppCompatActivity() {
         if(viewModel.isStartVideo.value == true){
             viewModel.stopActivityVideoSecond.value = viewModel.tracker.currentSecond.toInt()
         }
-        viewModel.youTubePlayer.value!!.pause()
+        viewModel.youTubePlayer.value?.pause()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        if(dataStoreViewModel.isChagneButton.value == true){
-            viewModel.swapPlusAndMinus()
-        }
+//        if(dataStoreViewModel.isChangeButton.value == true){
+//            viewModel.swapPlusAndMinus()
+//        }
+        viewModel.swapPlusAndMinus()
         youtubePlayerView.release()
     }
 }

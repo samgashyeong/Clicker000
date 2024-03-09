@@ -32,13 +32,6 @@ class SettingRepository(private val context: Context) {
     }
 
 
-
-//    suspend fun saveIsChangeButton(setting : Boolean){
-//        context.dataStore.edit { it->
-//            it[SettingDataStoreKey.IS_CHANGE_BUTTON] = setting
-//        }
-//    }
-
     suspend fun saveIsChangeButton(setting : Boolean){
         context.dataStore.edit { it->
             it[SettingDataStoreKey.IS_CHANGE_BUTTON] = setting
@@ -49,11 +42,4 @@ class SettingRepository(private val context: Context) {
             it[SettingDataStoreKey.IS_VIBRATE] = setting
         }
     }
-//    suspend fun saveSWITCH(setting : Setting){
-//        context.dataStore.edit { it->
-//            it[SettingDataStoreKey.IS_CHANGE_BUTTON] = setting.isChangeButton
-//            it[SettingDataStoreKey.IS_VIBRATE] = setting.isVarivarte
-//        }
-//    }
-
 }

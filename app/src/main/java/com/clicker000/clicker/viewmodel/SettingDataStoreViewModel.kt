@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingDataStoreViewModel @Inject constructor(private val dataRepo : SettingRepository) : ViewModel(){
     var isSwitchOn : MutableLiveData<Setting?> = MutableLiveData()
-    var isChagneButton : MutableLiveData<Boolean?> = MutableLiveData()
+    var isChangeButton : MutableLiveData<Boolean?> = MutableLiveData()
     var isVibButton : MutableLiveData<Boolean?> = MutableLiveData()
 
     init {
@@ -26,16 +26,16 @@ class SettingDataStoreViewModel @Inject constructor(private val dataRepo : Setti
         getData()
     }
 
-    fun getIsChangeButton(){
+    private fun getIsChangeButton(){
         viewModelScope.launch(Dispatchers.IO) {
             dataRepo.getIsChangeButton().collect(){
                 Log.d(ContentValues.TAG, "getData: ${it}")
-                isChagneButton.postValue(it)
+                isChangeButton.postValue(it)
             }
         }
     }
 
-    fun getIsvibButton(){
+    private fun getIsvibButton(){
         viewModelScope.launch(Dispatchers.IO) {
             dataRepo.getIsVibButton().collect(){
                 Log.d(ContentValues.TAG, "getData: ${it}")
@@ -43,7 +43,7 @@ class SettingDataStoreViewModel @Inject constructor(private val dataRepo : Setti
             }
         }
     }
-    fun getData(){
+    private fun getData(){
         viewModelScope.launch(Dispatchers.IO) {
             dataRepo.getSetting().collect(){
                 Log.d(ContentValues.TAG, "getData: ${it}")

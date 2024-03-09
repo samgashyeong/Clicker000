@@ -28,7 +28,7 @@ class SettingDialog(context: Context,
         val vibrateButton = findViewById<CheckBox>(R.id.vibrateButton)
 
 
-        dataStoreViewModel.isChagneButton.observe(lifeCycleOwner, Observer {
+        dataStoreViewModel.isChangeButton.observe(lifeCycleOwner, Observer {
             btnInversionButton.isChecked = it ?: false
         })
 

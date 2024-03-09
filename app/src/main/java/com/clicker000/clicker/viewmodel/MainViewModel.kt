@@ -11,6 +11,7 @@ import com.clicker000.clicker.data.database.Setting
 import com.clicker000.clicker.data.remote.model.youtube.Item
 import com.clicker000.clicker.data.repository.YoutubeServiceRepository
 import com.clicker000.clicker.util.Utils
+import com.github.mikephil.charting.BuildConfig
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerTracker
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,12 +40,12 @@ class MainViewModel @Inject constructor(
 
     fun getVideoInfo(id : String){
         viewModelScope.launch(Dispatchers.IO) {
-            videoInfo.postValue(youtubeServiceRepository.searchYoutubeInfo("snippet", id, Utils.youtubeDataApiKey))
+            videoInfo.postValue(youtubeServiceRepository.searchYoutubeInfo("snippet", id, com.clicker000.clicker.BuildConfig.YOUTUBE_API_KEY))
         }
     }
 
-    fun rightButton(view : View, isChangeButton : MutableLiveData<Setting?>){
-        if(isChangeButton.value?.isChangeButton == true){
+    fun rightButton(view : View, isChangeButton : MutableLiveData<Boolean>, isVib : MutableLiveData<Boolean>){
+        if(isChangeButton.value == true){
             minus.value = minus.value?.plus(1)
             total.value = total.value?.plus(1)
 
@@ -58,14 +59,14 @@ class MainViewModel @Inject constructor(
             clickInfo.value!!.add(ClickInfo(clickSecond = tracker.currentSecond, clickScorePoint = -1, null, plus.value!!, minus.value!!, total.value!!))
         }
 
-        if(isChangeButton.value?.isVarivarte == true && vib.value == false){
+        if(isVib.value == true && vib.value == false){
             vib.value = true
         }
     }
 
-    fun leftButton(view : View, isChangeButton : MutableLiveData<Setting?>){
+    fun leftButton(view : View, isChangeButton : MutableLiveData<Boolean>, isVib : MutableLiveData<Boolean>){
 
-        if(isChangeButton.value?.isChangeButton == true){
+        if(isChangeButton.value == true){
             plus.value = plus.value?.plus(-1)
             total.value = total.value?.plus(-1)
 
@@ -75,10 +76,10 @@ class MainViewModel @Inject constructor(
             plus.value = plus.value?.plus(1)
             total.value = total.value?.plus(1)
 
-            Log.d(TAG, "plusPoint: ${tracker.currentSecond}")
             clickInfo.value!!.add(ClickInfo(clickSecond = tracker.currentSecond, clickScorePoint = +1, null, plus.value!!, minus.value!!, total.value!!))
         }
-        if(isChangeButton.value?.isVarivarte == true && vib.value == false){
+
+        if(isVib.value == true && vib.value == false){
             vib.value = true
         }
     }
@@ -93,5 +94,4 @@ class MainViewModel @Inject constructor(
         plus.value = minus.value
         minus.value = tmp
     }
-
 }

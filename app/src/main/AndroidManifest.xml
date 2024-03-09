@@ -47,6 +47,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-    </application>
 
+        <meta-data
+            android:name="youtubeApi"
+            android:value="${YOUTUBE_API_KEY}"/>
+    </application>
 </manifest>
