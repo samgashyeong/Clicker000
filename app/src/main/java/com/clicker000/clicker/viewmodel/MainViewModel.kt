@@ -38,9 +38,9 @@ class MainViewModel @Inject constructor(
 
     val vib : MutableLiveData<Boolean> = MutableLiveData(false)
 
-    fun getVideoInfo(id : String){
+    fun getVideoInfo(id : String, key : String){
         viewModelScope.launch(Dispatchers.IO) {
-            videoInfo.postValue(youtubeServiceRepository.searchYoutubeInfo("snippet", id, com.clicker000.clicker.BuildConfig.YOUTUBE_API_KEY))
+            videoInfo.postValue(youtubeServiceRepository.searchYoutubeInfo("snippet", id, key))
         }
     }
 

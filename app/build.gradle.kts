@@ -23,29 +23,39 @@ android {
 
 
     buildTypes{
-        debug {
-            buildConfigField("String", "YOUTUBE_API_KEY", properties.getProperty("YOUTUBE_API_KEY"))
-
-            buildConfigField("int", "AAAAKEY", "50")
-        }
-        release {
-            buildConfigField("String", "YOUTUBE_API_KEY", properties.getProperty("YOUTUBE_API_KEY"))
-
-            buildConfigField("int", "AAAAKEY", "50")
-        }
+//        debug {
+//            minifyEnabled true
+//            useProguard false
+//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+//        }
+//        debug {
+////            buildConfigField("String", "YOUTUBE_API_KEY", properties.getProperty("YOUTUBE_API_KEY"))
+////            isMinifyEnabled = true
+////            buildConfigField("int", "AAAAKEY", "50")
+//            isMinifyEnabled = true
+//            proguardFile(getDefaultProguardFile("proguard-android-optimize.txt"))
+//        }
+//        release {
+////            buildConfigField("String", "YOUTUBE_API_KEY", properties.getProperty("YOUTUBE_API_KEY"))
+////            isMinifyEnabled = true
+////            buildConfigField("int", "AAAAKEY", "50")
+//            isMinifyEnabled = true
+//            proguardFile(getDefaultProguardFile("proguard-android-optimize.txt"))
+//        }
     }
 
     defaultConfig {
         applicationId = "com.clicker000.clicker"
         minSdk = 26
         targetSdk = 33
-        versionCode = 6
-        versionName = "6.0"
+        versionCode = 7
+        versionName = "7.0"
 
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
 
+        buildConfigField("String", "YOUTUBE_API_KEY", "\"${properties.getProperty("YOUTUBE_API_KEY")}\"")
 
     }
 

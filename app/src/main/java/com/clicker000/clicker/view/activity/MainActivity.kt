@@ -3,6 +3,8 @@ package com.clicker000.clicker.view.activity
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
@@ -244,7 +246,14 @@ class MainActivity : AppCompatActivity() {
                 viewModel.total.value = 0
                 viewModel.clickInfo.value?.clear()
                 //비디오 정보 가져오기
-                viewModel.getVideoInfo(viewModel.urlString.value!!)
+
+                //youtube api key 가져오기
+                val ai: ApplicationInfo = applicationContext.packageManager
+                    .getApplicationInfo(applicationContext.packageName, PackageManager.GET_META_DATA)
+                val value = ai.metaData?.getString("youtubeApi")
+                val key = value.toString()
+                Log.d(TAG, "setObserve: ${key}")
+                viewModel.getVideoInfo(viewModel.urlString.value!!, key)
             }
             else{
                 Log.d(TAG, "onCreate: 예외실행")
