@@ -26,6 +26,7 @@ class ClickInfoAdapter(private val databaseViewModel: MainDatabaseViewModel, pri
         dialog = EditTextDialog(context, EditTextDialogDto("Enter a description of the score.", "description")){
             data.clickInfoList[editScoreInfoPosition!!].clickDescription = it
             databaseViewModel.update(data)
+            dialog.cancel()
         }
         items = data.clickInfoList
     }

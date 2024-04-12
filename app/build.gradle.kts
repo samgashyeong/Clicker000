@@ -48,8 +48,8 @@ android {
         applicationId = "com.clicker000.clicker"
         minSdk = 26
         targetSdk = 33
-        versionCode = 7
-        versionName = "7.0"
+        versionCode = 8
+        versionName = "8.0"
 
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
