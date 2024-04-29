@@ -5,10 +5,10 @@
     <data>
         <variable
             name="viewModel"
-            type="com.clicker000.clicker.viewmodel.MainViewModel" />
+            type="com.example.clicker.viewmodel.MainViewModel" />
         <variable
             name="databaseStore"
-            type="com.clicker000.clicker.viewmodel.SettingDataStoreViewModel" />
+            type="com.example.clicker.viewmodel.SettingDataStoreViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

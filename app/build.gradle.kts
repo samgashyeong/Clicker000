@@ -17,7 +17,7 @@ if (localPropertiesFile.exists()) {
 
 
 android {
-    namespace = "com.clicker000.clicker"
+    namespace = "com.example.clicker"
     compileSdk = 34
 
 
@@ -45,7 +45,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.clicker000.clicker"
+        applicationId = "com.example.clicker"
         minSdk = 26
         targetSdk = 33
         versionCode = 8
