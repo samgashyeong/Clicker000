@@ -1,29 +1,36 @@
 package com.example.clicker.viewmodel
 
 import android.content.ContentValues
+import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.clicker.data.repository.SettingRepository
+import com.example.clicker.util.intToMode
+import com.example.clicker.util.modeToInt
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
+sealed class Mode(){
+    data class Default(val name : String = "Default") : Mode()
+    data class Ranking(val name : String = "Ranking") : Mode()
+}
 @HiltViewModel
 class SettingDataStoreViewModel @Inject constructor(private val dataRepo : SettingRepository) : ViewModel(){
     //var isSwitchOn : MutableLiveData<Setting?> = MutableLiveData()
     var isChangeButton : MutableLiveData<Boolean?> = MutableLiveData()
     var isVibButton : MutableLiveData<Boolean?> = MutableLiveData()
+    var mode : MutableLiveData<Mode> = MutableLiveData()
 
     init {
         getIsChangeButton()
         getIsvibButton()
+        getMode()
     }
+
 
     private fun getIsChangeButton(){
         viewModelScope.launch(Dispatchers.IO) {
@@ -46,6 +53,18 @@ class SettingDataStoreViewModel @Inject constructor(private val dataRepo : Setti
             }
         }
     }
+
+    private fun getMode(){
+        viewModelScope.launch(Dispatchers.IO) {
+            dataRepo.getMode().collect(){
+                Log.d(ContentValues.TAG, "getDataVibData : ${it}")
+                if(mode.value != intToMode.get(it)!!){
+                    mode.postValue(intToMode.get(it)!!)
+                }
+            }
+        }
+    }
+
 //    private fun getData(){
 //        viewModelScope.launch(Dispatchers.IO) {
 //            dataRepo.getSetting().collect(){
@@ -63,6 +82,12 @@ class SettingDataStoreViewModel @Inject constructor(private val dataRepo : Setti
     fun saveIsvibButton(isSwitchOn: Boolean){
         viewModelScope.launch(Dispatchers.IO) {
             dataRepo.saveIsVibButton(isSwitchOn)
+        }
+    }
+    fun saveMode(mode: Mode){
+        Log.d(TAG, "saveMode: ${mode.toString()}")
+        viewModelScope.launch(Dispatchers.IO) {
+            dataRepo.saveMode(modeToInt[mode]!!)
         }
     }
 }

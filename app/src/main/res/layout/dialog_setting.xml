@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -52,18 +51,25 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btnInversionButton" />
 
-
-        <!--        <androidx.appcompat.widget.AppCompatButton-->
-        <!--            android:layout_width="200dp"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:background="@drawable/button_round"-->
-        <!--            android:text="Initializing Scored Video"-->
-        <!--            android:textSize="12sp"-->
-        <!--            app:layout_constraintBottom_toTopOf="@+id/linearLayout"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toBottomOf="@+id/checkBox" />-->
-
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="mode"
+            android:textColor="@color/default_text_color"
+            app:layout_constraintBottom_toBottomOf="@+id/spinner"
+            app:layout_constraintEnd_toStartOf="@+id/spinner"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/spinner" />
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:textColor="@color/default_text_color"
+            app:layout_constraintTop_toBottomOf="@+id/vibrateButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:entries="@array/spinner_options"
+            android:layout_marginTop="10dp"/>
 
         <LinearLayout
             android:id="@+id/linearLayout"
@@ -73,7 +79,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/vibrateButton">
+            app:layout_constraintTop_toBottomOf="@+id/spinner">
 
             <TextView
                 android:id="@+id/cancelBtn"
@@ -86,11 +92,6 @@
                 android:text="Close"
                 android:textColor="@color/default_text_color"
                 android:textSize="15sp" />
-
-
         </LinearLayout>
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

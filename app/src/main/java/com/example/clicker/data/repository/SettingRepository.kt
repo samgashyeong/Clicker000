@@ -31,6 +31,9 @@ class SettingRepository(private val context: Context) {
         return@map it[SettingDataStoreKey.IS_VIBRATE] ?: false
     }
 
+    suspend fun getMode() : Flow<Int> = context.dataStore.data.map {
+        return@map it[SettingDataStoreKey.MODE] ?: 0
+    }
 
     suspend fun saveIsChangeButton(setting : Boolean){
         context.dataStore.edit { it->
@@ -40,6 +43,12 @@ class SettingRepository(private val context: Context) {
     suspend fun saveIsVibButton(setting : Boolean){
         context.dataStore.edit { it->
             it[SettingDataStoreKey.IS_VIBRATE] = setting
+        }
+    }
+
+    suspend fun saveMode(setting : Int){
+        context.dataStore.edit { it->
+            it[SettingDataStoreKey.MODE] = setting
         }
     }
 }

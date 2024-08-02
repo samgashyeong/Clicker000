@@ -23,25 +23,6 @@ android {
 
 
     buildTypes{
-//        debug {
-//            minifyEnabled true
-//            useProguard false
-//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-//        }
-//        debug {
-////            buildConfigField("String", "YOUTUBE_API_KEY", properties.getProperty("YOUTUBE_API_KEY"))
-////            isMinifyEnabled = true
-////            buildConfigField("int", "AAAAKEY", "50")
-//            isMinifyEnabled = true
-//            proguardFile(getDefaultProguardFile("proguard-android-optimize.txt"))
-//        }
-//        release {
-////            buildConfigField("String", "YOUTUBE_API_KEY", properties.getProperty("YOUTUBE_API_KEY"))
-////            isMinifyEnabled = true
-////            buildConfigField("int", "AAAAKEY", "50")
-//            isMinifyEnabled = true
-//            proguardFile(getDefaultProguardFile("proguard-android-optimize.txt"))
-//        }
     }
 
     defaultConfig {
@@ -55,7 +36,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
 
-        buildConfigField("String", "YOUTUBE_API_KEY", "\"${properties.getProperty("YOUTUBE_API_KEY")}\"")
+        //buildConfigField("String", "YOUTUBE_API_KEY", "\"${properties.getProperty("YOUTUBE_API_KEY")}\"")
 
     }
 
