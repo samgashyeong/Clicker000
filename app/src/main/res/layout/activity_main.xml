@@ -49,6 +49,7 @@
         <!--            app:layout_constraintStart_toStartOf="@id/youtubePlayer"-->
         <!--            app:layout_constraintTop_toTopOf="@id/youtubePlayer" />-->
 
+
         <FrameLayout
             android:id="@+id/frameLayout"
             android:layout_width="match_parent"
@@ -75,8 +76,10 @@
             android:layout_height="0dp"
             android:background="@color/black"
             app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+            app:layout_constraintTop_toBottomOf="@+id/toolbar"/>
+
         <TextView
             android:id="@+id/youtubeVideoTextView"
             android:layout_width="wrap_content"
@@ -110,15 +113,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/youtubeVideoTextView" />
 
-
-<!--        <TextView-->
-<!--            android:id="@+id/testString"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="@{viewModel.testString.toString()}"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />-->
 
         <LinearLayout
             android:id="@+id/linearLayout"

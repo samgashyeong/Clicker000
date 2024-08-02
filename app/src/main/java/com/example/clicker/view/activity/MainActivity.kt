@@ -32,6 +32,7 @@ import com.example.clicker.view.dialog.SaveDialog
 import com.example.clicker.view.dialog.SettingDialog
 import com.example.clicker.viewmodel.MainDatabaseViewModel
 import com.example.clicker.viewmodel.MainViewModel
+import com.example.clicker.viewmodel.Mode
 import com.example.clicker.viewmodel.SettingDataStoreViewModel
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
@@ -188,6 +189,24 @@ class MainActivity : AppCompatActivity() {
 //            }
         })
 
+        dataStoreViewModel.mode.observe(this) {
+            when (it) {
+                is Mode.Default -> {
+                    binding.youtubeBlackView.visibility = View.VISIBLE
+                    binding.youtubeButton.visibility = View.VISIBLE
+                    binding.youtubePlayer.visibility = View.VISIBLE
+                    binding.youtubeVideoTextView.visibility = View.VISIBLE
+                }
+
+                is Mode.Ranking -> {
+                    binding.youtubeBlackView.visibility = View.GONE
+                    binding.youtubeButton.visibility = View.GONE
+                    binding.youtubePlayer.visibility = View.GONE
+                    binding.youtubeVideoTextView.visibility = View.GONE
+                }
+            }
+        }
+
 
 //        dataStoreViewModel.isVibButton.observe(this, Observer {
 //            viewModel.swapPlusAndMinus()
@@ -223,7 +242,7 @@ class MainActivity : AppCompatActivity() {
 
                 binding.youtubeVideoTextView.visibility = View.INVISIBLE
                 binding.youtubeButton.visibility = View.INVISIBLE
-                binding.youtubeBlackView.visibility = View.INVISIBLE
+                binding.youtubeBlackView?.visibility = View.INVISIBLE
 
                 youtubePlayerView.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
                     override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
@@ -240,7 +259,7 @@ class MainActivity : AppCompatActivity() {
                 viewModel.urlString.value = viewModel.extractYouTubeVideoId(sharedText!!).value
                 binding.youtubeVideoTextView.visibility = View.INVISIBLE
                 binding.youtubeButton.visibility = View.INVISIBLE
-                binding.youtubeBlackView.visibility = View.INVISIBLE
+                binding.youtubeBlackView?.visibility = View.INVISIBLE
 
                 viewModel.youTubePlayer.value!!.loadVideo(viewModel.urlString.value!!, viewModel.startPoint.value!!)
                 viewModel.isStartVideo.value = true
@@ -292,7 +311,16 @@ class MainActivity : AppCompatActivity() {
             if (intent.getAction().equals(Intent.ACTION_SEND) && "text/plain".equals(intent.getType())) {
                 sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
                 // startPointDialog 관련 처리
-                startPointDialog.show()
+                when(dataStoreViewModel.mode.value){
+                    is Mode.Default ->{
+                        startPointDialog.show()
+                    }
+                    is Mode.Ranking ->{
+                        Toast.makeText(this, "Youtube video is not supported in ranking mode.", Toast.LENGTH_SHORT).show()
+                    }
+
+                    null -> {}
+                }
             }
         }
     }
