@@ -161,7 +161,12 @@ class MainActivity : AppCompatActivity() {
                 rankingDialog.cancel()
             }
         )
-        settingDialog = SettingDialog(this, dataStoreViewModel)
+        settingDialog = SettingDialog(this, dataStoreViewModel){
+            viewModel.plus.value = 0
+            viewModel.minus.value = 0
+            viewModel.total.value = 0
+            Toast.makeText(this, "The data has been reset.", Toast.LENGTH_SHORT).show()
+        }
 
         saveDataDialog = DefaultDialog(
             this,
@@ -241,11 +246,6 @@ class MainActivity : AppCompatActivity() {
         dataStoreViewModel.isChangeButton.observe(this, Observer {
             viewModel.swapPlusAndMinus()
             Log.e(TAG, "setObserve: 에러처리")
-//            if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-//                // 현재 세로 모드입니다.
-//            } else if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-//                // 현재 가로 모드입니다.
-//            }
         })
 
         dataStoreViewModel.mode.observe(this) {
@@ -253,15 +253,23 @@ class MainActivity : AppCompatActivity() {
                 is Mode.Default -> {
                     binding.youtubeBlackView.visibility = View.VISIBLE
                     binding.youtubeButton.visibility = View.VISIBLE
-                    binding.youtubePlayer.visibility = View.VISIBLE
                     binding.youtubeVideoTextView.visibility = View.VISIBLE
+                    binding.frameLayout.visibility = View.INVISIBLE
+
+                    binding.youtubePlayer.visibility = View.INVISIBLE
+
+                    viewModel.youTubePlayer.value?.pause()
                 }
 
                 is Mode.Ranking -> {
                     binding.youtubeBlackView.visibility = View.GONE
                     binding.youtubeButton.visibility = View.GONE
-                    binding.youtubePlayer.visibility = View.GONE
                     binding.youtubeVideoTextView.visibility = View.GONE
+                    binding.frameLayout.visibility = View.GONE
+
+                    binding.youtubePlayer.visibility = View.GONE
+
+                    viewModel.youTubePlayer.value?.pause()
                 }
             }
         }
@@ -323,31 +331,66 @@ class MainActivity : AppCompatActivity() {
                         youTubePlayer.addListener(viewModel.tracker)
                     }
                 })
-
-                binding.youtubePlayer.visibility = View.VISIBLE
-                binding.youtubeVideoTextView.visibility = View.INVISIBLE
-                binding.youtubeButton.visibility = View.INVISIBLE
-                binding.youtubeBlackView.visibility = View.INVISIBLE
-
-                youtubePlayerView.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
-                    override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
-                        viewModel.youTubePlayer.value = youTubePlayer
-                        youTubePlayer.loadVideo(
-                            viewModel.urlString.value!!,
-                            viewModel.stopActivityVideoSecond.value!!.toFloat()
-                        )
+                when (dataStoreViewModel.mode.value!!) {
+                    is Mode.Default -> {
+                        binding.youtubeBlackView.visibility = View.INVISIBLE
+                        binding.youtubeButton.visibility = View.INVISIBLE
+                        binding.youtubeVideoTextView.visibility = View.INVISIBLE
+                        binding.frameLayout.visibility = View.VISIBLE
+                        binding.youtubePlayer.visibility = View.INVISIBLE
                     }
-                })
+                    is Mode.Ranking -> {
+                        binding.youtubeBlackView.visibility = View.GONE
+                        binding.youtubeButton.visibility = View.GONE
+                        binding.youtubeVideoTextView.visibility = View.GONE
+                        binding.frameLayout.visibility = View.GONE
+
+                        binding.youtubePlayer.visibility = View.GONE
+                        viewModel.youTubePlayer.value?.pause()
+                    }
+                }
+//                binding.youtubePlayer.visibility = View.INVISIBLE
+//                binding.youtubeVideoTextView.visibility = View.INVISIBLE
+//                binding.youtubeButton.visibility = View.INVISIBLE
+//                binding.youtubeBlackView.visibility = View.INVISIBLE
+//                binding.frameLayout.visibility = View.VISIBLE
+
+                if(dataStoreViewModel.mode.value!! == Mode.Default()){
+                    youtubePlayerView.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
+                        override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
+                            viewModel.youTubePlayer.value = youTubePlayer
+                            youTubePlayer.loadVideo(
+                                viewModel.urlString.value!!,
+                                viewModel.stopActivityVideoSecond.value!!.toFloat()
+                            )
+                        }
+                    })
+                }
             }
         })
 
         viewModel.startPoint.observe(this, Observer {
             if (sharedText != null && viewModel.startPoint.value != null) {
                 viewModel.urlString.value = viewModel.extractYouTubeVideoId(sharedText!!).value
-                binding.youtubePlayer.visibility = View.VISIBLE
-                binding.youtubeVideoTextView.visibility = View.INVISIBLE
-                binding.youtubeButton.visibility = View.INVISIBLE
-                binding.youtubeBlackView.visibility = View.INVISIBLE
+
+                when (dataStoreViewModel.mode.value!!) {
+                    is Mode.Default -> {
+                        binding.youtubeBlackView.visibility = View.INVISIBLE
+                        binding.youtubeButton.visibility = View.INVISIBLE
+                        binding.youtubeVideoTextView.visibility = View.INVISIBLE
+                        binding.frameLayout.visibility = View.VISIBLE
+                        binding.youtubePlayer.visibility = View.INVISIBLE
+                    }
+
+                    is Mode.Ranking -> {
+                        binding.youtubeBlackView.visibility = View.GONE
+                        binding.youtubeButton.visibility = View.GONE
+                        binding.youtubeVideoTextView.visibility = View.GONE
+                        binding.frameLayout.visibility = View.GONE
+
+                        binding.youtubePlayer.visibility = View.GONE
+                    }
+                }
 
                 viewModel.youTubePlayer.value!!.loadVideo(
                     viewModel.urlString.value!!,

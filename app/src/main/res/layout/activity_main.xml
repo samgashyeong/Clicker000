@@ -49,11 +49,13 @@
         <!--            app:layout_constraintStart_toStartOf="@id/youtubePlayer"-->
         <!--            app:layout_constraintTop_toTopOf="@id/youtubePlayer" />-->
 
+
+        <!-- youtube player의 본체는 FrameLayout임. 절대 com.pierfrancesco...이거가 아님. 얘는 단순히 UI 만 유지시켜주는 용... 따라서 UI적으로 바꿔줘야 될 필요가 있음.-->
         <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
             android:id="@+id/youtubePlayer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="visible"
+            android:visibility="invisible"
             app:enableAutomaticInitialization="false"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

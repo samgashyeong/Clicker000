@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
+import android.widget.Button
 import android.widget.CheckBox
 import android.widget.Spinner
 import android.widget.TextView
@@ -23,6 +24,7 @@ import com.example.clicker.viewmodel.SettingDataStoreViewModel
 class SettingDialog(
     context: Context,
     val dataStoreViewModel: SettingDataStoreViewModel,
+    val onClickInit : () -> Unit
 ) : Dialog(context) {
 
     private val lifeCycleOwner: MyLifeCycleOwner by lazy { MyLifeCycleOwner() }
@@ -64,6 +66,9 @@ class SettingDialog(
             this.cancel()
         }
 
+        findViewById<Button>(R.id.newButton).setOnClickListener{
+            onClickInit()
+        }
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>,
