@@ -41,7 +41,7 @@ class MainActivityViewModel @Inject constructor(
             settingRepository.getIsChangeButton().collect(){
                 Log.d(ContentValues.TAG, "getDataIsChange : ${it}")
                 if(settingUiModel.value?.isChangeButton != it){
-                    _settingUiModel.value = _settingUiModel.value?.copy(isChangeButton = it)
+                    _settingUiModel.postValue(_settingUiModel.value?.copy(isChangeButton = it))
                 }
             }
         }
@@ -50,7 +50,7 @@ class MainActivityViewModel @Inject constructor(
             settingRepository.getIsVibButton().collect(){
                 Log.d(ContentValues.TAG, "getDataVibData : ${it}")
                 if(settingUiModel.value?.isVidButton != it){
-                    _settingUiModel.value = _settingUiModel.value?.copy(isVidButton = it)
+                    _settingUiModel.postValue(_settingUiModel.value?.copy(isVidButton = it))
                 }
             }
         }
@@ -59,7 +59,7 @@ class MainActivityViewModel @Inject constructor(
             settingRepository.getMode().collect(){
                 Log.d(ContentValues.TAG, "getDataVibData : ${it}")
                 if(settingUiModel.value?.mode != intToMode.get(it)!!){
-                    _settingUiModel.value = _settingUiModel.value?.copy(mode = intToMode.get(it)!!)
+                    _settingUiModel.postValue(_settingUiModel.value?.copy(mode = intToMode.get(it)!!))
                 }
             }
         }
