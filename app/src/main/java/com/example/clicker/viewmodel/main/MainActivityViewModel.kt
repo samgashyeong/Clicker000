@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.clicker.data.repository.ClickVideoRepository
 import com.example.clicker.data.repository.SettingRepository
 import com.example.clicker.data.repository.YoutubeServiceRepository
+import com.example.clicker.viewmodel.main.model.SettingUiModel
 import com.example.clicker.viewmodel.main.model.VideoScoreUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +22,10 @@ class MainActivityViewModel @Inject constructor(
 ) : ViewModel() {
     private val _videoScoreUiModel : MutableLiveData<VideoScoreUiModel> = MutableLiveData(VideoScoreUiModel(videoInfo = null))
     val videoScoreUiModel : LiveData<VideoScoreUiModel> get() = _videoScoreUiModel
+
+    private val _settingUiModel : MutableLiveData<SettingUiModel> = MutableLiveData(SettingUiModel())
+    val settingUiModel : LiveData<SettingUiModel> get() = _settingUiModel
+
 
 
     fun changeStartPoint(startPoint : Float){
@@ -37,8 +42,9 @@ class MainActivityViewModel @Inject constructor(
         _videoScoreUiModel.value = _videoScoreUiModel.value?.copy(minus = value-1, total = value-1)
     }
 
+    fun rightButton(isChangeButton : Boolean){
 
-
+    }
 
     fun getVideoInfo(id : String, key : String){
         viewModelScope.launch(Dispatchers.IO) {
@@ -46,6 +52,5 @@ class MainActivityViewModel @Inject constructor(
             _videoScoreUiModel.value = _videoScoreUiModel.value?.copy(videoInfo = videoInfo)
         }
     }
-
 
 }
