@@ -39,6 +39,7 @@ import com.example.clicker.viewmodel.MainDatabaseViewModel
 import com.example.clicker.viewmodel.MainViewModel
 import com.example.clicker.viewmodel.Mode
 import com.example.clicker.viewmodel.SettingDataStoreViewModel
+import com.example.clicker.viewmodel.main.MainActivityViewModel
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
@@ -50,9 +51,10 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel1: MainViewModel by viewModels()
     private val databaseViewModel: MainDatabaseViewModel by viewModels()
     private val dataStoreViewModel: SettingDataStoreViewModel by viewModels()
+    private val viewModel : MainActivityViewModel by viewModels()
 
     private lateinit var startPointDialog: EditTextDialog
     private lateinit var saveDataDialog: DefaultDialog
@@ -83,7 +85,8 @@ class MainActivity : AppCompatActivity() {
             getSystemService(VIBRATOR_SERVICE) as Vibrator
         }
 
-        binding.viewModel = viewModel
+        binding.viewModel1 = viewModel
+        binding.viewModel = viewModel1
         binding.databaseStore = dataStoreViewModel
         binding.lifecycleOwner = this
 
@@ -100,8 +103,8 @@ class MainActivity : AppCompatActivity() {
         youtubePlayerView.initialize(object : AbstractYouTubePlayerListener() {
             override fun onReady(youTubePlayer: YouTubePlayer) {
                 super.onReady(youTubePlayer)
-                viewModel.youTubePlayer.value = youTubePlayer
-                youTubePlayer.addListener(viewModel.tracker)
+                viewModel1.youTubePlayer.value = youTubePlayer
+                youTubePlayer.addListener(viewModel1.tracker)
             }
         })
 
@@ -128,7 +131,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Please enter an integer!", Toast.LENGTH_SHORT).show()
             } else {
                 dialogManager.closeAllDialog()
-                viewModel.startPoint.value = it.toFloat()
+                viewModel1.startPoint.value = it.toFloat()
                 startPointDialog.cancel()
             }
         }
@@ -137,8 +140,8 @@ class MainActivity : AppCompatActivity() {
             this@MainActivity,
             EditTextDialogDto("Write Player Name", "ex ) Lee Jun Sang")
         ) {
-            viewModel.addPlayer(RankingDto(it, viewModel.plus.value!!, viewModel.minus.value!!, viewModel.total.value!!)){
-                Toast.makeText(this, "now 1st \n${viewModel.ranking.value?.get(0)!!.name} ${viewModel.ranking.value?.get(0)!!.plus} ${viewModel.ranking.value?.get(0)!!.minus} ${viewModel.ranking.value?.get(0)!!.total}", Toast.LENGTH_SHORT).show()
+            viewModel1.addPlayer(RankingDto(it, viewModel1.plus.value!!, viewModel1.minus.value!!, viewModel1.total.value!!)){
+                Toast.makeText(this, "now 1st \n${viewModel1.ranking.value?.get(0)!!.name} ${viewModel1.ranking.value?.get(0)!!.plus} ${viewModel1.ranking.value?.get(0)!!.minus} ${viewModel1.ranking.value?.get(0)!!.total}", Toast.LENGTH_SHORT).show()
             }
             savePlayerEditTextDialog.cancel()
 
@@ -146,9 +149,9 @@ class MainActivity : AppCompatActivity() {
 
         rankingDialog = RankingDialog(
             this@MainActivity,
-            rankingList = viewModel.ranking.value!!,
+            rankingList = viewModel1.ranking.value!!,
             copyCallback = {
-                val text = viewModel.convertDataToText()
+                val text = viewModel1.convertDataToText()
 
                 val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 val clip = ClipData.newPlainText("Ranking Data", text)
@@ -157,14 +160,14 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Data copied to clipboard", Toast.LENGTH_SHORT).show()
             },
             clearCallback = {
-                viewModel.clearRankingData()
+                viewModel1.clearRankingData()
                 rankingDialog.cancel()
             }
         )
         settingDialog = SettingDialog(this, dataStoreViewModel){
-            viewModel.plus.value = 0
-            viewModel.minus.value = 0
-            viewModel.total.value = 0
+            viewModel1.plus.value = 0
+            viewModel1.minus.value = 0
+            viewModel1.total.value = 0
             Toast.makeText(this, "The data has been reset.", Toast.LENGTH_SHORT).show()
         }
 
@@ -177,30 +180,30 @@ class MainActivity : AppCompatActivity() {
                 "cancel"
             )
         ) {
-            Log.d(TAG, "setDialog: ${viewModel.urlString.value}")
-            if (viewModel.urlString.value!!.isNotEmpty() && dataStoreViewModel.isChangeButton.value == true) {
+            Log.d(TAG, "setDialog: ${viewModel1.urlString.value}")
+            if (viewModel1.urlString.value!!.isNotEmpty() && dataStoreViewModel.isChangeButton.value == true) {
                 databaseViewModel.insert(
                     ClickVideoListWithClickInfo(
-                        viewModel.videoInfo.value!!,
-                        viewModel.startPoint.value!!.toInt(),
-                        viewModel.urlString.value!!,
-                        viewModel.minus.value!!,
-                        viewModel.plus.value!!,
-                        viewModel.total.value!!,
-                        viewModel.clickInfo.value!!
+                        viewModel1.videoInfo.value!!,
+                        viewModel1.startPoint.value!!.toInt(),
+                        viewModel1.urlString.value!!,
+                        viewModel1.minus.value!!,
+                        viewModel1.plus.value!!,
+                        viewModel1.total.value!!,
+                        viewModel1.clickInfo.value!!
                     )
                 )
                 Toast.makeText(this, "Data has been saved.", Toast.LENGTH_SHORT).show()
-            } else if (viewModel.urlString.value!!.isNotEmpty() && (dataStoreViewModel.isChangeButton.value == false || dataStoreViewModel.isChangeButton.value == null)) {
+            } else if (viewModel1.urlString.value!!.isNotEmpty() && (dataStoreViewModel.isChangeButton.value == false || dataStoreViewModel.isChangeButton.value == null)) {
                 databaseViewModel.insert(
                     ClickVideoListWithClickInfo(
-                        viewModel.videoInfo.value!!,
-                        viewModel.startPoint.value!!.toInt(),
-                        viewModel.urlString.value!!,
-                        viewModel.plus.value!!,
-                        viewModel.minus.value!!,
-                        viewModel.total.value!!,
-                        viewModel.clickInfo.value!!
+                        viewModel1.videoInfo.value!!,
+                        viewModel1.startPoint.value!!.toInt(),
+                        viewModel1.urlString.value!!,
+                        viewModel1.plus.value!!,
+                        viewModel1.minus.value!!,
+                        viewModel1.total.value!!,
+                        viewModel1.clickInfo.value!!
                     )
                 )
                 Toast.makeText(this, "Data has been saved.", Toast.LENGTH_SHORT).show()
@@ -223,8 +226,8 @@ class MainActivity : AppCompatActivity() {
                 "No"
             )
         ) {
-            if (viewModel.urlString.value?.isNotEmpty() == true) {
-                viewModel.clickInfo.value?.clear()
+            if (viewModel1.urlString.value?.isNotEmpty() == true) {
+                viewModel1.clickInfo.value?.clear()
                 dialogManager.closeAllDialog()
                 startPointDialog.show()
             } else {
@@ -244,7 +247,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setObserve() {
         dataStoreViewModel.isChangeButton.observe(this, Observer {
-            viewModel.swapPlusAndMinus()
+            viewModel1.swapPlusAndMinus()
             Log.e(TAG, "setObserve: 에러처리")
         })
 
@@ -258,7 +261,7 @@ class MainActivity : AppCompatActivity() {
 
                     binding.youtubePlayer.visibility = View.INVISIBLE
 
-                    viewModel.youTubePlayer.value?.pause()
+                    viewModel1.youTubePlayer.value?.pause()
                 }
 
                 is Mode.Ranking -> {
@@ -269,17 +272,17 @@ class MainActivity : AppCompatActivity() {
 
                     binding.youtubePlayer.visibility = View.GONE
 
-                    viewModel.youTubePlayer.value?.pause()
+                    viewModel1.youTubePlayer.value?.pause()
                 }
             }
         }
 
-        viewModel.ranking.observe(this) {
+        viewModel1.ranking.observe(this) {
             rankingDialog = RankingDialog(
                 this@MainActivity,
                 rankingList = it,
                 copyCallback = {
-                    val text = viewModel.convertDataToText()
+                    val text = viewModel1.convertDataToText()
 
                     val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     val clip = ClipData.newPlainText("Ranking Data", text)
@@ -288,7 +291,7 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "Data copied to clipboard", Toast.LENGTH_SHORT).show()
                 },
                 clearCallback = {
-                    viewModel.clearRankingData()
+                    viewModel1.clearRankingData()
                     rankingDialog.cancel()
                 }
             )
@@ -300,8 +303,8 @@ class MainActivity : AppCompatActivity() {
 //        })
 
 
-        viewModel.vib.observe(this, Observer {
-            if (viewModel.vib.value == true) {
+        viewModel1.vib.observe(this, Observer {
+            if (viewModel1.vib.value == true) {
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1)
                     vibrator.vibrate(
                         VibrationEffect.createOneShot(
@@ -312,12 +315,12 @@ class MainActivity : AppCompatActivity() {
                 else
                     vibrator.vibrate(40);
 
-                viewModel.vib.value = false
+                viewModel1.vib.value = false
             }
         })
 
-        viewModel.stopActivityVideoSecond.observe(this, Observer {
-            if (viewModel.isStartVideo.value == true) {
+        viewModel1.stopActivityVideoSecond.observe(this, Observer {
+            if (viewModel1.isStartVideo.value == true) {
                 binding.frameLayout.removeView(youtubePlayerView)
 
                 val youtubePlayerView = YouTubePlayerView(this)
@@ -327,8 +330,8 @@ class MainActivity : AppCompatActivity() {
                 youtubePlayerView.initialize(object : AbstractYouTubePlayerListener() {
                     override fun onReady(youTubePlayer: YouTubePlayer) {
                         super.onReady(youTubePlayer)
-                        viewModel.youTubePlayer.value = youTubePlayer
-                        youTubePlayer.addListener(viewModel.tracker)
+                        viewModel1.youTubePlayer.value = youTubePlayer
+                        youTubePlayer.addListener(viewModel1.tracker)
                     }
                 })
                 when (dataStoreViewModel.mode.value!!) {
@@ -346,7 +349,7 @@ class MainActivity : AppCompatActivity() {
                         binding.frameLayout.visibility = View.GONE
 
                         binding.youtubePlayer.visibility = View.GONE
-                        viewModel.youTubePlayer.value?.pause()
+                        viewModel1.youTubePlayer.value?.pause()
                     }
                 }
 //                binding.youtubePlayer.visibility = View.INVISIBLE
@@ -358,10 +361,10 @@ class MainActivity : AppCompatActivity() {
                 if(dataStoreViewModel.mode.value!! == Mode.Default()){
                     youtubePlayerView.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
                         override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
-                            viewModel.youTubePlayer.value = youTubePlayer
+                            viewModel1.youTubePlayer.value = youTubePlayer
                             youTubePlayer.loadVideo(
-                                viewModel.urlString.value!!,
-                                viewModel.stopActivityVideoSecond.value!!.toFloat()
+                                viewModel1.urlString.value!!,
+                                viewModel1.stopActivityVideoSecond.value!!.toFloat()
                             )
                         }
                     })
@@ -369,9 +372,9 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        viewModel.startPoint.observe(this, Observer {
-            if (sharedText != null && viewModel.startPoint.value != null) {
-                viewModel.urlString.value = viewModel.extractYouTubeVideoId(sharedText!!).value
+        viewModel1.startPoint.observe(this, Observer {
+            if (sharedText != null && viewModel1.startPoint.value != null) {
+                viewModel1.urlString.value = viewModel1.extractYouTubeVideoId(sharedText!!).value
 
                 when (dataStoreViewModel.mode.value!!) {
                     is Mode.Default -> {
@@ -392,16 +395,16 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                viewModel.youTubePlayer.value!!.loadVideo(
-                    viewModel.urlString.value!!,
-                    viewModel.startPoint.value!!
+                viewModel1.youTubePlayer.value!!.loadVideo(
+                    viewModel1.urlString.value!!,
+                    viewModel1.startPoint.value!!
                 )
-                viewModel.isStartVideo.value = true
+                viewModel1.isStartVideo.value = true
 
-                viewModel.plus.value = 0
-                viewModel.minus.value = 0
-                viewModel.total.value = 0
-                viewModel.clickInfo.value?.clear()
+                viewModel1.plus.value = 0
+                viewModel1.minus.value = 0
+                viewModel1.total.value = 0
+                viewModel1.clickInfo.value?.clear()
                 //비디오 정보 가져오기
 
                 //youtube api key 가져오기
@@ -413,7 +416,7 @@ class MainActivity : AppCompatActivity() {
                 val value = ai.metaData?.getString("youtubeApi")
                 val key = value.toString()
                 Log.d(TAG, "setObserve: ${key}")
-                viewModel.getVideoInfo(viewModel.urlString.value!!, key)
+                viewModel1.getVideoInfo(viewModel1.urlString.value!!, key)
             } else {
                 Log.d(TAG, "onCreate: 예외실행")
             }
@@ -494,10 +497,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        if (viewModel.isStartVideo.value == true) {
-            viewModel.stopActivityVideoSecond.value = viewModel.tracker.currentSecond.toInt()
+        if (viewModel1.isStartVideo.value == true) {
+            viewModel1.stopActivityVideoSecond.value = viewModel1.tracker.currentSecond.toInt()
         }
-        viewModel.youTubePlayer.value?.pause()
+        viewModel1.youTubePlayer.value?.pause()
     }
 
     override fun onDestroy() {
@@ -505,7 +508,7 @@ class MainActivity : AppCompatActivity() {
 //        if(dataStoreViewModel.isChangeButton.value == true){
 //            viewModel.swapPlusAndMinus()
 //        }
-        viewModel.swapPlusAndMinus()
+        viewModel1.swapPlusAndMinus()
         youtubePlayerView.release()
     }
 }
