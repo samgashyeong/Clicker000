@@ -65,15 +65,6 @@ class SettingDataStoreViewModel @Inject constructor(private val dataRepo : Setti
         }
     }
 
-//    private fun getData(){
-//        viewModelScope.launch(Dispatchers.IO) {
-//            dataRepo.getSetting().collect(){
-//                Log.d(ContentValues.TAG, "getData: ${it}")
-//                isSwitchOn.postValue(it)
-//            }
-//        }
-//    }
-
     fun saveIsChangeButton(isSwitchOn: Boolean){
         viewModelScope.launch(Dispatchers.IO) {
             dataRepo.saveIsChangeButton(isSwitchOn)

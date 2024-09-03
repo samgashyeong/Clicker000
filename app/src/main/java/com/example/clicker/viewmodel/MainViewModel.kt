@@ -22,22 +22,23 @@ import kotlin.random.Random
 @HiltViewModel
 class MainViewModel @Inject constructor(
                     val tracker: YouTubePlayerTracker,
-                    val youtubeServiceRepository : YoutubeServiceRepository
+                    private val youtubeServiceRepository : YoutubeServiceRepository
                     ) : ViewModel() {
+    val clickInfo : MutableLiveData<ArrayList<ClickInfo>> = MutableLiveData(ArrayList())
+    val stopActivityVideoSecond : MutableLiveData<Int> = MutableLiveData(0)
+    val isStartVideo : MutableLiveData<Boolean> = MutableLiveData(false)
+    val ranking : MutableLiveData<ArrayList<RankingDto>> = MutableLiveData(ArrayList())
+
 
     val urlString : MutableLiveData<String> = MutableLiveData("")
     val plus : MutableLiveData<Int> = MutableLiveData(0)
     val minus : MutableLiveData<Int?> = MutableLiveData(0)
     val total : MutableLiveData<Int> = MutableLiveData(0)
-    val startPoint : MutableLiveData<Float?> = MutableLiveData(null)
-    val clickInfo : MutableLiveData<ArrayList<ClickInfo>> = MutableLiveData(ArrayList())
     var videoInfo : MutableLiveData<Item> = MutableLiveData()
     var youTubePlayer : MutableLiveData<YouTubePlayer> = MutableLiveData()
-    val stopActivityVideoSecond : MutableLiveData<Int> = MutableLiveData(0)
-    val isStartVideo : MutableLiveData<Boolean> = MutableLiveData(false)
-    val ranking : MutableLiveData<ArrayList<RankingDto>> = MutableLiveData(ArrayList())
 
-    val vib : MutableLiveData<Boolean> = MutableLiveData(false)
+    val startPoint : MutableLiveData<Float?> = MutableLiveData(null)
+    val vib : MutableLiveData<Boolean> = MutableLiveData( false)
 
     fun getVideoInfo(id : String, key : String){
         viewModelScope.launch(Dispatchers.IO) {
