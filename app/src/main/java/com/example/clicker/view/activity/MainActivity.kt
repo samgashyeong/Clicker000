@@ -164,7 +164,7 @@ class MainActivity : AppCompatActivity() {
                 rankingDialog.cancel()
             }
         )
-        settingDialog = SettingDialog(this, dataStoreViewModel){
+        settingDialog = SettingDialog(this, dataStoreViewModel, viewModel){
             viewModel1.plus.value = 0
             viewModel1.minus.value = 0
             viewModel1.total.value = 0

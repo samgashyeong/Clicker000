@@ -17,7 +17,11 @@ import com.example.clicker.viewmodel.main.model.SettingUiModel
 import com.example.clicker.viewmodel.main.model.VideoScoreUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,34 +40,52 @@ class MainActivityViewModel @Inject constructor(
         getSettingData()
     }
 
+
     private fun getSettingData() {
+        val mutex = Mutex()
+
         viewModelScope.launch(Dispatchers.IO) {
-            settingRepository.getIsChangeButton().collect(){
-                Log.d(ContentValues.TAG, "getDataIsChange : ${it}")
-                if(settingUiModel.value?.isChangeButton != it){
-                    _settingUiModel.postValue(_settingUiModel.value?.copy(isChangeButton = it))
+            settingRepository.getIsChangeButton().collect { isChange ->
+                mutex.withLock {
+                    withContext(Dispatchers.Main) {
+                        if (_settingUiModel.value?.isChangeButton != isChange) {
+                            _settingUiModel.value = _settingUiModel.value!!.copy(isChangeButton = isChange)
+                        }
+                    }
                 }
             }
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            settingRepository.getIsVibButton().collect(){
-                Log.d(ContentValues.TAG, "getDataVibData : ${it}")
-                if(settingUiModel.value?.isVidButton != it){
-                    _settingUiModel.postValue(_settingUiModel.value?.copy(isVidButton = it))
+            settingRepository.getIsVibButton().collect { isVib ->
+                mutex.withLock {
+                    withContext(Dispatchers.Main) {
+                        if (_settingUiModel.value?.isVidButton != isVib) {
+                            _settingUiModel.value = _settingUiModel.value!!.copy(isVidButton = isVib)
+                        }
+                    }
                 }
             }
         }
 
+
         viewModelScope.launch(Dispatchers.IO) {
-            settingRepository.getMode().collect(){
+            settingRepository.getMode().collect() {
                 Log.d(ContentValues.TAG, "getDataVibData : ${it}")
-                if(settingUiModel.value?.mode != intToMode.get(it)!!){
-                    _settingUiModel.postValue(_settingUiModel.value?.copy(mode = intToMode.get(it)!!))
+                mutex.withLock {
+                    withContext(Dispatchers.Main){
+                        if (settingUiModel.value?.mode != intToMode.get(it)!!) {
+                            _settingUiModel.postValue(_settingUiModel.value?.copy(mode = intToMode.get(it)!!))
+                            Log.d(TAG, "getSettingData: ${_settingUiModel.value} 3")
+                        }
+                    }
                 }
             }
         }
     }
+
+
+
 
     fun saveIsChangeButton(isSwitchOn: Boolean){
         viewModelScope.launch(Dispatchers.IO) {

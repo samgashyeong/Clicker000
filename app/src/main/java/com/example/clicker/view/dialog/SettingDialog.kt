@@ -19,11 +19,13 @@ import com.example.clicker.R
 import com.example.clicker.util.intToMode
 import com.example.clicker.util.modeToInt
 import com.example.clicker.viewmodel.SettingDataStoreViewModel
+import com.example.clicker.viewmodel.main.MainActivityViewModel
 
 
 class SettingDialog(
     context: Context,
     val dataStoreViewModel: SettingDataStoreViewModel,
+    val viewModel : MainActivityViewModel,
     val onClickInit : () -> Unit
 ) : Dialog(context) {
 
@@ -41,25 +43,34 @@ class SettingDialog(
         val spinner = findViewById<Spinner>(R.id.spinner)
 
 
-        dataStoreViewModel.isChangeButton.observe(lifeCycleOwner, Observer {
-            btnInversionButton.isChecked = it ?: false
+        viewModel.settingUiModel.observe(lifeCycleOwner, Observer {
+            Log.d(TAG, "onCreate: ${it}")
+            btnInversionButton.isChecked = it.isChangeButton
+            vibrateButton.isChecked = it.isVidButton
+            spinner.setSelection((modeToInt[it.mode] ?: 0))
         })
 
-        dataStoreViewModel.isVibButton.observe(lifeCycleOwner, Observer {
-            vibrateButton.isChecked = it ?: false
-        })
-
-        dataStoreViewModel.mode.observe(lifeCycleOwner, Observer {
-            spinner.setSelection((modeToInt[it] ?: 0) as Int)
-        })
+//        dataStoreViewModel.isChangeButton.observe(lifeCycleOwner, Observer {
+//            btnInversionButton.isChecked = it ?: false
+//        })
+//
+//        dataStoreViewModel.isVibButton.observe(lifeCycleOwner, Observer {
+//            vibrateButton.isChecked = it ?: false
+//        })
+//
+//        dataStoreViewModel.mode.observe(lifeCycleOwner, Observer {
+//            spinner.setSelection((modeToInt[it] ?: 0) as Int)
+//        })
 
         btnInversionButton.setOnCheckedChangeListener { compoundButton, b ->
             //데이터 관련코드
-            dataStoreViewModel.saveIsChangeButton(b)
+            //dataStoreViewModel.saveIsChangeButton(b)
+            viewModel.saveIsChangeButton(b)
         }
         vibrateButton.setOnCheckedChangeListener { compoundButton, b ->
             //데이터 코드
-            dataStoreViewModel.saveIsvibButton(b)
+            //dataStoreViewModel.saveIsvibButton(b)
+            viewModel.saveIsVibButton(b)
         }
 
         findViewById<TextView>(R.id.cancelBtn).setOnClickListener {
@@ -69,6 +80,8 @@ class SettingDialog(
         findViewById<Button>(R.id.newButton).setOnClickListener{
             onClickInit()
         }
+
+
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>,

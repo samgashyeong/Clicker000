@@ -26,9 +26,9 @@ class SettingDataStoreViewModel @Inject constructor(private val dataRepo : Setti
     var mode : MutableLiveData<Mode> = MutableLiveData()
 
     init {
-        getIsChangeButton()
-        getIsvibButton()
-        getMode()
+//        getIsChangeButton()
+//        getIsvibButton()
+//        getMode()
     }
 
 
