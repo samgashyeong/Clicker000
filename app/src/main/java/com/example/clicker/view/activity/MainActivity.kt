@@ -131,11 +131,56 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Please enter an integer!", Toast.LENGTH_SHORT).show()
             } else {
                 dialogManager.closeAllDialog()
-                viewModel1.startPoint.value = it.toFloat()
+                //viewModel1.startPoint.value = it.toFloat()
+                viewModel.changeStartPoint(it.toFloat())
                 startPointDialog.cancel()
+
+                if (sharedText != null && viewModel1.startPoint.value != null) {
+                    //viewModel1.urlString.value = viewModel1.extractYouTubeVideoId(sharedText!!).value
+                    viewModel.extractYouTubeVideoId(sharedText!!)
+                    when (viewModel.settingUiModel.value!!.mode) {
+                        is Mode.Default -> {
+                            binding.youtubeBlackView.visibility = View.INVISIBLE
+                            binding.youtubeButton.visibility = View.INVISIBLE
+                            binding.youtubeVideoTextView.visibility = View.INVISIBLE
+                            binding.frameLayout.visibility = View.VISIBLE
+                            binding.youtubePlayer.visibility = View.INVISIBLE
+                        }
+                        is Mode.Ranking -> {
+                            binding.youtubeBlackView.visibility = View.GONE
+                            binding.youtubeButton.visibility = View.GONE
+                            binding.youtubeVideoTextView.visibility = View.GONE
+                            binding.frameLayout.visibility = View.GONE
+
+                            binding.youtubePlayer.visibility = View.GONE
+                        }
+                    }
+
+
+                    viewModel1.youTubePlayer.value!!.loadVideo(
+                        viewModel1.urlString.value!!,
+                        viewModel1.startPoint.value!!
+                    )
+                    viewModel1.isStartVideo.value = true
+                    viewModel1.plus.value = 0
+                    viewModel1.minus.value = 0
+                    viewModel1.total.value = 0
+                    viewModel1.clickInfo.value?.clear()
+                    //비디오 정보 가져오기
+
+                    //youtube api key 가져오기
+                    val ai: ApplicationInfo = applicationContext.packageManager
+                        .getApplicationInfo(
+                            applicationContext.packageName,
+                            PackageManager.GET_META_DATA
+                        )
+                    val value = ai.metaData?.getString("youtubeApi")
+                    val key = value.toString()
+                    Log.d(TAG, "setObserve: ${key}")
+                    viewModel1.getVideoInfo(viewModel1.urlString.value!!, key)
+                }
             }
         }
-
         savePlayerEditTextDialog = SavePlayerEditTextDialog(
             this@MainActivity,
             EditTextDialogDto("Write Player Name", "ex ) Lee Jun Sang")
@@ -146,7 +191,6 @@ class MainActivity : AppCompatActivity() {
             savePlayerEditTextDialog.cancel()
 
         }
-
         rankingDialog = RankingDialog(
             this@MainActivity,
             rankingList = viewModel1.ranking.value!!,
@@ -164,7 +208,7 @@ class MainActivity : AppCompatActivity() {
                 rankingDialog.cancel()
             }
         )
-        settingDialog = SettingDialog(this, dataStoreViewModel, viewModel){
+        settingDialog = SettingDialog(this, viewModel){
             viewModel1.plus.value = 0
             viewModel1.minus.value = 0
             viewModel1.total.value = 0
@@ -180,7 +224,6 @@ class MainActivity : AppCompatActivity() {
                 "cancel"
             )
         ) {
-            Log.d(TAG, "setDialog: ${viewModel1.urlString.value}")
             if (viewModel1.urlString.value!!.isNotEmpty() && dataStoreViewModel.isChangeButton.value == true) {
                 databaseViewModel.insert(
                     ClickVideoListWithClickInfo(
@@ -216,7 +259,6 @@ class MainActivity : AppCompatActivity() {
             }
             dialogManager.closeAllDialog()
         }
-
         initializeDialog = DefaultDialog(
             this,
             DefaultDialogDto(
@@ -253,15 +295,8 @@ class MainActivity : AppCompatActivity() {
             else{
                 viewModel.leftPlusRightMinus()
             }
-        })
 
-        /*dataStoreViewModel.isChangeButton.observe(this, Observer {
-            viewModel1.swapPlusAndMinus()
-            Log.e(TAG, "setObserve: 에러처리")
-        })*/
-
-        dataStoreViewModel.mode.observe(this) {
-            when (it) {
+            when (it.mode) {
                 is Mode.Default -> {
                     binding.youtubeBlackView.visibility = View.VISIBLE
                     binding.youtubeButton.visibility = View.VISIBLE
@@ -280,7 +315,7 @@ class MainActivity : AppCompatActivity() {
                     viewModel1.youTubePlayer.value?.pause()
                 }
             }
-        }
+        })
 
         viewModel1.ranking.observe(this) {
             rankingDialog = RankingDialog(
@@ -302,23 +337,6 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-
-
-        viewModel1.vib.observe(this, Observer {
-            if (viewModel1.vib.value == true) {
-                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1)
-                    vibrator.vibrate(
-                        VibrationEffect.createOneShot(
-                            40,
-                            VibrationEffect.DEFAULT_AMPLITUDE
-                        )
-                    );
-                else
-                    vibrator.vibrate(40);
-
-                viewModel1.vib.value = false
-            }
-        })
 
         viewModel1.stopActivityVideoSecond.observe(this, Observer {
             if (viewModel1.isStartVideo.value == true) {
@@ -353,11 +371,7 @@ class MainActivity : AppCompatActivity() {
                         viewModel1.youTubePlayer.value?.pause()
                     }
                 }
-//                binding.youtubePlayer.visibility = View.INVISIBLE
-//                binding.youtubeVideoTextView.visibility = View.INVISIBLE
-//                binding.youtubeButton.visibility = View.INVISIBLE
-//                binding.youtubeBlackView.visibility = View.INVISIBLE
-//                binding.frameLayout.visibility = View.VISIBLE
+
 
                 if(dataStoreViewModel.mode.value!! == Mode.Default()){
                     youtubePlayerView.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
@@ -401,7 +415,6 @@ class MainActivity : AppCompatActivity() {
                     viewModel1.startPoint.value!!
                 )
                 viewModel1.isStartVideo.value = true
-
                 viewModel1.plus.value = 0
                 viewModel1.minus.value = 0
                 viewModel1.total.value = 0
@@ -418,8 +431,6 @@ class MainActivity : AppCompatActivity() {
                 val key = value.toString()
                 Log.d(TAG, "setObserve: ${key}")
                 viewModel1.getVideoInfo(viewModel1.urlString.value!!, key)
-            } else {
-                Log.d(TAG, "onCreate: 예외실행")
             }
         })
     }
@@ -431,7 +442,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             R.id.save -> {
-                when (dataStoreViewModel.mode.value) {
+                when (viewModel.settingUiModel.value!!.mode) {
                     is Mode.Default -> {
                         saveDialog.show()
                     }
@@ -440,23 +451,17 @@ class MainActivity : AppCompatActivity() {
                         savePlayerEditTextDialog.show()
                     }
 
-                    null -> {
-
-                    }
                 }
             }
 
             R.id.list -> {
-                when (dataStoreViewModel.mode.value) {
+                when (viewModel.settingUiModel.value!!.mode) {
                     is Mode.Default -> {
                         startActivity(Intent(this, ClickVideoListActivity::class.java))
                     }
 
                     is Mode.Ranking -> {
                         rankingDialog.show()
-                    }
-
-                    null -> {
                     }
                 }
             }
@@ -478,7 +483,7 @@ class MainActivity : AppCompatActivity() {
             ) {
                 sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
                 // startPointDialog 관련 처리
-                when (dataStoreViewModel.mode.value) {
+                when (viewModel.settingUiModel.value?.mode) {
                     is Mode.Default -> {
                         startPointDialog.show()
                     }
@@ -506,10 +511,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-//        if(dataStoreViewModel.isChangeButton.value == true){
-//            viewModel.swapPlusAndMinus()
-//        }
-        //viewModel1.swapPlusAndMinus()
         youtubePlayerView.release()
     }
 }
