@@ -247,12 +247,18 @@ class MainActivity : AppCompatActivity() {
 
     private fun setObserve() {
         viewModel.settingUiModel.observe(this, Observer {
-
+            if(it.isChangeButton){
+                viewModel.leftMinusRightPlus()
+            }
+            else{
+                viewModel.leftPlusRightMinus()
+            }
         })
-        dataStoreViewModel.isChangeButton.observe(this, Observer {
+
+        /*dataStoreViewModel.isChangeButton.observe(this, Observer {
             viewModel1.swapPlusAndMinus()
             Log.e(TAG, "setObserve: 에러처리")
-        })
+        })*/
 
         dataStoreViewModel.mode.observe(this) {
             when (it) {
@@ -503,7 +509,7 @@ class MainActivity : AppCompatActivity() {
 //        if(dataStoreViewModel.isChangeButton.value == true){
 //            viewModel.swapPlusAndMinus()
 //        }
-        viewModel1.swapPlusAndMinus()
+        //viewModel1.swapPlusAndMinus()
         youtubePlayerView.release()
     }
 }

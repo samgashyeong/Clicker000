@@ -11,6 +11,7 @@ import com.example.clicker.data.database.ClickInfo
 import com.example.clicker.data.repository.ClickVideoRepository
 import com.example.clicker.data.repository.SettingRepository
 import com.example.clicker.data.repository.YoutubeServiceRepository
+import com.example.clicker.util.VibrationProvider
 import com.example.clicker.util.intToMode
 import com.example.clicker.util.modeToInt
 import com.example.clicker.viewmodel.Mode
@@ -25,10 +26,12 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlin.math.min
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
     val tracker: YouTubePlayerTracker,
+    private val vibrationProvider: VibrationProvider,
     private val clickVideoRepository: ClickVideoRepository,
     private val settingRepository: SettingRepository,
     private val youtubeServiceRepository: YoutubeServiceRepository,
@@ -122,8 +125,9 @@ class MainActivityViewModel @Inject constructor(
 
     private fun plus() {
         val value = videoScoreUiModel.value!!.plus
+        val totalValue = videoScoreUiModel.value!!.total
         _videoScoreUiModel.value =
-            _videoScoreUiModel.value?.copy(plus = value + 1, total = value + 1)
+            _videoScoreUiModel.value?.copy(plus = value + 1, total = totalValue + 1)
 
         val updateList = videoScoreUiModel.value?.clickInfoList
         updateList!!.add(
@@ -140,9 +144,10 @@ class MainActivityViewModel @Inject constructor(
     }
 
     private fun minus() {
+        val totalValue = videoScoreUiModel.value!!.total
         val value = videoScoreUiModel.value!!.minus
         _videoScoreUiModel.value =
-            _videoScoreUiModel.value?.copy(minus = value - 1, total = value - 1)
+            _videoScoreUiModel.value?.copy(minus = value - 1, total = totalValue-1)
         val updateList = videoScoreUiModel.value?.clickInfoList
         updateList!!.add(
             ClickInfo(
@@ -158,20 +163,28 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun rightButton() {
+        vibrationProvider.triggerVibration()
         if (settingUiModel.value!!.isChangeButton == false) {
             minus()
-        }
-        else{
+            _videoScoreUiModel.value =
+                _videoScoreUiModel.value?.copy(rightText = videoScoreUiModel.value!!.minus.toString())
+        } else {
             plus()
+            _videoScoreUiModel.value =
+                _videoScoreUiModel.value?.copy(rightText = videoScoreUiModel.value!!.plus.toString())
         }
     }
 
     fun leftButton() {
+        vibrationProvider.triggerVibration()
         if (settingUiModel.value!!.isChangeButton == false) {
             plus()
-        }
-        else{
+            _videoScoreUiModel.value =
+                _videoScoreUiModel.value?.copy(leftText = videoScoreUiModel.value!!.plus.toString())
+        } else {
             minus()
+            _videoScoreUiModel.value =
+                _videoScoreUiModel.value?.copy(leftText = videoScoreUiModel.value!!.minus.toString())
         }
     }
 
@@ -182,4 +195,19 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
+
+    fun leftMinusRightPlus(){
+        val plus = videoScoreUiModel.value!!.plus
+        val minus = videoScoreUiModel.value!!.minus
+        //_videoScoreUiModel.value = _videoScoreUiModel.value?.copy( = minus, minus = plus)
+
+        _videoScoreUiModel.value = _videoScoreUiModel.value?.copy(leftText = minus.toString(), rightText = plus.toString())
+    }
+
+    fun leftPlusRightMinus(){
+        val plus = videoScoreUiModel.value!!.plus
+        val minus = videoScoreUiModel.value!!.minus
+
+        _videoScoreUiModel.value = _videoScoreUiModel.value?.copy(leftText = plus.toString(), rightText = minus.toString())
+    }
 }
