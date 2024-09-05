@@ -43,10 +43,10 @@ class MainActivityViewModel @Inject constructor(
     private val _settingUiModel: MutableLiveData<SettingUiModel> = MutableLiveData(SettingUiModel())
     val settingUiModel: LiveData<SettingUiModel> get() = _settingUiModel
 
+
     init {
         getSettingData()
     }
-
 
     private fun getSettingData() {
         val mutex = Mutex()
@@ -115,6 +115,10 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
+    fun clearClickInfo(){
+        _videoScoreUiModel.value = _videoScoreUiModel.value!!.copy(clickInfoList = arrayListOf())
+    }
+
     fun saveMode(mode: Mode) {
         Log.d(TAG, "saveMode: ${mode.toString()}")
         viewModelScope.launch(Dispatchers.IO) {
@@ -149,7 +153,7 @@ class MainActivityViewModel @Inject constructor(
         var basePart = url.substringAfterLast( "v=")
         basePart = basePart.substringBefore("&si=")
 
-        _videoScoreUiModel.value = _videoScoreUiModel.value!!.copy(url = url)
+        _videoScoreUiModel.value = _videoScoreUiModel.value!!.copy(url = basePart)
     }
 
 

@@ -63,13 +63,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var saveDialog: SaveDialog
     private lateinit var savePlayerEditTextDialog: SavePlayerEditTextDialog
     private lateinit var rankingDialog: RankingDialog
-
+    private lateinit var youtubePlayer: YouTubePlayer
 
     @Inject
     lateinit var dialogManager: DialogManager
 
     private lateinit var youtubePlayerView: YouTubePlayerView
-    private lateinit var vibrator: Vibrator
     private var sharedText: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,14 +76,6 @@ class MainActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         setDialog()
-        vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vibratorManager =
-                getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-            vibratorManager.defaultVibrator
-        } else {
-            @Suppress("DEPRECATION")
-            getSystemService(VIBRATOR_SERVICE) as Vibrator
-        }
 
         binding.viewModel1 = viewModel
         binding.viewModel = viewModel1
@@ -104,7 +95,8 @@ class MainActivity : AppCompatActivity() {
             override fun onReady(youTubePlayer: YouTubePlayer) {
                 super.onReady(youTubePlayer)
                 viewModel1.youTubePlayer.value = youTubePlayer
-                youTubePlayer.addListener(viewModel1.tracker)
+                youtubePlayer = youTubePlayer
+                youTubePlayer.addListener(viewModel.tracker)
             }
         })
 
@@ -127,59 +119,58 @@ class MainActivity : AppCompatActivity() {
             this@MainActivity,
             EditTextDialogDto("Please enter the start point", "only use integer ex)10")
         ) {
+            Log.d(TAG, "setDialog: ${it}")
             if (it.toIntOrNull() == null) {
                 Toast.makeText(this, "Please enter an integer!", Toast.LENGTH_SHORT).show()
             } else {
-                dialogManager.closeAllDialog()
                 //viewModel1.startPoint.value = it.toFloat()
+                Log.d(TAG, "setDialog: ${it}asdfaffffff")
                 viewModel.changeStartPoint(it.toFloat())
-                startPointDialog.cancel()
-
-                if (sharedText != null && viewModel1.startPoint.value != null) {
-                    //viewModel1.urlString.value = viewModel1.extractYouTubeVideoId(sharedText!!).value
-                    viewModel.extractYouTubeVideoId(sharedText!!)
-                    when (viewModel.settingUiModel.value!!.mode) {
-                        is Mode.Default -> {
-                            binding.youtubeBlackView.visibility = View.INVISIBLE
-                            binding.youtubeButton.visibility = View.INVISIBLE
-                            binding.youtubeVideoTextView.visibility = View.INVISIBLE
-                            binding.frameLayout.visibility = View.VISIBLE
-                            binding.youtubePlayer.visibility = View.INVISIBLE
-                        }
-                        is Mode.Ranking -> {
-                            binding.youtubeBlackView.visibility = View.GONE
-                            binding.youtubeButton.visibility = View.GONE
-                            binding.youtubeVideoTextView.visibility = View.GONE
-                            binding.frameLayout.visibility = View.GONE
-
-                            binding.youtubePlayer.visibility = View.GONE
-                        }
+                viewModel.extractYouTubeVideoId(sharedText!!)
+                when (viewModel.settingUiModel.value!!.mode) {
+                    is Mode.Default -> {
+                        binding.youtubeBlackView.visibility = View.INVISIBLE
+                        binding.youtubeButton.visibility = View.INVISIBLE
+                        binding.youtubeVideoTextView.visibility = View.INVISIBLE
+                        binding.frameLayout.visibility = View.VISIBLE
+                        binding.youtubePlayer.visibility = View.INVISIBLE
                     }
+                    is Mode.Ranking -> {
+                        binding.youtubeBlackView.visibility = View.GONE
+                        binding.youtubeButton.visibility = View.GONE
+                        binding.youtubeVideoTextView.visibility = View.GONE
+                        binding.frameLayout.visibility = View.GONE
 
-
-                    viewModel1.youTubePlayer.value!!.loadVideo(
-                        viewModel1.urlString.value!!,
-                        viewModel1.startPoint.value!!
-                    )
-                    viewModel1.isStartVideo.value = true
-                    viewModel1.plus.value = 0
-                    viewModel1.minus.value = 0
-                    viewModel1.total.value = 0
-                    viewModel1.clickInfo.value?.clear()
-                    //비디오 정보 가져오기
-
-
-                    //youtube api key 가져오기
-                    val ai: ApplicationInfo = applicationContext.packageManager
-                        .getApplicationInfo(
-                            applicationContext.packageName,
-                            PackageManager.GET_META_DATA
-                        )
-                    val value = ai.metaData?.getString("youtubeApi")
-                    val key = value.toString()
-                    Log.d(TAG, "setObserve: ${key}")
-                    viewModel1.getVideoInfo(viewModel1.urlString.value!!, key)
+                        binding.youtubePlayer.visibility = View.GONE
+                    }
                 }
+                //비디오 정보 가져오기
+
+                Log.d(TAG, "setDialog: test logd")
+                Log.d(TAG, "setDialog: ${it}")
+                youtubePlayer.loadVideo(
+                    viewModel.videoScoreUiModel.value!!.url,
+                    viewModel.videoScoreUiModel.value!!.startPoint
+                )
+
+                viewModel.apply {
+                    clearClickInfo()
+                    clearScoreData()
+                }
+
+
+                //youtube api key 가져오기
+                val ai: ApplicationInfo = applicationContext.packageManager
+                    .getApplicationInfo(
+                        applicationContext.packageName,
+                        PackageManager.GET_META_DATA
+                    )
+                val value = ai.metaData?.getString("youtubeApi")
+                val key = value.toString()
+                Log.d(TAG, "setObserve: ${key}")
+                //viewModel1.getVideoInfo(viewModel1.urlString.value!!, key)
+                startPointDialog.cancel()
+                dialogManager.closeAllDialog()
             }
         }
         savePlayerEditTextDialog = SavePlayerEditTextDialog(
@@ -389,52 +380,52 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        viewModel1.startPoint.observe(this, Observer {
-            if (sharedText != null && viewModel1.startPoint.value != null) {
-                viewModel1.urlString.value = viewModel1.extractYouTubeVideoId(sharedText!!).value
-
-                when (dataStoreViewModel.mode.value!!) {
-                    is Mode.Default -> {
-                        binding.youtubeBlackView.visibility = View.INVISIBLE
-                        binding.youtubeButton.visibility = View.INVISIBLE
-                        binding.youtubeVideoTextView.visibility = View.INVISIBLE
-                        binding.frameLayout.visibility = View.VISIBLE
-                        binding.youtubePlayer.visibility = View.INVISIBLE
-                    }
-
-                    is Mode.Ranking -> {
-                        binding.youtubeBlackView.visibility = View.GONE
-                        binding.youtubeButton.visibility = View.GONE
-                        binding.youtubeVideoTextView.visibility = View.GONE
-                        binding.frameLayout.visibility = View.GONE
-
-                        binding.youtubePlayer.visibility = View.GONE
-                    }
-                }
-
-                viewModel1.youTubePlayer.value!!.loadVideo(
-                    viewModel1.urlString.value!!,
-                    viewModel1.startPoint.value!!
-                )
-                viewModel1.isStartVideo.value = true
-                viewModel1.plus.value = 0
-                viewModel1.minus.value = 0
-                viewModel1.total.value = 0
-                viewModel1.clickInfo.value?.clear()
-                //비디오 정보 가져오기
-
-                //youtube api key 가져오기
-                val ai: ApplicationInfo = applicationContext.packageManager
-                    .getApplicationInfo(
-                        applicationContext.packageName,
-                        PackageManager.GET_META_DATA
-                    )
-                val value = ai.metaData?.getString("youtubeApi")
-                val key = value.toString()
-                Log.d(TAG, "setObserve: ${key}")
-                viewModel1.getVideoInfo(viewModel1.urlString.value!!, key)
-            }
-        })
+//        viewModel1.startPoint.observe(this, Observer {
+//            if (sharedText != null && viewModel1.startPoint.value != null) {
+//                viewModel1.urlString.value = viewModel1.extractYouTubeVideoId(sharedText!!).value
+//
+//                when (dataStoreViewModel.mode.value!!) {
+//                    is Mode.Default -> {
+//                        binding.youtubeBlackView.visibility = View.INVISIBLE
+//                        binding.youtubeButton.visibility = View.INVISIBLE
+//                        binding.youtubeVideoTextView.visibility = View.INVISIBLE
+//                        binding.frameLayout.visibility = View.VISIBLE
+//                        binding.youtubePlayer.visibility = View.INVISIBLE
+//                    }
+//
+//                    is Mode.Ranking -> {
+//                        binding.youtubeBlackView.visibility = View.GONE
+//                        binding.youtubeButton.visibility = View.GONE
+//                        binding.youtubeVideoTextView.visibility = View.GONE
+//                        binding.frameLayout.visibility = View.GONE
+//
+//                        binding.youtubePlayer.visibility = View.GONE
+//                    }
+//                }
+//
+//                viewModel1.youTubePlayer.value!!.loadVideo(
+//                    viewModel1.urlString.value!!,
+//                    viewModel1.startPoint.value!!
+//                )
+//                viewModel1.isStartVideo.value = true
+//                viewModel1.plus.value = 0
+//                viewModel1.minus.value = 0
+//                viewModel1.total.value = 0
+//                viewModel1.clickInfo.value?.clear()
+//                //비디오 정보 가져오기
+//
+//                //youtube api key 가져오기
+//                val ai: ApplicationInfo = applicationContext.packageManager
+//                    .getApplicationInfo(
+//                        applicationContext.packageName,
+//                        PackageManager.GET_META_DATA
+//                    )
+//                val value = ai.metaData?.getString("youtubeApi")
+//                val key = value.toString()
+//                Log.d(TAG, "setObserve: ${key}")
+//                viewModel1.getVideoInfo(viewModel1.urlString.value!!, key)
+//            }
+//        })
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
