@@ -24,7 +24,6 @@ import com.example.clicker.viewmodel.main.MainActivityViewModel
 
 class SettingDialog(
     context: Context,
-    val dataStoreViewModel: SettingDataStoreViewModel,
     val viewModel : MainActivityViewModel,
     val onClickInit : () -> Unit
 ) : Dialog(context) {
@@ -93,7 +92,7 @@ class SettingDialog(
                 val selectedItem = parent.getItemAtPosition(position).toString()
                 // 이벤트 처리
                 Log.d(TAG, "onItemSelected: ${position}")
-                dataStoreViewModel.saveMode(intToMode[position]!!)
+                viewModel.saveMode(intToMode[position]!!)
                 // 필요한 경우 여기에 추가적인 로직을 추가하세요
             }
 

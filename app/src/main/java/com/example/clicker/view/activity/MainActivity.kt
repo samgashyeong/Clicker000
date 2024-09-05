@@ -64,6 +64,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var savePlayerEditTextDialog: SavePlayerEditTextDialog
     private lateinit var rankingDialog: RankingDialog
 
+
     @Inject
     lateinit var dialogManager: DialogManager
 
@@ -93,7 +94,6 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayUseLogoEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-
 
         setObserve()
 
@@ -168,6 +168,7 @@ class MainActivity : AppCompatActivity() {
                     viewModel1.clickInfo.value?.clear()
                     //비디오 정보 가져오기
 
+
                     //youtube api key 가져오기
                     val ai: ApplicationInfo = applicationContext.packageManager
                         .getApplicationInfo(
@@ -212,6 +213,7 @@ class MainActivity : AppCompatActivity() {
             viewModel1.plus.value = 0
             viewModel1.minus.value = 0
             viewModel1.total.value = 0
+            viewModel.clearScoreData()
             Toast.makeText(this, "The data has been reset.", Toast.LENGTH_SHORT).show()
         }
 

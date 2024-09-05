@@ -99,6 +99,9 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
+    fun clearScoreData(){
+        _videoScoreUiModel.value = _videoScoreUiModel.value!!.copy(plus = 0, minus = 0, total = 0, leftText = "0", rightText = "0")
+    }
 
     fun saveIsChangeButton(isSwitchOn: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -142,6 +145,13 @@ class MainActivityViewModel @Inject constructor(
         )
         _videoScoreUiModel.value = _videoScoreUiModel.value!!.copy(clickInfoList = updateList)
     }
+    fun extractYouTubeVideoId(url: String) {
+        var basePart = url.substringAfterLast( "v=")
+        basePart = basePart.substringBefore("&si=")
+
+        _videoScoreUiModel.value = _videoScoreUiModel.value!!.copy(url = url)
+    }
+
 
     private fun minus() {
         val totalValue = videoScoreUiModel.value!!.total
