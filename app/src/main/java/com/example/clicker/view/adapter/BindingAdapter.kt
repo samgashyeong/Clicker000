@@ -17,9 +17,9 @@ object BindingAdapter {
 
     @JvmStatic
     @BindingAdapter("app:setLeftButtonView")
-    fun setLeftButtonView(button : Button, isChangeButton: MutableLiveData<Boolean>){
-        Log.d(TAG, "setLeftButtonView: ${isChangeButton.value}")
-        if(isChangeButton.value == true){
+    fun setLeftButtonView(button : Button, isChangeButton: Boolean){
+        Log.d(TAG, "setLeftButtonView: ${isChangeButton}")
+        if(isChangeButton == true){
             button.apply {
                 text="-"
                 setBackgroundResource(R.drawable.minus_selector)
@@ -35,8 +35,8 @@ object BindingAdapter {
 
     @JvmStatic
     @BindingAdapter("app:setRightButton")
-    fun setRightButton(button : Button, isChangeButton: MutableLiveData<Boolean>){
-        if(isChangeButton.value == true){
+    fun setRightButton(button : Button, isChangeButton: Boolean){
+        if(isChangeButton == true){
             button.apply {
                 text="+"
                 setBackgroundResource(R.drawable.plus_selector)

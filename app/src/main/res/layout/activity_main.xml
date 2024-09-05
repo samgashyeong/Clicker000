@@ -134,8 +134,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                app:setLeftButtonView="@{databaseStore.isChangeButton()}"
-                android:onClick="@{(v) -> viewModel.leftButton(v, databaseStore.isChangeButton(), databaseStore.isVibButton())}"
+                app:setLeftButtonView="@{viewModel1.settingUiModel.changeButton}"
+                android:onClick="@{(v) -> viewModel1.leftButton()}"
                 android:textColor="@color/default_text_color"
                 android:textSize="60sp" />
 
@@ -144,10 +144,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:onClick="@{(v) -> viewModel.rightButton(v, databaseStore.isChangeButton(), databaseStore.isVibButton())}"
+                android:onClick="@{(v) -> viewModel1.rightButton()}"
                 android:textColor="@color/default_text_color"
                 android:textSize="60sp"
-                app:setRightButton="@{databaseStore.isChangeButton()}" />
+                app:setRightButton="@{viewModel1.settingUiModel.changeButton}" />
 
         </LinearLayout>
 
@@ -165,7 +165,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@{viewModel.plus.toString()}"
+                android:text="@{String.valueOf(viewModel1.videoScoreUiModel.plus)}"
                 android:textColor="@color/default_text_color"
                 android:textSize="20sp" />
 
@@ -175,7 +175,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@{viewModel.total.toString()}"
+                android:text="@{String.valueOf(viewModel1.videoScoreUiModel.total)}"
                 android:textColor="@color/default_text_color"
                 android:textSize="20sp" />
 
@@ -185,7 +185,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@{viewModel.minus.toString()}"
+                android:text="@{String.valueOf(viewModel1.videoScoreUiModel.minus)}"
                 android:textColor="@color/default_text_color"
                 android:textSize="20sp" />
         </LinearLayout>

@@ -12,6 +12,6 @@ data class VideoScoreUiModel(
     val total : Int = 0,
     val url : String = "",
     val startPoint : Float = 0f,
-    val clickInfoList : List<ClickInfo> = listOf(),
+    val clickInfoList : ArrayList<ClickInfo> = arrayListOf(),
     val videoInfo : Item?,
 )

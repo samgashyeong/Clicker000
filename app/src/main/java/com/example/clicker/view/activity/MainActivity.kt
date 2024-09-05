@@ -246,6 +246,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setObserve() {
+        viewModel.settingUiModel.observe(this, Observer {
+
+        })
         dataStoreViewModel.isChangeButton.observe(this, Observer {
             viewModel1.swapPlusAndMinus()
             Log.e(TAG, "setObserve: 에러처리")
@@ -258,9 +261,7 @@ class MainActivity : AppCompatActivity() {
                     binding.youtubeButton.visibility = View.VISIBLE
                     binding.youtubeVideoTextView.visibility = View.VISIBLE
                     binding.frameLayout.visibility = View.INVISIBLE
-
                     binding.youtubePlayer.visibility = View.INVISIBLE
-
                     viewModel1.youTubePlayer.value?.pause()
                 }
 
@@ -269,9 +270,7 @@ class MainActivity : AppCompatActivity() {
                     binding.youtubeButton.visibility = View.GONE
                     binding.youtubeVideoTextView.visibility = View.GONE
                     binding.frameLayout.visibility = View.GONE
-
                     binding.youtubePlayer.visibility = View.GONE
-
                     viewModel1.youTubePlayer.value?.pause()
                 }
             }
@@ -297,10 +296,6 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-
-//        dataStoreViewModel.isVibButton.observe(this, Observer {
-//            viewModel.swapPlusAndMinus()
-//        })
 
 
         viewModel1.vib.observe(this, Observer {
