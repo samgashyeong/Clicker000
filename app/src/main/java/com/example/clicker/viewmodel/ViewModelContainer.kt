@@ -1,5 +1,7 @@
 package com.example.clicker.viewmodel
 
+import com.example.clicker.util.ApiKeyProvider
+import com.example.clicker.util.ApiKeyProviderImpl
 import com.example.clicker.util.VibrationProvider
 import com.example.clicker.util.VibrationProviderImpl
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerTracker
@@ -23,4 +25,7 @@ object ViewModelContainer {
 abstract class ViewModelCon{
     @Binds
     abstract fun bindVibrator(quc : VibrationProviderImpl) : VibrationProvider
+
+    @Binds
+    abstract fun bindApiKey(data : ApiKeyProviderImpl) : ApiKeyProvider
 }

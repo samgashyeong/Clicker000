@@ -11,6 +11,7 @@ import com.example.clicker.data.database.ClickInfo
 import com.example.clicker.data.repository.ClickVideoRepository
 import com.example.clicker.data.repository.SettingRepository
 import com.example.clicker.data.repository.YoutubeServiceRepository
+import com.example.clicker.util.ApiKeyProvider
 import com.example.clicker.util.VibrationProvider
 import com.example.clicker.util.intToMode
 import com.example.clicker.util.modeToInt
@@ -20,13 +21,11 @@ import com.example.clicker.viewmodel.main.model.VideoScoreUiModel
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerTracker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
-import kotlin.math.min
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
@@ -35,6 +34,7 @@ class MainActivityViewModel @Inject constructor(
     private val clickVideoRepository: ClickVideoRepository,
     private val settingRepository: SettingRepository,
     private val youtubeServiceRepository: YoutubeServiceRepository,
+    private val apiKeyProvider: ApiKeyProvider,
 ) : ViewModel() {
     private val _videoScoreUiModel: MutableLiveData<VideoScoreUiModel> =
         MutableLiveData(VideoScoreUiModel(videoInfo = null))
@@ -153,7 +153,7 @@ class MainActivityViewModel @Inject constructor(
         var basePart = url.substringAfterLast( "v=")
         basePart = basePart.substringBefore("&si=")
 
-        _videoScoreUiModel.value = _videoScoreUiModel.value!!.copy(url = basePart)
+        _videoScoreUiModel.value = _videoScoreUiModel.value!!.copy(videoId = basePart)
     }
 
 
@@ -202,10 +202,11 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    fun getVideoInfo(id: String, key: String) {
+    fun getVideoInfo() {
         viewModelScope.launch(Dispatchers.IO) {
-            val videoInfo = youtubeServiceRepository.searchYoutubeInfo("snippet", id, key)
+            val videoInfo = youtubeServiceRepository.searchYoutubeInfo("snippet", videoScoreUiModel.value!!.videoId, apiKeyProvider.getApiKey())
             _videoScoreUiModel.value = _videoScoreUiModel.value?.copy(videoInfo = videoInfo)
+            Log.d(TAG, "getVideoInfo: ${videoInfo}")
         }
     }
 

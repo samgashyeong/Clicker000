@@ -8,11 +8,7 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.os.VibratorManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -123,7 +119,6 @@ class MainActivity : AppCompatActivity() {
             if (it.toIntOrNull() == null) {
                 Toast.makeText(this, "Please enter an integer!", Toast.LENGTH_SHORT).show()
             } else {
-                //viewModel1.startPoint.value = it.toFloat()
                 Log.d(TAG, "setDialog: ${it}asdfaffffff")
                 viewModel.changeStartPoint(it.toFloat())
                 viewModel.extractYouTubeVideoId(sharedText!!)
@@ -149,25 +144,25 @@ class MainActivity : AppCompatActivity() {
                 Log.d(TAG, "setDialog: test logd")
                 Log.d(TAG, "setDialog: ${it}")
                 youtubePlayer.loadVideo(
-                    viewModel.videoScoreUiModel.value!!.url,
+                    viewModel.videoScoreUiModel.value!!.videoId,
                     viewModel.videoScoreUiModel.value!!.startPoint
                 )
 
                 viewModel.apply {
                     clearClickInfo()
                     clearScoreData()
+                    getVideoInfo()
                 }
 
-
                 //youtube api key 가져오기
-                val ai: ApplicationInfo = applicationContext.packageManager
+                /*val ai: ApplicationInfo = applicationContext.packageManager
                     .getApplicationInfo(
                         applicationContext.packageName,
                         PackageManager.GET_META_DATA
                     )
                 val value = ai.metaData?.getString("youtubeApi")
                 val key = value.toString()
-                Log.d(TAG, "setObserve: ${key}")
+                Log.d(TAG, "setObserve: ${key}")*/
                 //viewModel1.getVideoInfo(viewModel1.urlString.value!!, key)
                 startPointDialog.cancel()
                 dialogManager.closeAllDialog()
