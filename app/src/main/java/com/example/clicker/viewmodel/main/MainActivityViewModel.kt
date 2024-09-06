@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.clicker.data.database.ClickInfo
+import com.example.clicker.data.database.ClickVideoListWithClickInfo
 import com.example.clicker.data.repository.ClickVideoRepository
 import com.example.clicker.data.repository.SettingRepository
 import com.example.clicker.data.repository.YoutubeServiceRepository
@@ -210,6 +211,10 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
+    fun saveClickInfo(){
+
+    }
+
     fun getVideoInfo() {
         viewModelScope.launch(Dispatchers.IO) {
             val videoInfo = youtubeServiceRepository.searchYoutubeInfo("snippet", videoScoreUiModel.value!!.videoId, apiKeyProvider.getApiKey())
@@ -238,5 +243,27 @@ class MainActivityViewModel @Inject constructor(
 
     fun changeVideo(data : Boolean){
         _videoScoreUiModel.value = _videoScoreUiModel.value?.copy(isVideoStart = data)
+    }
+
+    fun insertVideoData(success : () -> Unit, failed : () -> Unit) {
+        if(videoScoreUiModel.value!!.videoId.isNotEmpty()){
+            viewModelScope.launch {
+                clickVideoRepository.insert(
+                    ClickVideoListWithClickInfo(
+                        videoScoreUiModel.value!!.videoInfo!!,
+                        videoScoreUiModel.value!!.startPoint.toInt(),
+                        videoScoreUiModel.value!!.videoId,
+                        videoScoreUiModel.value!!.plus,
+                        videoScoreUiModel.value!!.minus,
+                        videoScoreUiModel.value!!.total,
+                        videoScoreUiModel.value!!.clickInfoList,
+                    )
+                )
+            }
+            success()
+        }
+        else{
+            failed()
+        }
     }
 }

@@ -48,8 +48,6 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val viewModel1: MainViewModel by viewModels()
-    private val databaseViewModel: MainDatabaseViewModel by viewModels()
-    private val dataStoreViewModel: SettingDataStoreViewModel by viewModels()
     private val viewModel : MainActivityViewModel by viewModels()
 
     private lateinit var startPointDialog: EditTextDialog
@@ -75,7 +73,6 @@ class MainActivity : AppCompatActivity() {
 
         binding.viewModel1 = viewModel
         binding.viewModel = viewModel1
-        binding.databaseStore = dataStoreViewModel
         binding.lifecycleOwner = this
 
         setSupportActionBar(binding.toolbar)
@@ -143,7 +140,6 @@ class MainActivity : AppCompatActivity() {
                         binding.youtubePlayer.visibility = View.GONE
                     }
                 }
-                //비디오 정보 가져오기
 
                 Log.d(TAG, "setDialog: test logd")
                 Log.d(TAG, "setDialog: ${it}")
@@ -167,7 +163,6 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "now 1st \n${viewModel1.ranking.value?.get(0)!!.name} ${viewModel1.ranking.value?.get(0)!!.plus} ${viewModel1.ranking.value?.get(0)!!.minus} ${viewModel1.ranking.value?.get(0)!!.total}", Toast.LENGTH_SHORT).show()
             }
             savePlayerEditTextDialog.cancel()
-
         }
         rankingDialog = RankingDialog(
             this@MainActivity,
@@ -200,39 +195,18 @@ class MainActivity : AppCompatActivity() {
                 "cancel"
             )
         ) {
-            if (viewModel1.urlString.value!!.isNotEmpty() && dataStoreViewModel.isChangeButton.value == true) {
-                databaseViewModel.insert(
-                    ClickVideoListWithClickInfo(
-                        viewModel1.videoInfo.value!!,
-                        viewModel1.startPoint.value!!.toInt(),
-                        viewModel1.urlString.value!!,
-                        viewModel1.minus.value!!,
-                        viewModel1.plus.value!!,
-                        viewModel1.total.value!!,
-                        viewModel1.clickInfo.value!!
-                    )
-                )
-                Toast.makeText(this, "Data has been saved.", Toast.LENGTH_SHORT).show()
-            } else if (viewModel1.urlString.value!!.isNotEmpty() && (dataStoreViewModel.isChangeButton.value == false || dataStoreViewModel.isChangeButton.value == null)) {
-                databaseViewModel.insert(
-                    ClickVideoListWithClickInfo(
-                        viewModel1.videoInfo.value!!,
-                        viewModel1.startPoint.value!!.toInt(),
-                        viewModel1.urlString.value!!,
-                        viewModel1.plus.value!!,
-                        viewModel1.minus.value!!,
-                        viewModel1.total.value!!,
-                        viewModel1.clickInfo.value!!
-                    )
-                )
-                Toast.makeText(this, "Data has been saved.", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(
+            viewModel.insertVideoData(
+                success = {
+                    Toast.makeText(this, "Data has been saved.", Toast.LENGTH_SHORT).show()
+                },
+                failed = {
+                    Toast.makeText(
                     this,
                     "Bring on the Youtube video and Score them",
                     Toast.LENGTH_SHORT
                 ).show()
-            }
+                }
+            )
             dialogManager.closeAllDialog()
         }
         initializeDialog = DefaultDialog(
@@ -362,54 +336,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        /*viewModel1.stopActivityVideoSecond.observe(this, Observer {
-            if (viewModel1.isStartVideo.value == true) {
-                binding.frameLayout.removeView(youtubePlayerView)
-
-                val youtubePlayerView = YouTubePlayerView(this)
-                binding.frameLayout.addView(youtubePlayerView)
-
-                youtubePlayerView.enableAutomaticInitialization = false
-                youtubePlayerView.initialize(object : AbstractYouTubePlayerListener() {
-                    override fun onReady(youTubePlayer: YouTubePlayer) {
-                        super.onReady(youTubePlayer)
-                        viewModel1.youTubePlayer.value = youTubePlayer
-                        youTubePlayer.addListener(viewModel1.tracker)
-                    }
-                })
-                when (dataStoreViewModel.mode.value!!) {
-                    is Mode.Default -> {
-                        binding.youtubeBlackView.visibility = View.INVISIBLE
-                        binding.youtubeButton.visibility = View.INVISIBLE
-                        binding.youtubeVideoTextView.visibility = View.INVISIBLE
-                        binding.frameLayout.visibility = View.VISIBLE
-                        binding.youtubePlayer.visibility = View.INVISIBLE
-                    }
-                    is Mode.Ranking -> {
-                        binding.youtubeBlackView.visibility = View.GONE
-                        binding.youtubeButton.visibility = View.GONE
-                        binding.youtubeVideoTextView.visibility = View.GONE
-                        binding.frameLayout.visibility = View.GONE
-
-                        binding.youtubePlayer.visibility = View.GONE
-                        viewModel1.youTubePlayer.value?.pause()
-                    }
-                }
-
-
-                if(dataStoreViewModel.mode.value!! == Mode.Default()){
-                    youtubePlayerView.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
-                        override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
-                            viewModel1.youTubePlayer.value = youTubePlayer
-                            youTubePlayer.loadVideo(
-                                viewModel1.urlString.value!!,
-                                viewModel1.stopActivityVideoSecond.value!!.toFloat()
-                            )
-                        }
-                    })
-                }
-            }
-        })*/
 
     }
 
@@ -486,7 +412,6 @@ class MainActivity : AppCompatActivity() {
             viewModel.changeStopPoint(viewModel.tracker.currentSecond.toInt())
         }
         youtubePlayer.pause()
-        //viewModel1.youTubePlayer.value?.pause()
     }
 
     override fun onDestroy() {
