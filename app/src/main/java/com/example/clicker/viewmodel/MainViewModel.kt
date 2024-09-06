@@ -92,6 +92,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun convertDataToText(): String {
+
         return ranking.value!!.mapIndexed { index, rankingDto ->
             "${index + 1}. ${rankingDto.name} : ${rankingDto.plus} ${rankingDto.minus} ${rankingDto.total}"
         }.joinToString("\n")

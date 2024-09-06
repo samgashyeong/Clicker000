@@ -43,6 +43,8 @@ class MainActivityViewModel @Inject constructor(
     private val _settingUiModel: MutableLiveData<SettingUiModel> = MutableLiveData(SettingUiModel())
     val settingUiModel: LiveData<SettingUiModel> get() = _settingUiModel
 
+    private val _stopActivityVideoSecond : MutableLiveData<Int> = MutableLiveData(0)
+    val stopActivityVideoSecond: LiveData<Int> get() = _stopActivityVideoSecond
 
     init {
         getSettingData()
@@ -136,6 +138,7 @@ class MainActivityViewModel @Inject constructor(
         _videoScoreUiModel.value =
             _videoScoreUiModel.value?.copy(plus = value + 1, total = totalValue + 1)
 
+        Log.d(TAG, "onStop: ${tracker.currentSecond.toInt()}")
         val updateList = videoScoreUiModel.value?.clickInfoList
         updateList!!.add(
             ClickInfo(
@@ -148,12 +151,6 @@ class MainActivityViewModel @Inject constructor(
             )
         )
         _videoScoreUiModel.value = _videoScoreUiModel.value!!.copy(clickInfoList = updateList)
-    }
-    fun extractYouTubeVideoId(url: String) {
-        var basePart = url.substringAfterLast( "v=")
-        basePart = basePart.substringBefore("&si=")
-
-        _videoScoreUiModel.value = _videoScoreUiModel.value!!.copy(videoId = basePart)
     }
 
 
@@ -174,6 +171,17 @@ class MainActivityViewModel @Inject constructor(
             )
         )
         _videoScoreUiModel.value = _videoScoreUiModel.value!!.copy(clickInfoList = updateList)
+    }
+
+    fun changeStopPoint(data : Int){
+        _stopActivityVideoSecond.value = data
+    }
+
+    fun extractYouTubeVideoId(url: String) {
+        var basePart = url.substringAfterLast( "v=")
+        basePart = basePart.substringBefore("&si=")
+
+        _videoScoreUiModel.value = _videoScoreUiModel.value!!.copy(videoId = basePart)
     }
 
     fun rightButton() {
@@ -226,5 +234,9 @@ class MainActivityViewModel @Inject constructor(
         val minus = videoScoreUiModel.value!!.minus
 
         _videoScoreUiModel.value = _videoScoreUiModel.value?.copy(leftText = plus.toString(), rightText = minus.toString())
+    }
+
+    fun changeVideo(data : Boolean){
+        _videoScoreUiModel.value = _videoScoreUiModel.value?.copy(isVideoStart = data)
     }
 }
