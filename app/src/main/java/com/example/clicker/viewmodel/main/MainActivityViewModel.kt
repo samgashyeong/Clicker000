@@ -205,7 +205,9 @@ class MainActivityViewModel @Inject constructor(
     fun getVideoInfo() {
         viewModelScope.launch(Dispatchers.IO) {
             val videoInfo = youtubeServiceRepository.searchYoutubeInfo("snippet", videoScoreUiModel.value!!.videoId, apiKeyProvider.getApiKey())
-            _videoScoreUiModel.value = _videoScoreUiModel.value?.copy(videoInfo = videoInfo)
+            withContext(Dispatchers.Main){
+                _videoScoreUiModel.value = _videoScoreUiModel.value?.copy(videoInfo = videoInfo)
+            }
             Log.d(TAG, "getVideoInfo: ${videoInfo}")
         }
     }
