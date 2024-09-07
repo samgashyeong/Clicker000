@@ -115,7 +115,7 @@ class MainActivity : AppCompatActivity() {
             if (it.toIntOrNull() == null) {
                 Toast.makeText(this, "Please enter an integer!", Toast.LENGTH_SHORT).show()
             } else {
-                Log.d(TAG, "setDialog: ${it}asdfaffffff")
+                Log.d(TAG, "setDialog: ${it} ${sharedText}asdfaffffff")
                 viewModel.apply {
                     changeStartPoint(it.toFloat())
                     extractYouTubeVideoId(sharedText!!)

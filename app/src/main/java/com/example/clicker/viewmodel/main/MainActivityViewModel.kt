@@ -188,8 +188,8 @@ class MainActivityViewModel @Inject constructor(
                 clickSecond = tracker.currentSecond,
                 clickScorePoint = +1,
                 null,
-                videoScoreUiModel.value!!.minus,
                 videoScoreUiModel.value!!.plus,
+                videoScoreUiModel.value!!.minus,
                 videoScoreUiModel.value!!.total
             )
         )
@@ -208,8 +208,8 @@ class MainActivityViewModel @Inject constructor(
                 clickSecond = tracker.currentSecond,
                 clickScorePoint = -1,
                 null,
-                videoScoreUiModel.value!!.minus,
                 videoScoreUiModel.value!!.plus,
+                videoScoreUiModel.value!!.minus,
                 videoScoreUiModel.value!!.total
             )
         )
