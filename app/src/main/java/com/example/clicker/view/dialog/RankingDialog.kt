@@ -43,6 +43,7 @@ class RankingDialog(
         }
         findViewById<TextView>(R.id.rankingText).text = rankingText
         findViewById<ImageView>(R.id.resetButton).setOnClickListener {
+            findViewById<TextView>(R.id.rankingText).text = ""
             clearCallback()
         }
         findViewById<TextView>(R.id.cancelBtn).setOnClickListener {
