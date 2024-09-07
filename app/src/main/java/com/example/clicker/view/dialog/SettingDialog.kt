@@ -49,18 +49,6 @@ class SettingDialog(
             spinner.setSelection((modeToInt[it.mode] ?: 0))
         })
 
-//        dataStoreViewModel.isChangeButton.observe(lifeCycleOwner, Observer {
-//            btnInversionButton.isChecked = it ?: false
-//        })
-//
-//        dataStoreViewModel.isVibButton.observe(lifeCycleOwner, Observer {
-//            vibrateButton.isChecked = it ?: false
-//        })
-//
-//        dataStoreViewModel.mode.observe(lifeCycleOwner, Observer {
-//            spinner.setSelection((modeToInt[it] ?: 0) as Int)
-//        })
-
         btnInversionButton.setOnCheckedChangeListener { compoundButton, b ->
             //데이터 관련코드
             //dataStoreViewModel.saveIsChangeButton(b)

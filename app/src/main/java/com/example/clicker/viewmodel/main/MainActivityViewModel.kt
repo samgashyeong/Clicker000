@@ -13,6 +13,7 @@ import com.example.clicker.data.repository.ClickVideoRepository
 import com.example.clicker.data.repository.SettingRepository
 import com.example.clicker.data.repository.YoutubeServiceRepository
 import com.example.clicker.util.ApiKeyProvider
+import com.example.clicker.util.RankingDto
 import com.example.clicker.util.VibrationProvider
 import com.example.clicker.util.intToMode
 import com.example.clicker.util.modeToInt
@@ -44,11 +45,46 @@ class MainActivityViewModel @Inject constructor(
     private val _settingUiModel: MutableLiveData<SettingUiModel> = MutableLiveData(SettingUiModel())
     val settingUiModel: LiveData<SettingUiModel> get() = _settingUiModel
 
-    private val _stopActivityVideoSecond : MutableLiveData<Int> = MutableLiveData(0)
+    private val _stopActivityVideoSecond: MutableLiveData<Int> = MutableLiveData(0)
     val stopActivityVideoSecond: LiveData<Int> get() = _stopActivityVideoSecond
+
+    private val _ranking: MutableLiveData<ArrayList<RankingDto>> = MutableLiveData(ArrayList())
+    val ranking: LiveData<ArrayList<RankingDto>> get() = _ranking
+
 
     init {
         getSettingData()
+    }
+
+    fun addPlayer(data: RankingDto, callBack: () -> Unit) {
+        _ranking.value!!.add(data)
+        val updateData = _ranking.value!!
+        updateData.sortWith(Comparator<RankingDto> { a, b ->
+            if (a.total == b.total) {
+                a.name.compareTo(b.name)
+            } else {
+                a.total.compareTo(b.total)
+            }
+        })
+        updateData.reverse()
+
+        _ranking.value = updateData
+        _videoScoreUiModel.value = _videoScoreUiModel.value!!.copy(
+            plus = 0,
+            minus = 0,
+            total = 0,
+            leftText = "0",
+            rightText = "0"
+        )
+
+        callBack()
+    }
+
+    fun convertDataToText(): String {
+
+        return ranking.value!!.mapIndexed { index, rankingDto ->
+            "${index + 1}. ${rankingDto.name} : ${rankingDto.plus} ${rankingDto.minus} ${rankingDto.total}"
+        }.joinToString("\n")
     }
 
     private fun getSettingData() {
@@ -102,8 +138,14 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    fun clearScoreData(){
-        _videoScoreUiModel.value = _videoScoreUiModel.value!!.copy(plus = 0, minus = 0, total = 0, leftText = "0", rightText = "0")
+    fun clearScoreData() {
+        _videoScoreUiModel.value = _videoScoreUiModel.value!!.copy(
+            plus = 0,
+            minus = 0,
+            total = 0,
+            leftText = "0",
+            rightText = "0"
+        )
     }
 
     fun saveIsChangeButton(isSwitchOn: Boolean) {
@@ -118,7 +160,7 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    fun clearClickInfo(){
+    fun clearClickInfo() {
         _videoScoreUiModel.value = _videoScoreUiModel.value!!.copy(clickInfoList = arrayListOf())
     }
 
@@ -159,7 +201,7 @@ class MainActivityViewModel @Inject constructor(
         val totalValue = videoScoreUiModel.value!!.total
         val value = videoScoreUiModel.value!!.minus
         _videoScoreUiModel.value =
-            _videoScoreUiModel.value?.copy(minus = value - 1, total = totalValue-1)
+            _videoScoreUiModel.value?.copy(minus = value - 1, total = totalValue - 1)
         val updateList = videoScoreUiModel.value?.clickInfoList
         updateList!!.add(
             ClickInfo(
@@ -174,12 +216,12 @@ class MainActivityViewModel @Inject constructor(
         _videoScoreUiModel.value = _videoScoreUiModel.value!!.copy(clickInfoList = updateList)
     }
 
-    fun changeStopPoint(data : Int){
+    fun changeStopPoint(data: Int) {
         _stopActivityVideoSecond.value = data
     }
 
     fun extractYouTubeVideoId(url: String) {
-        var basePart = url.substringAfterLast( "v=")
+        var basePart = url.substringAfterLast("v=")
         basePart = basePart.substringBefore("&si=")
 
         _videoScoreUiModel.value = _videoScoreUiModel.value!!.copy(videoId = basePart)
@@ -211,14 +253,18 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    fun saveClickInfo(){
+    fun saveClickInfo() {
 
     }
 
     fun getVideoInfo() {
         viewModelScope.launch(Dispatchers.IO) {
-            val videoInfo = youtubeServiceRepository.searchYoutubeInfo("snippet", videoScoreUiModel.value!!.videoId, apiKeyProvider.getApiKey())
-            withContext(Dispatchers.Main){
+            val videoInfo = youtubeServiceRepository.searchYoutubeInfo(
+                "snippet",
+                videoScoreUiModel.value!!.videoId,
+                apiKeyProvider.getApiKey()
+            )
+            withContext(Dispatchers.Main) {
                 _videoScoreUiModel.value = _videoScoreUiModel.value?.copy(videoInfo = videoInfo)
             }
             Log.d(TAG, "getVideoInfo: ${videoInfo}")
@@ -226,27 +272,29 @@ class MainActivityViewModel @Inject constructor(
     }
 
 
-    fun leftMinusRightPlus(){
+    fun leftMinusRightPlus() {
         val plus = videoScoreUiModel.value!!.plus
         val minus = videoScoreUiModel.value!!.minus
         //_videoScoreUiModel.value = _videoScoreUiModel.value?.copy( = minus, minus = plus)
 
-        _videoScoreUiModel.value = _videoScoreUiModel.value?.copy(leftText = minus.toString(), rightText = plus.toString())
+        _videoScoreUiModel.value =
+            _videoScoreUiModel.value?.copy(leftText = minus.toString(), rightText = plus.toString())
     }
 
-    fun leftPlusRightMinus(){
+    fun leftPlusRightMinus() {
         val plus = videoScoreUiModel.value!!.plus
         val minus = videoScoreUiModel.value!!.minus
 
-        _videoScoreUiModel.value = _videoScoreUiModel.value?.copy(leftText = plus.toString(), rightText = minus.toString())
+        _videoScoreUiModel.value =
+            _videoScoreUiModel.value?.copy(leftText = plus.toString(), rightText = minus.toString())
     }
 
-    fun changeVideo(data : Boolean){
+    fun changeVideo(data: Boolean) {
         _videoScoreUiModel.value = _videoScoreUiModel.value?.copy(isVideoStart = data)
     }
 
-    fun insertVideoData(success : () -> Unit, failed : () -> Unit) {
-        if(videoScoreUiModel.value!!.videoId.isNotEmpty()){
+    fun insertVideoData(success: () -> Unit, failed: () -> Unit) {
+        if (videoScoreUiModel.value!!.videoId.isNotEmpty()) {
             viewModelScope.launch {
                 clickVideoRepository.insert(
                     ClickVideoListWithClickInfo(
@@ -261,9 +309,15 @@ class MainActivityViewModel @Inject constructor(
                 )
             }
             success()
-        }
-        else{
+        } else {
             failed()
         }
+    }
+
+    fun clearRankingData() {
+        val updateData = _ranking.value!!
+
+        updateData.clear()
+        _ranking.value = updateData
     }
 }

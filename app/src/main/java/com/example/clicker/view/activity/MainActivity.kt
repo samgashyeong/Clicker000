@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var saveDialog: SaveDialog
     private lateinit var savePlayerEditTextDialog: SavePlayerEditTextDialog
     private lateinit var rankingDialog: RankingDialog
-    private lateinit var youtubePlayer: YouTubePlayer
+    private var youtubePlayer: YouTubePlayer? = null
 
     @Inject
     lateinit var dialogManager: DialogManager
@@ -143,13 +143,10 @@ class MainActivity : AppCompatActivity() {
 
                 Log.d(TAG, "setDialog: test logd")
                 Log.d(TAG, "setDialog: ${it}")
-                youtubePlayer.loadVideo(
+                youtubePlayer?.loadVideo(
                     viewModel.videoScoreUiModel.value!!.videoId,
                     viewModel.videoScoreUiModel.value!!.startPoint
                 )
-
-                viewModel.apply {
-                }
 
                 startPointDialog.cancel()
                 dialogManager.closeAllDialog()
@@ -159,16 +156,16 @@ class MainActivity : AppCompatActivity() {
             this@MainActivity,
             EditTextDialogDto("Write Player Name", "ex ) Lee Jun Sang")
         ) {
-            viewModel1.addPlayer(RankingDto(it, viewModel1.plus.value!!, viewModel1.minus.value!!, viewModel1.total.value!!)){
-                Toast.makeText(this, "now 1st \n${viewModel1.ranking.value?.get(0)!!.name} ${viewModel1.ranking.value?.get(0)!!.plus} ${viewModel1.ranking.value?.get(0)!!.minus} ${viewModel1.ranking.value?.get(0)!!.total}", Toast.LENGTH_SHORT).show()
+            viewModel.addPlayer(RankingDto(it, viewModel.videoScoreUiModel.value!!.plus, viewModel.videoScoreUiModel.value!!.minus, viewModel.videoScoreUiModel.value!!.total)){
+                Toast.makeText(this, "now 1st \n${viewModel.ranking.value?.get(0)!!.name} ${viewModel.ranking.value?.get(0)!!.plus} ${viewModel.ranking.value?.get(0)!!.minus} ${viewModel.ranking.value?.get(0)!!.total}", Toast.LENGTH_SHORT).show()
             }
             savePlayerEditTextDialog.cancel()
         }
         rankingDialog = RankingDialog(
             this@MainActivity,
-            rankingList = viewModel1.ranking.value!!,
+            rankingList = viewModel.ranking.value!!,
             copyCallback = {
-                val text = viewModel1.convertDataToText()
+                val text = viewModel.convertDataToText()
 
                 val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 val clip = ClipData.newPlainText("Ranking Data", text)
@@ -177,7 +174,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Data copied to clipboard", Toast.LENGTH_SHORT).show()
             },
             clearCallback = {
-                viewModel1.clearRankingData()
+                viewModel.clearRankingData()
                 rankingDialog.cancel()
             }
         )
@@ -218,8 +215,12 @@ class MainActivity : AppCompatActivity() {
                 "No"
             )
         ) {
-            if (viewModel1.urlString.value?.isNotEmpty() == true) {
-                viewModel1.clickInfo.value?.clear()
+            if (viewModel.videoScoreUiModel.value!!.videoId.isNotEmpty()) {
+                //viewModel1.clickInfo.value?.clear()
+                viewModel.apply {
+                    clearScoreData()
+                    clearClickInfo()
+                }
                 dialogManager.closeAllDialog()
                 startPointDialog.show()
             } else {
@@ -248,12 +249,26 @@ class MainActivity : AppCompatActivity() {
 
             when (it.mode) {
                 is Mode.Default -> {
-                    binding.youtubeBlackView.visibility = View.VISIBLE
-                    binding.youtubeButton.visibility = View.VISIBLE
-                    binding.youtubeVideoTextView.visibility = View.VISIBLE
-                    binding.frameLayout.visibility = View.INVISIBLE
-                    binding.youtubePlayer.visibility = View.INVISIBLE
-                    viewModel1.youTubePlayer.value?.pause()
+                    if(!viewModel.videoScoreUiModel.value!!.isVideoStart){
+                        binding.youtubeBlackView.visibility = View.VISIBLE
+                        binding.youtubeButton.visibility = View.VISIBLE
+                        binding.youtubeVideoTextView.visibility = View.VISIBLE
+                        binding.frameLayout.visibility = View.INVISIBLE
+                        binding.youtubePlayer.visibility = View.INVISIBLE
+                    }
+                    else{
+                        binding.youtubeBlackView.visibility = View.INVISIBLE
+                        binding.youtubeButton.visibility = View.INVISIBLE
+                        binding.youtubeVideoTextView.visibility = View.INVISIBLE
+                        binding.frameLayout.visibility = View.VISIBLE
+                        binding.youtubePlayer.visibility = View.VISIBLE
+                    }
+//                    youtubePlayer?.pause()
+//
+//                    viewModel.apply {
+//                        clearScoreData()
+//                        clearClickInfo()
+//                    }
                 }
 
                 is Mode.Ranking -> {
@@ -262,17 +277,22 @@ class MainActivity : AppCompatActivity() {
                     binding.youtubeVideoTextView.visibility = View.GONE
                     binding.frameLayout.visibility = View.GONE
                     binding.youtubePlayer.visibility = View.GONE
-                    viewModel1.youTubePlayer.value?.pause()
+                    youtubePlayer?.pause()
+
+                    viewModel.apply {
+                        clearScoreData()
+                        clearClickInfo()
+                    }
                 }
             }
         })
 
-        viewModel1.ranking.observe(this) {
+        viewModel.ranking.observe(this) {
             rankingDialog = RankingDialog(
                 this@MainActivity,
                 rankingList = it,
                 copyCallback = {
-                    val text = viewModel1.convertDataToText()
+                    val text = viewModel.convertDataToText()
 
                     val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     val clip = ClipData.newPlainText("Ranking Data", text)
@@ -281,7 +301,8 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "Data copied to clipboard", Toast.LENGTH_SHORT).show()
                 },
                 clearCallback = {
-                    viewModel1.clearRankingData()
+                    viewModel.clearRankingData()
+                    Toast.makeText(this, "Data has been deleted.", Toast.LENGTH_SHORT).show()
                     rankingDialog.cancel()
                 }
             )
@@ -318,7 +339,7 @@ class MainActivity : AppCompatActivity() {
                         binding.frameLayout.visibility = View.GONE
 
                         binding.youtubePlayer.visibility = View.GONE
-                        youtubePlayer.pause()
+                        youtubePlayer?.pause()
                     }
                 }
 
@@ -411,7 +432,7 @@ class MainActivity : AppCompatActivity() {
             Log.d(TAG, "onStop: ${viewModel.tracker.currentSecond.toInt()}")
             viewModel.changeStopPoint(viewModel.tracker.currentSecond.toInt())
         }
-        youtubePlayer.pause()
+        youtubePlayer?.pause()
     }
 
     override fun onDestroy() {
