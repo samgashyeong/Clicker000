@@ -24,7 +24,7 @@ object ViewModelContainer {
 @InstallIn(SingletonComponent::class)
 abstract class ViewModelCon{
     @Binds
-    abstract fun bindVibrator(quc : VibrationProviderImpl) : VibrationProvider
+    abstract fun bindVibrator(data : VibrationProviderImpl) : VibrationProvider
 
     @Binds
     abstract fun bindApiKey(data : ApiKeyProviderImpl) : ApiKeyProvider

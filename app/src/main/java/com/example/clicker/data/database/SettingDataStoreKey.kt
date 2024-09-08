@@ -8,4 +8,5 @@ object SettingDataStoreKey {
     val IS_VIBRATE = booleanPreferencesKey("is_vibrate")
     val IS_FIRST_START = booleanPreferencesKey("is_first_start")
     val MODE = intPreferencesKey("mode")
+    val SET_START_POINT = booleanPreferencesKey("set_start_point")
 }

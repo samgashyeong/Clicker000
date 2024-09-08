@@ -3,7 +3,6 @@ package com.example.clicker.util
 import com.example.clicker.viewmodel.Mode
 
 object Utils {
-
     const val youtubeUrl = "https://youtube.googleapis.com/youtube/v3/"
 }
 
