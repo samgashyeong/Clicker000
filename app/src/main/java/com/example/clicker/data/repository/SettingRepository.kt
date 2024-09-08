@@ -13,7 +13,7 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("d
 class SettingRepository(private val context: Context) {
 
     fun getSetStartPoint() : Flow<Boolean> = context.dataStore.data.map {
-        return@map it[SettingDataStoreKey.IS_CHANGE_BUTTON] ?: false
+        return@map it[SettingDataStoreKey.SET_START_POINT] ?: false
     }
 
     suspend fun getIsChangeButton() : Flow<Boolean> = context.dataStore.data.map { it->

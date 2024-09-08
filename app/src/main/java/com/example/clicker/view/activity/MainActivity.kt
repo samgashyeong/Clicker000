@@ -141,8 +141,6 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                Log.d(TAG, "setDialog: test logd")
-                Log.d(TAG, "setDialog: ${it}")
                 youtubePlayer?.loadVideo(
                     viewModel.videoScoreUiModel.value!!.videoId,
                     viewModel.videoScoreUiModel.value!!.startPoint
@@ -198,10 +196,10 @@ class MainActivity : AppCompatActivity() {
                 },
                 failed = {
                     Toast.makeText(
-                    this,
-                    "Bring on the Youtube video and Score them",
-                    Toast.LENGTH_SHORT
-                ).show()
+                        this,
+                        "Bring on the Youtube video and Score them",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             )
             dialogManager.closeAllDialog()
@@ -263,6 +261,12 @@ class MainActivity : AppCompatActivity() {
                         binding.frameLayout.visibility = View.VISIBLE
                         binding.youtubePlayer.visibility = View.VISIBLE
                     }
+//                    youtubePlayer?.pause()
+//
+//                    viewModel.apply {
+//                        clearScoreData()
+//                        clearClickInfo()
+//                    }
                 }
 
                 is Mode.Ranking -> {
@@ -304,6 +308,7 @@ class MainActivity : AppCompatActivity() {
 
 
         viewModel.stopActivityVideoSecond.observe(this){
+            Log.d(TAG, "setObserve: onNewintent")
             if (viewModel.videoScoreUiModel.value!!.isVideoStart) {
                 binding.frameLayout.removeView(youtubePlayerView)
 
@@ -404,7 +409,45 @@ class MainActivity : AppCompatActivity() {
                 // startPointDialog 관련 처리
                 when (viewModel.settingUiModel.value?.mode) {
                     is Mode.Default -> {
-                        startPointDialog.show()
+                        Log.d(TAG, "test : ${sharedText}")
+                        if(viewModel.settingUiModel.value!!.setStartPoint){
+                            startPointDialog.show()
+                        }
+                        else if(!viewModel.settingUiModel.value!!.setStartPoint){
+                            viewModel.apply {
+                                changeStartPoint(0f)
+                                extractYouTubeVideoId(sharedText!!)
+                                clearClickInfo()
+                                clearScoreData()
+                                getVideoInfo()
+                                changeVideo(true)
+                            }
+                            when (viewModel.settingUiModel.value!!.mode) {
+                                is Mode.Default -> {
+                                    binding.youtubeBlackView.visibility = View.INVISIBLE
+                                    binding.youtubeButton.visibility = View.INVISIBLE
+                                    binding.youtubeVideoTextView.visibility = View.INVISIBLE
+                                    binding.frameLayout.visibility = View.VISIBLE
+                                    binding.youtubePlayer.visibility = View.INVISIBLE
+                                }
+                                is Mode.Ranking -> {
+                                    binding.youtubeBlackView.visibility = View.GONE
+                                    binding.youtubeButton.visibility = View.GONE
+                                    binding.youtubeVideoTextView.visibility = View.GONE
+                                    binding.frameLayout.visibility = View.GONE
+                                    binding.youtubePlayer.visibility = View.GONE
+                                }
+                            }
+
+                            Log.d(TAG, "onNewIntent: ${viewModel.videoScoreUiModel.value!!.startPoint}")
+                            youtubePlayer?.loadVideo(
+                                viewModel.videoScoreUiModel.value!!.videoId,
+                                0f
+                            )
+
+                            startPointDialog.cancel()
+                            dialogManager.closeAllDialog()
+                        }
                     }
                     is Mode.Ranking -> {
                         Toast.makeText(

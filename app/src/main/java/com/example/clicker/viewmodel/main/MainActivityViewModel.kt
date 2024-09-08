@@ -136,6 +136,23 @@ class MainActivityViewModel @Inject constructor(
                 }
             }
         }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            settingRepository.getSetStartPoint().collect(){
+                Log.d(TAG, "getSettingData: ${it} 3")
+                mutex.withLock {
+                    withContext(Dispatchers.Main) {
+                        if (settingUiModel.value?.setStartPoint != it) {
+                            _settingUiModel.postValue(
+                                _settingUiModel.value?.copy(
+                                    setStartPoint = it
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 
     fun clearScoreData() {
@@ -157,6 +174,12 @@ class MainActivityViewModel @Inject constructor(
     fun saveIsVibButton(isSwitchOn: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             settingRepository.saveIsVibButton(isSwitchOn)
+        }
+    }
+
+    fun saveIsSetStartPoint(isSwitchOn: Boolean){
+        viewModelScope.launch(Dispatchers.IO){
+            settingRepository.saveSetStartPoint(isSwitchOn)
         }
     }
 

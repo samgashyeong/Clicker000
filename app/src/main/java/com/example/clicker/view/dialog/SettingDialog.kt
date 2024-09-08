@@ -41,13 +41,14 @@ class SettingDialog(
         val btnInversionButton = findViewById<CheckBox>(R.id.btnInversionButton)
         val vibrateButton = findViewById<CheckBox>(R.id.vibrateButton)
         val spinner = findViewById<Spinner>(R.id.spinner)
-
+        val setStartPoint = findViewById<CheckBox>(R.id.setStartPointButton)
 
         viewModel.settingUiModel.observe(lifeCycleOwner, Observer {
             Log.d(TAG, "onCreate: ${it}")
             btnInversionButton.isChecked = it.isChangeButton
             vibrateButton.isChecked = it.isVidButton
             spinner.setSelection((modeToInt[it.mode] ?: 0))
+            setStartPoint.isChecked = it.setStartPoint
         })
 
         btnInversionButton.setOnCheckedChangeListener { compoundButton, b ->
@@ -59,6 +60,9 @@ class SettingDialog(
             //데이터 코드
             //dataStoreViewModel.saveIsvibButton(b)
             viewModel.saveIsVibButton(b)
+        }
+        setStartPoint.setOnCheckedChangeListener { compoundButton, b ->
+            viewModel.saveIsSetStartPoint(b)
         }
 
         findViewById<TextView>(R.id.cancelBtn).setOnClickListener {
