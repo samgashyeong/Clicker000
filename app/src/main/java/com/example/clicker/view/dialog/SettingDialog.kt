@@ -11,6 +11,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.Button
 import android.widget.CheckBox
+import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -64,7 +65,7 @@ class SettingDialog(
             this.cancel()
         }
 
-        findViewById<Button>(R.id.newButton).setOnClickListener{
+        findViewById<LinearLayout>(R.id.newButton).setOnClickListener{
             onClickInit()
         }
 

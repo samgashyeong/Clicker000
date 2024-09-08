@@ -263,12 +263,6 @@ class MainActivity : AppCompatActivity() {
                         binding.frameLayout.visibility = View.VISIBLE
                         binding.youtubePlayer.visibility = View.VISIBLE
                     }
-//                    youtubePlayer?.pause()
-//
-//                    viewModel.apply {
-//                        clearScoreData()
-//                        clearClickInfo()
-//                    }
                 }
 
                 is Mode.Ranking -> {
