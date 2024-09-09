@@ -29,20 +29,14 @@ import dagger.hilt.android.AndroidEntryPoint
 class ClickVideoListActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityClickVideoListBinding
-    private val databaseViewModel: MainDatabaseViewModel by viewModels()
     private val searchVideoListViewModel : SearchVideoListViewModel by viewModels()
 
-    private var clickVideo : List<ClickVideoListWithClickInfo>? = null
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_click_video_list)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_click_video_list)
-        databaseViewModel.readAllData.observe(this, Observer {
-            searchVideoListViewModel.databaseScoredList.value = databaseViewModel.readAllData.value
-            searchVideoListViewModel.searchList.value = databaseViewModel.readAllData.value
-        })
 
         searchVideoListViewModel.searchList.observe(this, Observer {
             binding.recycler.apply {
@@ -63,7 +57,7 @@ class ClickVideoListActivity : AppCompatActivity() {
                 IME_ACTION_SEARCH -> {
 
                     if(binding.toolbarEditText.text.toString().isEmpty()){
-                        searchVideoListViewModel.getAllVideos(databaseViewModel.readAllData.value)
+                        searchVideoListViewModel.getAllVideos()
                     }
                     else{
                         searchVideoListViewModel.findVideo(binding.toolbarEditText.text.toString())
@@ -83,7 +77,7 @@ class ClickVideoListActivity : AppCompatActivity() {
 
         binding.toolbarEditText.addTextChangedListener {
             if(it.toString().isEmpty()){
-                searchVideoListViewModel.getAllVideos(databaseViewModel.readAllData.value)
+                searchVideoListViewModel.getAllVideos()
             }
             else{
                 searchVideoListViewModel.findVideo(it.toString())

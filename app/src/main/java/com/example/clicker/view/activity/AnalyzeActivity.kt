@@ -25,7 +25,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class AnalyzeActivity : AppCompatActivity() {
     private lateinit var binding : ActivityAnalyzeBinding
     private val viewModel: AnalyzeViewModel by viewModels()
-    private val databaseViewModel: MainDatabaseViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_analyze)
