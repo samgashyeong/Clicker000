@@ -47,7 +47,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val viewModel1: MainViewModel by viewModels()
     private val viewModel : MainActivityViewModel by viewModels()
 
     private lateinit var startPointDialog: EditTextDialog
@@ -72,7 +71,6 @@ class MainActivity : AppCompatActivity() {
         setDialog()
 
         binding.viewModel1 = viewModel
-        binding.viewModel = viewModel1
         binding.lifecycleOwner = this
 
         setSupportActionBar(binding.toolbar)
@@ -124,20 +122,14 @@ class MainActivity : AppCompatActivity() {
                     getVideoInfo()
                     changeVideo(true)
                 }
+
+                // 가시성 설정
                 when (viewModel.settingUiModel.value!!.mode) {
                     is Mode.Default -> {
-                        binding.youtubeBlackView.visibility = View.INVISIBLE
-                        binding.youtubeButton.visibility = View.INVISIBLE
-                        binding.youtubeVideoTextView.visibility = View.INVISIBLE
-                        binding.frameLayout.visibility = View.VISIBLE
-                        binding.youtubePlayer.visibility = View.INVISIBLE
+                        setDefaultModeViewWhenVideoStarted()
                     }
                     is Mode.Ranking -> {
-                        binding.youtubeBlackView.visibility = View.GONE
-                        binding.youtubeButton.visibility = View.GONE
-                        binding.youtubeVideoTextView.visibility = View.GONE
-                        binding.frameLayout.visibility = View.GONE
-                        binding.youtubePlayer.visibility = View.GONE
+                        setRankingModeView()
                     }
                 }
 
@@ -248,35 +240,15 @@ class MainActivity : AppCompatActivity() {
             when (it.mode) {
                 is Mode.Default -> {
                     if(!viewModel.videoScoreUiModel.value!!.isVideoStart){
-                        binding.youtubeBlackView.visibility = View.VISIBLE
-                        binding.youtubeButton.visibility = View.VISIBLE
-                        binding.youtubeVideoTextView.visibility = View.VISIBLE
-                        binding.frameLayout.visibility = View.INVISIBLE
-                        binding.youtubePlayer.visibility = View.INVISIBLE
+                        setDefaultModeViewWhenVideoNotStarted()
                     }
                     else{
-                        binding.youtubeBlackView.visibility = View.INVISIBLE
-                        binding.youtubeButton.visibility = View.INVISIBLE
-                        binding.youtubeVideoTextView.visibility = View.INVISIBLE
-                        binding.frameLayout.visibility = View.VISIBLE
-                        binding.youtubePlayer.visibility = View.VISIBLE
+                        setDefaultModeViewWhenVideoStarted()
                     }
-//                    youtubePlayer?.pause()
-//
-//                    viewModel.apply {
-//                        clearScoreData()
-//                        clearClickInfo()
-//                    }
                 }
-
                 is Mode.Ranking -> {
-                    binding.youtubeBlackView.visibility = View.GONE
-                    binding.youtubeButton.visibility = View.GONE
-                    binding.youtubeVideoTextView.visibility = View.GONE
-                    binding.frameLayout.visibility = View.GONE
-                    binding.youtubePlayer.visibility = View.GONE
+                    setRankingModeView()
                     youtubePlayer?.pause()
-
                     viewModel.apply {
                         clearScoreData()
                         clearClickInfo()
@@ -325,19 +297,10 @@ class MainActivity : AppCompatActivity() {
                 })
                 when (viewModel.settingUiModel.value!!.mode) {
                     is Mode.Default -> {
-                        binding.youtubeBlackView.visibility = View.INVISIBLE
-                        binding.youtubeButton.visibility = View.INVISIBLE
-                        binding.youtubeVideoTextView.visibility = View.INVISIBLE
-                        binding.frameLayout.visibility = View.VISIBLE
-                        binding.youtubePlayer.visibility = View.INVISIBLE
+                        setDefaultModeViewWhenVideoStarted()
                     }
                     is Mode.Ranking -> {
-                        binding.youtubeBlackView.visibility = View.GONE
-                        binding.youtubeButton.visibility = View.GONE
-                        binding.youtubeVideoTextView.visibility = View.GONE
-                        binding.frameLayout.visibility = View.GONE
-
-                        binding.youtubePlayer.visibility = View.GONE
+                        setRankingModeView()
                         youtubePlayer?.pause()
                     }
                 }
@@ -356,8 +319,38 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
     }
+
+    // 비디오가 시작되지 않았을 때 Mode.Default 관련 가시성 설정
+    private fun setDefaultModeViewWhenVideoNotStarted() {
+        Log.d(TAG, "setDefaultModeViewWhenVideoNotStarted: ")
+        binding.youtubeBlackView.visibility = View.VISIBLE
+        binding.youtubeButton.visibility = View.VISIBLE
+        binding.youtubeVideoTextView.visibility = View.VISIBLE
+        binding.frameLayout.visibility = View.INVISIBLE
+        binding.youtubePlayer.visibility = View.INVISIBLE
+    }
+
+    // 비디오가 시작된 후 Mode.Default 관련 가시성 설정
+    private fun setDefaultModeViewWhenVideoStarted() {
+        Log.d(TAG, "setDefaultModeViewWhenVideoStarted: ")
+        binding.youtubeBlackView.visibility = View.INVISIBLE
+        binding.youtubeButton.visibility = View.INVISIBLE
+        binding.youtubeVideoTextView.visibility = View.INVISIBLE
+        binding.frameLayout.visibility = View.VISIBLE
+        binding.youtubePlayer.visibility = View.INVISIBLE
+    }
+
+    // Mode.Ranking 관련 가시성 설정
+    private fun setRankingModeView() {
+        Log.d(TAG, "setRankingModeView: ")
+        binding.youtubeBlackView.visibility = View.GONE
+        binding.youtubeButton.visibility = View.GONE
+        binding.youtubeVideoTextView.visibility = View.GONE
+        binding.frameLayout.visibility = View.GONE
+        binding.youtubePlayer.visibility = View.GONE
+    }
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -424,18 +417,10 @@ class MainActivity : AppCompatActivity() {
                             }
                             when (viewModel.settingUiModel.value!!.mode) {
                                 is Mode.Default -> {
-                                    binding.youtubeBlackView.visibility = View.INVISIBLE
-                                    binding.youtubeButton.visibility = View.INVISIBLE
-                                    binding.youtubeVideoTextView.visibility = View.INVISIBLE
-                                    binding.frameLayout.visibility = View.VISIBLE
-                                    binding.youtubePlayer.visibility = View.INVISIBLE
+                                    setDefaultModeViewWhenVideoStarted()
                                 }
                                 is Mode.Ranking -> {
-                                    binding.youtubeBlackView.visibility = View.GONE
-                                    binding.youtubeButton.visibility = View.GONE
-                                    binding.youtubeVideoTextView.visibility = View.GONE
-                                    binding.frameLayout.visibility = View.GONE
-                                    binding.youtubePlayer.visibility = View.GONE
+                                    setRankingModeView()
                                 }
                             }
 
