@@ -7,9 +7,6 @@
             name="viewModel1"
             type="com.example.clicker.viewmodel.main.MainActivityViewModel"
             />
-        <variable
-            name="viewModel"
-            type="com.example.clicker.viewmodel.MainViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -13,11 +13,11 @@ import com.example.clicker.data.repository.ClickVideoRepository
 import com.example.clicker.data.repository.SettingRepository
 import com.example.clicker.data.repository.YoutubeServiceRepository
 import com.example.clicker.util.ApiKeyProvider
+import com.example.clicker.util.Mode
 import com.example.clicker.util.RankingDto
 import com.example.clicker.util.VibrationProvider
 import com.example.clicker.util.intToMode
 import com.example.clicker.util.modeToInt
-import com.example.clicker.viewmodel.Mode
 import com.example.clicker.viewmodel.main.model.SettingUiModel
 import com.example.clicker.viewmodel.main.model.VideoScoreUiModel
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerTracker

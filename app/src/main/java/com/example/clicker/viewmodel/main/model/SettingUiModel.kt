@@ -1,6 +1,6 @@
 package com.example.clicker.viewmodel.main.model
 
-import com.example.clicker.viewmodel.Mode
+import com.example.clicker.util.Mode
 import javax.annotation.concurrent.Immutable
 
 @Immutable

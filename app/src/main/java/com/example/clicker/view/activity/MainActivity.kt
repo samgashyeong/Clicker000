@@ -21,6 +21,7 @@ import androidx.lifecycle.Observer
 import com.example.clicker.R
 import com.example.clicker.data.database.ClickVideoListWithClickInfo
 import com.example.clicker.databinding.ActivityMainBinding
+import com.example.clicker.util.Mode
 import com.example.clicker.util.RankingDto
 import com.example.clicker.view.dialog.DefaultDialog
 import com.example.clicker.view.dialog.DefaultDialogDto
@@ -32,8 +33,6 @@ import com.example.clicker.view.dialog.SaveDialog
 import com.example.clicker.view.dialog.SavePlayerEditTextDialog
 import com.example.clicker.view.dialog.SettingDialog
 import com.example.clicker.viewmodel.MainDatabaseViewModel
-import com.example.clicker.viewmodel.MainViewModel
-import com.example.clicker.viewmodel.Mode
 import com.example.clicker.viewmodel.SettingDataStoreViewModel
 import com.example.clicker.viewmodel.main.MainActivityViewModel
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
@@ -68,6 +67,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
+        Log.d(TAG, "onCreate: ${intent.getStringExtra(Intent.EXTRA_TEXT)}")
         setDialog()
 
         binding.viewModel1 = viewModel
@@ -102,6 +102,8 @@ class MainActivity : AppCompatActivity() {
 
             startActivity(intent)
         }
+
+        settingIntent(intent)
     }
 
     private fun setDialog() {
@@ -394,6 +396,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
+        settingIntent(intent)
+    }
+
+    private fun settingIntent(intent : Intent?) {
+        Log.d(TAG, "settingIntent: ${intent!!.getStringExtra(Intent.EXTRA_TEXT)}")
         if (intent != null) {
             if (intent.getAction()
                     .equals(Intent.ACTION_SEND) && "text/plain".equals(intent.getType())

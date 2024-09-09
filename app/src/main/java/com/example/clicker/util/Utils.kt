@@ -1,6 +1,5 @@
 package com.example.clicker.util
 
-import com.example.clicker.viewmodel.Mode
 
 object Utils {
     const val youtubeUrl = "https://youtube.googleapis.com/youtube/v3/"
@@ -21,3 +20,7 @@ data class RankingDto(
     val minus : Int,
     val total : Int
 )
+sealed class Mode(){
+    data class Default(val name : String = "Default") : Mode()
+    data class Ranking(val name : String = "Ranking") : Mode()
+}

@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.clicker.data.repository.SettingRepository
+import com.example.clicker.util.Mode
 import com.example.clicker.util.intToMode
 import com.example.clicker.util.modeToInt
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,10 +15,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-sealed class Mode(){
-    data class Default(val name : String = "Default") : Mode()
-    data class Ranking(val name : String = "Ranking") : Mode()
-}
 @HiltViewModel
 class SettingDataStoreViewModel @Inject constructor(private val dataRepo : SettingRepository) : ViewModel(){
     //var isSwitchOn : MutableLiveData<Setting?> = MutableLiveData()
@@ -25,11 +22,6 @@ class SettingDataStoreViewModel @Inject constructor(private val dataRepo : Setti
     var isVibButton : MutableLiveData<Boolean?> = MutableLiveData()
     var mode : MutableLiveData<Mode> = MutableLiveData()
 
-    init {
-//        getIsChangeButton()
-//        getIsvibButton()
-//        getMode()
-    }
 
 
     private fun getIsChangeButton(){
