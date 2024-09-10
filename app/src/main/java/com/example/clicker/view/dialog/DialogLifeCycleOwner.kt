@@ -4,7 +4,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 
-class MyLifeCycleOwner() : LifecycleOwner {
+class DialogLifeCycleOwner() : LifecycleOwner {
     private val mLifecycleRegistry: LifecycleRegistry by lazy { LifecycleRegistry(this) }
     override var lifecycle: Lifecycle
     init {

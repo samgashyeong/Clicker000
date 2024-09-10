@@ -9,17 +9,14 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
-import android.widget.Button
 import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.TextView
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import com.example.clicker.R
 import com.example.clicker.util.intToMode
 import com.example.clicker.util.modeToInt
-import com.example.clicker.viewmodel.SettingDataStoreViewModel
 import com.example.clicker.viewmodel.main.MainActivityViewModel
 
 
@@ -29,7 +26,7 @@ class SettingDialog(
     val onClickInit : () -> Unit
 ) : Dialog(context) {
 
-    private val lifeCycleOwner: MyLifeCycleOwner by lazy { MyLifeCycleOwner() }
+    private val lifeCycleOwner: DialogLifeCycleOwner by lazy { DialogLifeCycleOwner() }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
