@@ -1,7 +1,9 @@
 package com.example.clicker.viewmodel
 
+import android.app.Activity
 import com.example.clicker.util.ApiKeyProvider
 import com.example.clicker.util.ApiKeyProviderImpl
+import com.example.clicker.util.PermissionHelper
 import com.example.clicker.util.VibrationProvider
 import com.example.clicker.util.VibrationProviderImpl
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerTracker
