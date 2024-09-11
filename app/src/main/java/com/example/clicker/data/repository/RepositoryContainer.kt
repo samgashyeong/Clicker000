@@ -53,6 +53,9 @@ object RepositoryContainer {
                         .build()
     }
 
+    @Singleton
+    fun provideExternalStorage(@ApplicationContext context: Context) = ExternalStorageRepository(context)
+
     @Provides
     fun provideNoteDAO(clickVideo: ClickVideoDatabase): ClickVideoDao {
         return clickVideo.clickVideoDao()
