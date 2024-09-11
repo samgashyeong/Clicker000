@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.ContentValues.TAG
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -23,6 +24,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.atwa.filepicker.core.FilePicker
 import com.example.clicker.R
 import com.example.clicker.databinding.ActivityClickVideoListBinding
 import com.example.clicker.util.PermissionHelper
@@ -39,6 +41,7 @@ class ClickVideoListActivity : AppCompatActivity() {
     private val searchVideoListViewModel : SearchVideoListViewModel by viewModels()
 
     private lateinit var permissionHelper: PermissionHelper
+    private lateinit var filePicker : FilePicker
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,7 +49,7 @@ class ClickVideoListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_click_video_list)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_click_video_list)
         permissionHelper = PermissionHelper(this)
-
+        filePicker = FilePicker.getInstance(this)
 
         searchVideoListViewModel.searchList.observe(this, Observer {
             binding.recycler.apply {
@@ -121,12 +124,12 @@ class ClickVideoListActivity : AppCompatActivity() {
                 }, 300)
             }
             R.id.folder->{
-//                if (!permissionHelper.checkPermissions()) {
-//                    permissionHelper.requestPermissions(PermissionHelper.REQUEST_CODE)
-//                } else {
-//                    Toast.makeText(this, "권한 설정 성공", Toast.LENGTH_SHORT).show()
-//                }
-                checkStoragePermission()
+//                val intent = Intent(Intent.ACTION_VIEW)
+//                intent.setDataAndType(Uri.parse("content://media/external/file"), "*/*")
+//                startActivity(intent)
+                filePicker.pickFile {
+                    Log.d(TAG, "onOptionsItemSelected: ${it!!.name}")
+                }
             }
         }
         return super.onOptionsItemSelected(item)
@@ -134,11 +137,7 @@ class ClickVideoListActivity : AppCompatActivity() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-//        if (permissionHelper.handlePermissionsResult(requestCode, permissions, grantResults)) {
-//            Toast.makeText(this, "권한 설정 성공", Toast.LENGTH_SHORT).show()
-//        } else {
-//            Toast.makeText(this, "권한 설정 실패", Toast.LENGTH_SHORT).show()
-//        }
+
         Log.d(TAG, "onRequestPermissionsResult: ${grantResults[0]} ${PackageManager.PERMISSION_GRANTED}")
     }
 
@@ -151,7 +150,6 @@ class ClickVideoListActivity : AppCompatActivity() {
                 REQUEST_CODE
             )
         } else {
-            // 권한이 이미 허용됨, 파일을 불러오는 로직을 실행
         }
     }
 }
