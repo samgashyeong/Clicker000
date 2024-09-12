@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.clicker.data.database.ClickInfo
 import com.example.clicker.data.database.ClickVideoListWithClickInfo
 import com.example.clicker.data.repository.ClickVideoRepository
+import com.example.clicker.data.repository.ExternalStorageRepository
 import com.example.clicker.data.repository.SettingRepository
 import com.example.clicker.data.repository.YoutubeServiceRepository
 import com.example.clicker.util.ApiKeyProvider
@@ -20,9 +21,11 @@ import com.example.clicker.util.intToMode
 import com.example.clicker.util.modeToInt
 import com.example.clicker.viewmodel.main.model.SettingUiModel
 import com.example.clicker.viewmodel.main.model.VideoScoreUiModel
+import com.google.gson.Gson
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerTracker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -37,6 +40,7 @@ class MainActivityViewModel @Inject constructor(
     private val settingRepository: SettingRepository,
     private val youtubeServiceRepository: YoutubeServiceRepository,
     private val apiKeyProvider: ApiKeyProvider,
+    private val externalStorageRepository: ExternalStorageRepository
 ) : ViewModel() {
     private val _videoScoreUiModel: MutableLiveData<VideoScoreUiModel> =
         MutableLiveData(VideoScoreUiModel(videoInfo = null))
@@ -78,6 +82,14 @@ class MainActivityViewModel @Inject constructor(
         )
 
         callBack()
+    }
+
+    private fun writeDataFile(){
+        viewModelScope.launch {
+            val dataList = clickVideoRepository.getAll().first()
+            val jsonString = Gson().toJson(dataList)
+            externalStorageRepository.findClickFile(jsonString)
+        }
     }
 
     fun convertDataToText(): String {
@@ -276,10 +288,6 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    fun saveClickInfo() {
-
-    }
-
     fun getVideoInfo() {
         viewModelScope.launch(Dispatchers.IO) {
             val videoInfo = youtubeServiceRepository.searchYoutubeInfo(
@@ -330,6 +338,7 @@ class MainActivityViewModel @Inject constructor(
                         videoScoreUiModel.value!!.clickInfoList,
                     )
                 )
+                writeDataFile()
             }
             success()
         } else {

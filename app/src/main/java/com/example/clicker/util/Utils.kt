@@ -14,6 +14,8 @@ val modeToInt : Map<Mode, Int> = mapOf(
     Mode.Ranking() to 1
 )
 
+val CLICKER000_EXTERNAL_FILE_NAME = "clicker000"
+
 data class RankingDto(
     val name : String,
     val plus : Int,

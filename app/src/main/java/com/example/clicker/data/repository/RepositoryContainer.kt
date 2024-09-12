@@ -54,6 +54,7 @@ object RepositoryContainer {
     }
 
     @Singleton
+    @Provides
     fun provideExternalStorage(@ApplicationContext context: Context) = ExternalStorageRepository(context)
 
     @Provides

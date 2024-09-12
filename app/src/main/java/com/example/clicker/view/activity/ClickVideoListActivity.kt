@@ -8,11 +8,9 @@ import android.content.ContentValues.TAG
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.MediaScannerConnection
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
-import android.os.Environment.DIRECTORY_DOCUMENTS
 import android.os.Environment.DIRECTORY_DOWNLOADS
 import android.provider.MediaStore
 import android.util.Log
@@ -42,12 +40,8 @@ import com.example.clicker.util.PermissionHelper.Companion.REQUEST_CODE
 import com.example.clicker.view.adapter.ClickVideoAdapter
 import com.example.clicker.viewmodel.SearchVideoListViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.callbackFlow
 import java.io.DataInputStream
-import java.io.File
 import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.IOException
 import java.io.OutputStream
 import kotlin.random.Random
 
@@ -175,8 +169,8 @@ class ClickVideoListActivity : AppCompatActivity() {
         return null
     }
 
-    private fun findNewFile(activity: AppCompatActivity, fileName: String, content: String) {
-        val resolver = activity.contentResolver
+    private fun findClickFile(activity: AppCompatActivity, fileName: String, content: String) {
+        val resolver = baseContext.contentResolver
         Log.d(TAG, "saveTextToFile: ${Environment.getExternalStoragePublicDirectory(
             DIRECTORY_DOWNLOADS).path}")
         MediaScannerConnection.scanFile(baseContext, arrayOf("${Environment.getExternalStoragePublicDirectory(
@@ -204,11 +198,10 @@ class ClickVideoListActivity : AppCompatActivity() {
         }
 
         val newUri = resolver.insert(MediaStore.Files.getContentUri("external"), contentValues)
-        val new = content + Random(100).toString()
         newUri?.let {
             val outputStream: OutputStream? = resolver.openOutputStream(it)
             outputStream?.use {
-                it.write(new.toByteArray())
+                it.write(content.toByteArray())
                 it.flush()
             }
         }
@@ -230,7 +223,7 @@ class ClickVideoListActivity : AppCompatActivity() {
                     manager.showSoftInput(binding.toolbarEditText, InputMethodManager.SHOW_IMPLICIT)
                 }, 300)
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                findNewFile(this, "dataJunsang.json", "테스트")
+                findClickFile(this, "dataJunsang.json", "테스트")
             }
             R.id.folder->{
                 filePicker.pickMimeFile("application/json"){
@@ -246,7 +239,7 @@ class ClickVideoListActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                findNewFile(this, "dataJunsang", "테스트")
+                findClickFile(this, "dataJunsang", "테스트")
             } else {
                 Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
             }
@@ -259,7 +252,7 @@ class ClickVideoListActivity : AppCompatActivity() {
             ActivityCompat.requestPermissions(this,
                 arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE)
         } else {
-            findNewFile(this, "dataJunsang", "테스트")
+            findClickFile(this, "dataJunsang", "테스트")
         }
     }
 }
