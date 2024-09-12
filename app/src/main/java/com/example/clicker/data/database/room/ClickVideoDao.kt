@@ -22,6 +22,10 @@ interface ClickVideoDao {
     suspend fun insert(contact: ClickVideoListWithClickInfo)
 
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(vararg entity: ClickVideoListWithClickInfo)
+
+
     @Update
     suspend fun update(updateData : ClickVideoListWithClickInfo)
 }

@@ -29,6 +29,10 @@ class SettingRepository(private val context: Context) {
         return@map it[SettingDataStoreKey.MODE] ?: 0
     }
 
+    fun getExternalFileDate() : Flow<String> = context.dataStore.data.map {
+        return@map it[SettingDataStoreKey.EXTERNAL_STORAGE_DATE] ?: ""
+    }
+
     suspend fun saveIsChangeButton(setting : Boolean){
         context.dataStore.edit { it->
             it[SettingDataStoreKey.IS_CHANGE_BUTTON] = setting
@@ -49,6 +53,12 @@ class SettingRepository(private val context: Context) {
     suspend fun saveMode(setting : Int){
         context.dataStore.edit { it->
             it[SettingDataStoreKey.MODE] = setting
+        }
+    }
+
+    suspend fun saveExternalFileDate(date : String){
+        context.dataStore.edit {
+            it[SettingDataStoreKey.EXTERNAL_STORAGE_DATE] = date
         }
     }
 }

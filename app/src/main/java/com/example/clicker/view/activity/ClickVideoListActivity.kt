@@ -1,13 +1,16 @@
 package com.example.clicker.view.activity
 
 import android.Manifest
+import android.app.Activity
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.content.Intent
+import android.content.IntentSender.SendIntentException
 import android.content.pm.PackageManager
 import android.media.MediaScannerConnection
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -22,6 +25,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.TextView.OnEditorActionListener
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
@@ -56,14 +60,23 @@ class ClickVideoListActivity : AppCompatActivity() {
     private lateinit var filePicker : FilePicker
     private lateinit var file_path : String
     private lateinit var activityResultLauncher2 : ActivityResultLauncher<Intent>
+    private lateinit var delete : ActivityResultLauncher<IntentSenderRequest>
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_click_video_list)
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_click_video_list)
         permissionHelper = PermissionHelper(this)
         filePicker = FilePicker.getInstance(this)
         file_path = getExternalFilesDir(Environment.DIRECTORY_MUSIC).toString()
+
+        delete = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                Log.d("deleteResultLauncher", "Android 11 or higher : deleted")
+            }
+        }
+
 
         searchVideoListViewModel.searchList.observe(this, Observer {
             binding.recycler.apply {
@@ -169,39 +182,44 @@ class ClickVideoListActivity : AppCompatActivity() {
         return null
     }
 
-    private fun findClickFile(activity: AppCompatActivity, fileName: String, content: String) {
-        val resolver = baseContext.contentResolver
+    private fun findNewFile(activity: AppCompatActivity, fileName: String, content: String) {
+        val resolver =
         Log.d(TAG, "saveTextToFile: ${Environment.getExternalStoragePublicDirectory(
             DIRECTORY_DOWNLOADS).path}")
         MediaScannerConnection.scanFile(baseContext, arrayOf("${Environment.getExternalStoragePublicDirectory(
-            DIRECTORY_DOWNLOADS).path}/dataJunsang.json"), null) { path, uri ->
+            DIRECTORY_DOWNLOADS).path}/dataJunsang.txt"), null) { path, uri ->
             // 파일이 스캔된 후 콜백에서 결과를 처리합니다.
             if (uri != null) {
                 Log.d(TAG, "saveTextToFile: ${path} ${uri}")// 파일이 성공적으로 스캔되었을 때 URI 반환
                 uri.let {
-                    resolver.delete(uri, null, null)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        val pendingIntent = MediaStore.createDeleteRequest(baseContext.contentResolver, mutableListOf(uri))
+                        delete.launch(IntentSenderRequest.Builder(pendingIntent.intentSender).build())
+                    }
                 }
-                saveClickFile(fileName, content)
+                saveClickFile("dataJunsang", content)
             } else {
                 Log.d(TAG, "saveTextToFile: ")  // 스캔 실패 시 null 반환
-                saveClickFile(fileName, content)
+                saveClickFile("dataJunsang", content)
             }
         }
     }
+
 
     private fun saveClickFile(fileName: String, content: String) {
         val resolver = baseContext.contentResolver
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
-            put(MediaStore.MediaColumns.MIME_TYPE, "application/json")
+            put(MediaStore.MediaColumns.MIME_TYPE, "text/plain")
             put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
         }
 
         val newUri = resolver.insert(MediaStore.Files.getContentUri("external"), contentValues)
+        val new = content + Random(100).toString()
         newUri?.let {
             val outputStream: OutputStream? = resolver.openOutputStream(it)
             outputStream?.use {
-                it.write(content.toByteArray())
+                it.write(new.toByteArray())
                 it.flush()
             }
         }
@@ -223,12 +241,13 @@ class ClickVideoListActivity : AppCompatActivity() {
                     manager.showSoftInput(binding.toolbarEditText, InputMethodManager.SHOW_IMPLICIT)
                 }, 300)
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                findClickFile(this, "dataJunsang.json", "테스트")
+                findNewFile(this, "dataJunsang", "테스트")
             }
             R.id.folder->{
-                filePicker.pickMimeFile("application/json"){
+                filePicker.pickMimeFile("text/plain"){
                     it
                     Log.d(TAG, "onOptionsItemSelected: ${it?.file?.readText()}")
+                    searchVideoListViewModel.insertAll(listOf())
                 }
             }
         }
@@ -239,7 +258,7 @@ class ClickVideoListActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                findClickFile(this, "dataJunsang", "테스트")
+                findNewFile(this, "dataJunsang", "테스트")
             } else {
                 Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
             }
@@ -252,7 +271,7 @@ class ClickVideoListActivity : AppCompatActivity() {
             ActivityCompat.requestPermissions(this,
                 arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE)
         } else {
-            findClickFile(this, "dataJunsang", "테스트")
+            findNewFile(this, "dataJunsang", "테스트")
         }
     }
 }

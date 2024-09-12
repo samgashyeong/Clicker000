@@ -8,5 +8,6 @@ data class SettingUiModel(
     val isChangeButton : Boolean = false,
     val isVidButton : Boolean = false,
     val setStartPoint : Boolean = false,
-    val mode : Mode = Mode.Default()
+    val mode : Mode = Mode.Default(),
+    val externalFileDate : String = ""
 )

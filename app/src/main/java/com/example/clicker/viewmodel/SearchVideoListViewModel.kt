@@ -46,6 +46,12 @@ class SearchVideoListViewModel @Inject constructor(
         }
     }
 
+    fun insertAll(list : List<ClickVideoListWithClickInfo>){
+        Log.d(TAG, "insertAll: ${list}")
+        viewModelScope.launch {
+            databaseVideoRepository.insertAll(list)
+        }
+    }
     fun getAllVideos() {
         _searchList.value = databaseScoredList.value
     }

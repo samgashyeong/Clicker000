@@ -17,5 +17,9 @@ class ClickVideoRepository(private val clickVideoDao: ClickVideoDao) {
         clickVideoDao.update(clickVideoListWithClickInfo)
     }
 
+    suspend fun insertAll(clickVideoListWithClickInfo: List<ClickVideoListWithClickInfo>){
+        clickVideoDao.insertAll(*clickVideoListWithClickInfo.toTypedArray())
+    }
+
 
 }

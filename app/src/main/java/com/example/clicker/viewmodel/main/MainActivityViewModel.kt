@@ -30,6 +30,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -84,11 +86,11 @@ class MainActivityViewModel @Inject constructor(
         callBack()
     }
 
-    private fun writeDataFile(){
+    private fun writeDataFile(externalFileDate: String) {
         viewModelScope.launch {
             val dataList = clickVideoRepository.getAll().first()
             val jsonString = Gson().toJson(dataList)
-            externalStorageRepository.findClickFile(jsonString)
+            externalStorageRepository.findClickFile(jsonString, externalFileDate)
         }
     }
 
@@ -99,70 +101,18 @@ class MainActivityViewModel @Inject constructor(
         }.joinToString("\n")
     }
 
-    private fun getSettingData() {
-        val mutex = Mutex()
 
+    private fun saveExternalFileDate() {
         viewModelScope.launch(Dispatchers.IO) {
-            settingRepository.getIsChangeButton().collect { isChange ->
-                mutex.withLock {
-                    withContext(Dispatchers.Main) {
-                        if (_settingUiModel.value?.isChangeButton != isChange) {
-                            _settingUiModel.value =
-                                _settingUiModel.value!!.copy(isChangeButton = isChange)
-                        }
-                    }
-                }
-            }
-        }
-
-        viewModelScope.launch(Dispatchers.IO) {
-            settingRepository.getIsVibButton().collect { isVib ->
-                mutex.withLock {
-                    withContext(Dispatchers.Main) {
-                        if (_settingUiModel.value?.isVidButton != isVib) {
-                            _settingUiModel.value =
-                                _settingUiModel.value!!.copy(isVidButton = isVib)
-                        }
-                    }
-                }
-            }
-        }
-
-
-        viewModelScope.launch(Dispatchers.IO) {
-            settingRepository.getMode().collect() {
-                Log.d(ContentValues.TAG, "getDataVibData : ${it}")
-                mutex.withLock {
-                    withContext(Dispatchers.Main) {
-                        if (settingUiModel.value?.mode != intToMode.get(it)!!) {
-                            _settingUiModel.postValue(
-                                _settingUiModel.value?.copy(
-                                    mode = intToMode.get(
-                                        it
-                                    )!!
-                                )
-                            )
-                            Log.d(TAG, "getSettingData: ${_settingUiModel.value} 3")
-                        }
-                    }
-                }
-            }
-        }
-
-        viewModelScope.launch(Dispatchers.IO) {
-            settingRepository.getSetStartPoint().collect(){
-                Log.d(TAG, "getSettingData: ${it} 3")
-                mutex.withLock {
-                    withContext(Dispatchers.Main) {
-                        if (settingUiModel.value?.setStartPoint != it) {
-                            _settingUiModel.postValue(
-                                _settingUiModel.value?.copy(
-                                    setStartPoint = it
-                                )
-                            )
-                        }
-                    }
-                }
+            val currentDate = LocalDate.now()
+            val formatter = DateTimeFormatter.ofPattern("yyMMdd_HHmm")
+            settingRepository.saveExternalFileDate(currentDate.format(formatter))
+            withContext(Dispatchers.Main){
+                _settingUiModel.postValue(
+                    _settingUiModel.value!!.copy(
+                        externalFileDate = currentDate.format(formatter)
+                    )
+                )
             }
         }
     }
@@ -338,7 +288,7 @@ class MainActivityViewModel @Inject constructor(
                         videoScoreUiModel.value!!.clickInfoList,
                     )
                 )
-                writeDataFile()
+                writeDataFile(settingUiModel.value!!.externalFileDate)
             }
             success()
         } else {
@@ -351,5 +301,109 @@ class MainActivityViewModel @Inject constructor(
 
         updateData.clear()
         _ranking.value = updateData
+    }
+
+    private fun getSettingData() {
+        val mutex = Mutex()
+
+        viewModelScope.launch(Dispatchers.IO) {
+            settingRepository.getIsChangeButton().collect { isChange ->
+                mutex.withLock {
+                    withContext(Dispatchers.Main) {
+                        if (_settingUiModel.value?.isChangeButton != isChange) {
+                            _settingUiModel.value =
+                                _settingUiModel.value!!.copy(isChangeButton = isChange)
+                        }
+                    }
+                }
+            }
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            settingRepository.getIsVibButton().collect { isVib ->
+                mutex.withLock {
+                    withContext(Dispatchers.Main) {
+                        if (_settingUiModel.value?.isVidButton != isVib) {
+                            _settingUiModel.value =
+                                _settingUiModel.value!!.copy(isVidButton = isVib)
+                        }
+                    }
+                }
+            }
+        }
+
+
+        viewModelScope.launch(Dispatchers.IO) {
+            settingRepository.getMode().collect() {
+                Log.d(ContentValues.TAG, "getDataVibData : ${it}")
+                mutex.withLock {
+                    withContext(Dispatchers.Main) {
+                        if (settingUiModel.value?.mode != intToMode.get(it)!!) {
+                            _settingUiModel.postValue(
+                                _settingUiModel.value?.copy(
+                                    mode = intToMode.get(
+                                        it
+                                    )!!
+                                )
+                            )
+                            Log.d(TAG, "getSettingData: ${_settingUiModel.value} 3")
+                        }
+                    }
+                }
+            }
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            settingRepository.getSetStartPoint().collect(){
+                Log.d(TAG, "getSettingData: ${it} 3")
+                mutex.withLock {
+                    withContext(Dispatchers.Main) {
+                        if (settingUiModel.value?.setStartPoint != it) {
+                            _settingUiModel.postValue(
+                                _settingUiModel.value?.copy(
+                                    setStartPoint = it
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            settingRepository.getSetStartPoint().collect(){
+                Log.d(TAG, "getSettingData: ${it} 3")
+                mutex.withLock {
+                    withContext(Dispatchers.Main) {
+                        if (settingUiModel.value?.setStartPoint != it) {
+                            _settingUiModel.postValue(
+                                _settingUiModel.value?.copy(
+                                    setStartPoint = it
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val date = settingRepository.getExternalFileDate().first()
+
+            if(date.isNullOrBlank()){
+                saveExternalFileDate()
+            }
+            else{
+                mutex.withLock {
+                    withContext(Dispatchers.Main) {
+                        _settingUiModel.postValue(
+                            _settingUiModel.value?.copy(
+                                externalFileDate = date
+                            )
+                        )
+                    }
+                }
+            }
+        }
     }
 }

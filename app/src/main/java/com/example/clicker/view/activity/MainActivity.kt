@@ -7,8 +7,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.os.Environment.DIRECTORY_DOWNLOADS
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -21,6 +24,7 @@ import androidx.lifecycle.Observer
 import com.example.clicker.R
 import com.example.clicker.data.database.ClickVideoListWithClickInfo
 import com.example.clicker.databinding.ActivityMainBinding
+import com.example.clicker.util.CLICKER000_EXTERNAL_FILE_NAME
 import com.example.clicker.util.Mode
 import com.example.clicker.util.RankingDto
 import com.example.clicker.view.dialog.DefaultDialog
@@ -230,6 +234,23 @@ class MainActivity : AppCompatActivity() {
         dialogManager.dialogs.add(settingDialog)
     }
 
+    private fun findClickFile(activity: AppCompatActivity, fileName: String, content: String) {
+        val resolver = activity.contentResolver
+        Log.d(TAG, "saveTextToFile: ${Environment.getExternalStoragePublicDirectory(
+            DIRECTORY_DOWNLOADS).path}")
+        MediaScannerConnection.scanFile(baseContext, arrayOf("${Environment.getExternalStoragePublicDirectory(
+            DIRECTORY_DOWNLOADS).path}/dataJunsang.json"), null) { path, uri ->
+            // 파일이 스캔된 후 콜백에서 결과를 처리합니다.
+            if (uri != null) {
+                Log.d(TAG, "saveTextToFile: ${path} ${uri}")// 파일이 성공적으로 스캔되었을 때 URI 반환
+                uri.let {
+                    resolver.delete(uri, null, null)
+                }
+            } else {
+                Log.d(TAG, "saveTextToFile: ")  // 스캔 실패 시 null 반환
+            }
+        }
+    }
     private fun setObserve() {
         viewModel.settingUiModel.observe(this, Observer {
             if(it.isChangeButton){

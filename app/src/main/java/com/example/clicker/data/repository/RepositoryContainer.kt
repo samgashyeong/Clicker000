@@ -10,6 +10,7 @@ import com.example.clicker.util.Utils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
@@ -46,7 +47,7 @@ object RepositoryContainer {
 
     @Singleton
     @Provides
-    fun provideNoteDatabase(@ApplicationContext context: Context) : ClickVideoDatabase {
+    fun provideNoteDatabase(@ActivityContext context: Context) : ClickVideoDatabase {
         return Room.databaseBuilder(context.applicationContext,
                         ClickVideoDatabase::class.java, "click_video.db")
                         .fallbackToDestructiveMigration()
