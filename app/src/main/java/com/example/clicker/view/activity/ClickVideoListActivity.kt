@@ -49,6 +49,7 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
+import kotlin.random.Random
 
 
 @AndroidEntryPoint
@@ -174,7 +175,7 @@ class ClickVideoListActivity : AppCompatActivity() {
         return null
     }
 
-    private fun saveTextToFile(activity: AppCompatActivity, fileName: String, content: String) {
+    private fun findNewFile(activity: AppCompatActivity, fileName: String, content: String) {
         val resolver = activity.contentResolver
         Log.d(TAG, "saveTextToFile: ${Environment.getExternalStoragePublicDirectory(
             DIRECTORY_DOWNLOADS).path}")
@@ -183,25 +184,34 @@ class ClickVideoListActivity : AppCompatActivity() {
             // 파일이 스캔된 후 콜백에서 결과를 처리합니다.
             if (uri != null) {
                 Log.d(TAG, "saveTextToFile: ${path} ${uri}")// 파일이 성공적으로 스캔되었을 때 URI 반환
+                uri.let {
+                    resolver.delete(uri, null, null)
+                }
+                saveClickFile(fileName, content)
             } else {
                 Log.d(TAG, "saveTextToFile: ")  // 스캔 실패 시 null 반환
+                saveClickFile(fileName, content)
             }
         }
-//        val contentValues = ContentValues().apply {
-//            put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
-//            put(MediaStore.MediaColumns.MIME_TYPE, "application/json")
-//            put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
-//        }
-//
-//        val newUri = resolver.insert(MediaStore.Files.getContentUri("external"), contentValues)
-//
-//        newUri?.let {
-//            val outputStream: OutputStream? = resolver.openOutputStream(it)
-//            outputStream?.use {
-//                it.write(content.toByteArray())
-//                it.flush()
-//            }
-//        }
+    }
+
+    private fun saveClickFile(fileName: String, content: String) {
+        val resolver = baseContext.contentResolver
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+            put(MediaStore.MediaColumns.MIME_TYPE, "application/json")
+            put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+        }
+
+        val newUri = resolver.insert(MediaStore.Files.getContentUri("external"), contentValues)
+        val new = content + Random(100).toString()
+        newUri?.let {
+            val outputStream: OutputStream? = resolver.openOutputStream(it)
+            outputStream?.use {
+                it.write(new.toByteArray())
+                it.flush()
+            }
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -220,22 +230,9 @@ class ClickVideoListActivity : AppCompatActivity() {
                     manager.showSoftInput(binding.toolbarEditText, InputMethodManager.SHOW_IMPLICIT)
                 }, 300)
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-//                Log.d(TAG, "onOptionsItemSelected: ${File(Environment.getExternalStoragePublicDirectory(
-//                    DIRECTORY_DOWNLOADS), "sampleTextFile.txt").readText()}")
-//                Log.d(TAG, "onOptionsItemSelected: ${File(Environment.getExternalStoragePublicDirectory(DIRECTORY_DOWNLOADS), "sampleTextFile.txt").toPath()}")
-                saveTextToFile(this, "dataJunsang.json", "테스트")
+                findNewFile(this, "dataJunsang.json", "테스트")
             }
             R.id.folder->{
-//                val intent = Intent(Intent.ACTION_VIEW)
-//                intent.setDataAndType(Uri.parse("content://media/external/file"), "*/*")
-//                startActivity(intent)
-
-//                filePicker.pickFile {
-//                    Log.d(TAG, "onOptionsItemSelected: ${it!!.name}  ${it!!.file!!.path}")
-//                }
-//                val fileIntent = Intent(Intent.ACTION_OPEN_DOCUMENT)  // 파일을 만들어 쓰는 옵션 줌
-//                fileIntent.type = "*/*"
-//                activityResultLauncher2.launch(fileIntent)
                 filePicker.pickMimeFile("application/json"){
                     it
                     Log.d(TAG, "onOptionsItemSelected: ${it?.file?.readText()}")
@@ -249,7 +246,7 @@ class ClickVideoListActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                saveTextToFile(this, "dataJunsang", "테스트")
+                findNewFile(this, "dataJunsang", "테스트")
             } else {
                 Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
             }
@@ -262,7 +259,7 @@ class ClickVideoListActivity : AppCompatActivity() {
             ActivityCompat.requestPermissions(this,
                 arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE)
         } else {
-            saveTextToFile(this, "dataJunsang", "테스트")
+            findNewFile(this, "dataJunsang", "테스트")
         }
     }
 }
