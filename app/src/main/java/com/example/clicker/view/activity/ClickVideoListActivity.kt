@@ -190,10 +190,8 @@ class ClickVideoListActivity : AppCompatActivity() {
                 filePicker.pickMimeFile("application/json"){
                     it
                     Log.d(TAG, "onOptionsItemSelected: ${it?.file?.readText()}")
-                    searchVideoListViewModel.insertAll(listOf())
-                    val listType = object : TypeToken<List<ClickVideoListWithClickInfo>>() {}.type
                    searchVideoListViewModel.insertAll(
-                       Gson().fromJson(it?.file?.readText(), listType)
+                       it
                    )
                 }
             }
