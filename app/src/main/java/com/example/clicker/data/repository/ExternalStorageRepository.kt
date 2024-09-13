@@ -15,19 +15,29 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.io.OutputStream
 
-class ExternalStorageRepository(private val context: Context, private val settingRepository: SettingRepository) {
+class ExternalStorageRepository(
+    private val context: Context,
+    private val settingRepository: SettingRepository
+) {
 
     fun findClickFile(content: String, externalFileDate: String) {
         val resolver = context.contentResolver
 
+        CoroutineScope(Dispatchers.IO).launch {
 
-        MediaScannerConnection.scanFile(context, arrayOf("${
-            Environment.getExternalStoragePublicDirectory(
-            DIRECTORY_DOWNLOADS
-            ).path}/${CLICKER000_EXTERNAL_FILE_NAME}_${externalFileDate}.json"), null) { path, uri ->
-            // 파일이 스캔된 후 콜백에서 결과를 처리합니다.
-            CoroutineScope(Dispatchers.IO).launch {
-                val data = settingRepository.getExternalFileDate().first()
+
+            val data = settingRepository.getExternalFileDate().first()
+
+            MediaScannerConnection.scanFile(
+                context, arrayOf(
+                    "${
+                        Environment.getExternalStoragePublicDirectory(
+                            DIRECTORY_DOWNLOADS
+                        ).path
+                    }/${CLICKER000_EXTERNAL_FILE_NAME}_${data}.json"
+                ), null
+            ) { path, uri ->
+                // 파일이 스캔된 후 콜백에서 결과를 처리합니다.
                 if (uri != null) {
                     Log.d(TAG, "saveTextToFile: ${path} ${uri}")// 파일이 성공적으로 스캔되었을 때 URI 반환
                     uri.let {
@@ -46,7 +56,10 @@ class ExternalStorageRepository(private val context: Context, private val settin
     private fun saveClickFile(content: String, externalFileDate: String) {
         val resolver = context.contentResolver
         val contentValues = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, "${CLICKER000_EXTERNAL_FILE_NAME}_${externalFileDate}")
+            put(
+                MediaStore.MediaColumns.DISPLAY_NAME,
+                "${CLICKER000_EXTERNAL_FILE_NAME}_${externalFileDate}"
+            )
             put(MediaStore.MediaColumns.MIME_TYPE, "application/json")
             put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
         }
