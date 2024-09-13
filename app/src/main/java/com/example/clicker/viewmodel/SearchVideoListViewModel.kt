@@ -39,7 +39,7 @@ class SearchVideoListViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             databaseVideoRepository.getAll().collect{
                 val dataToString = Gson().toJson(it)
-                Log.d(TAG, "getAll: ${dataToString}")
+                Log.d(TAG, "getAll: ${dataToString} asdf")
                 withContext(Dispatchers.Main){
                     _databaseScoredList.value = it
                     _searchList.value = it
