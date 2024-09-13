@@ -38,11 +38,14 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.atwa.filepicker.core.FilePicker
 import com.example.clicker.R
+import com.example.clicker.data.database.ClickVideoListWithClickInfo
 import com.example.clicker.databinding.ActivityClickVideoListBinding
 import com.example.clicker.util.PermissionHelper
 import com.example.clicker.util.PermissionHelper.Companion.REQUEST_CODE
 import com.example.clicker.view.adapter.ClickVideoAdapter
 import com.example.clicker.viewmodel.SearchVideoListViewModel
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.DataInputStream
 import java.io.FileInputStream
@@ -122,8 +125,6 @@ class ClickVideoListActivity : AppCompatActivity() {
 
         //Log.d(TAG, "onCreate: ${File(Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS), "testFile.txt").readText()}")
 
-        checkPermission()
-
         binding.toolbarEditText.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
             when (actionId) {
                 IME_ACTION_SEARCH -> {
@@ -166,64 +167,7 @@ class ClickVideoListActivity : AppCompatActivity() {
         inflater.inflate(com.example.clicker.R.menu.click_videos_menu , menu)
         return true
     }
-    fun findFileUri(resolver: ContentResolver, fileName: String): android.net.Uri? {
-        val projection = arrayOf(MediaStore.MediaColumns._ID)
-        val selection = "${MediaStore.MediaColumns.DISPLAY_NAME} = ?"
-        val selectionArgs = arrayOf(fileName)
-        val queryUri = MediaStore.Files.getContentUri("external")
 
-        resolver.query(queryUri, projection, selection, selectionArgs, null)?.use { cursor ->
-            if (cursor.moveToFirst()) {
-                val id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID))
-                return ContentUris.withAppendedId(queryUri, id)
-            }
-        }
-
-        return null
-    }
-
-    private fun findNewFile(activity: AppCompatActivity, fileName: String, content: String) {
-        val resolver =
-        Log.d(TAG, "saveTextToFile: ${Environment.getExternalStoragePublicDirectory(
-            DIRECTORY_DOWNLOADS).path}")
-        MediaScannerConnection.scanFile(baseContext, arrayOf("${Environment.getExternalStoragePublicDirectory(
-            DIRECTORY_DOWNLOADS).path}/dataJunsang.txt"), null) { path, uri ->
-            // 파일이 스캔된 후 콜백에서 결과를 처리합니다.
-            if (uri != null) {
-                Log.d(TAG, "saveTextToFile: ${path} ${uri}")// 파일이 성공적으로 스캔되었을 때 URI 반환
-                uri.let {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        val pendingIntent = MediaStore.createDeleteRequest(baseContext.contentResolver, mutableListOf(uri))
-                        delete.launch(IntentSenderRequest.Builder(pendingIntent.intentSender).build())
-                    }
-                }
-                saveClickFile("dataJunsang", content)
-            } else {
-                Log.d(TAG, "saveTextToFile: ")  // 스캔 실패 시 null 반환
-                saveClickFile("dataJunsang", content)
-            }
-        }
-    }
-
-
-    private fun saveClickFile(fileName: String, content: String) {
-        val resolver = baseContext.contentResolver
-        val contentValues = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
-            put(MediaStore.MediaColumns.MIME_TYPE, "text/plain")
-            put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
-        }
-
-        val newUri = resolver.insert(MediaStore.Files.getContentUri("external"), contentValues)
-        val new = content + Random(100).toString()
-        newUri?.let {
-            val outputStream: OutputStream? = resolver.openOutputStream(it)
-            outputStream?.use {
-                it.write(new.toByteArray())
-                it.flush()
-            }
-        }
-    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
@@ -241,37 +185,20 @@ class ClickVideoListActivity : AppCompatActivity() {
                     manager.showSoftInput(binding.toolbarEditText, InputMethodManager.SHOW_IMPLICIT)
                 }, 300)
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                findNewFile(this, "dataJunsang", "테스트")
             }
             R.id.folder->{
-                filePicker.pickMimeFile("text/plain"){
+                filePicker.pickMimeFile("application/json"){
                     it
                     Log.d(TAG, "onOptionsItemSelected: ${it?.file?.readText()}")
                     searchVideoListViewModel.insertAll(listOf())
+                    val listType = object : TypeToken<List<ClickVideoListWithClickInfo>>() {}.type
+                   searchVideoListViewModel.insertAll(
+                       Gson().fromJson(it?.file?.readText(), listType)
+                   )
                 }
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                findNewFile(this, "dataJunsang", "테스트")
-            } else {
-                Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun checkPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE)
-        } else {
-            findNewFile(this, "dataJunsang", "테스트")
-        }
-    }
 }

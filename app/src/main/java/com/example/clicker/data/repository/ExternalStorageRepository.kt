@@ -9,28 +9,36 @@ import android.os.Environment.DIRECTORY_DOWNLOADS
 import android.provider.MediaStore
 import android.util.Log
 import com.example.clicker.util.CLICKER000_EXTERNAL_FILE_NAME
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import java.io.OutputStream
 
-class ExternalStorageRepository(private val context: Context) {
+class ExternalStorageRepository(private val context: Context, private val settingRepository: SettingRepository) {
 
     fun findClickFile(content: String, externalFileDate: String) {
         val resolver = context.contentResolver
+
 
         MediaScannerConnection.scanFile(context, arrayOf("${
             Environment.getExternalStoragePublicDirectory(
             DIRECTORY_DOWNLOADS
             ).path}/${CLICKER000_EXTERNAL_FILE_NAME}_${externalFileDate}.json"), null) { path, uri ->
             // 파일이 스캔된 후 콜백에서 결과를 처리합니다.
-            if (uri != null) {
-                Log.d(TAG, "saveTextToFile: ${path} ${uri}")// 파일이 성공적으로 스캔되었을 때 URI 반환
-                uri.let {
-                    Log.d(TAG, "findClickFile: ${resolver}")
-                    resolver.delete(it, null, null)
-                    saveClickFile(content, externalFileDate)
+            CoroutineScope(Dispatchers.IO).launch {
+                val data = settingRepository.getExternalFileDate().first()
+                if (uri != null) {
+                    Log.d(TAG, "saveTextToFile: ${path} ${uri}")// 파일이 성공적으로 스캔되었을 때 URI 반환
+                    uri.let {
+                        Log.d(TAG, "findClickFile: ${resolver}")
+                        resolver.delete(it, null, null)
+                        saveClickFile(content, data)
+                    }
+                } else {
+                    Log.d(TAG, "saveTextToFile: ")
+                    saveClickFile(content, data)// 스캔 실패 시 null 반환
                 }
-            } else {
-                Log.d(TAG, "saveTextToFile: ")
-                saveClickFile(content, externalFileDate)// 스캔 실패 시 null 반환
             }
         }
     }

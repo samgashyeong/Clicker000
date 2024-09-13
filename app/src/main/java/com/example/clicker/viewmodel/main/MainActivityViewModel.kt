@@ -31,6 +31,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
@@ -104,13 +105,13 @@ class MainActivityViewModel @Inject constructor(
 
     private fun saveExternalFileDate() {
         viewModelScope.launch(Dispatchers.IO) {
-            val currentDate = LocalDate.now()
-            val formatter = DateTimeFormatter.ofPattern("yyMMdd_HHmm")
-            settingRepository.saveExternalFileDate(currentDate.format(formatter))
+            val currentDateTime = LocalDateTime.now() // This includes both date and time
+            val formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm")
+            settingRepository.saveExternalFileDate(currentDateTime.format(formatter))
             withContext(Dispatchers.Main){
                 _settingUiModel.postValue(
                     _settingUiModel.value!!.copy(
-                        externalFileDate = currentDate.format(formatter)
+                        externalFileDate = currentDateTime.format(formatter)
                     )
                 )
             }
