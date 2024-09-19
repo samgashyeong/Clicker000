@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.clicker.data.database.ClickInfo
 import com.example.clicker.data.database.ClickVideoListWithClickInfo
+import com.example.clicker.util.lowerBound
 import com.github.mikephil.charting.data.Entry
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
@@ -22,14 +23,14 @@ import javax.inject.Inject
 class AnalyzeViewModel @Inject constructor(val tracker: YouTubePlayerTracker) : ViewModel() {
 
     val videoInfo: MutableLiveData<ClickVideoListWithClickInfo?> = MutableLiveData(null)
-    val clickInfo : MutableLiveData<List<ClickInfo>> = MutableLiveData()
+    val clickInfo : MutableLiveData<List<ClickInfo>> = MutableLiveData(listOf())
     val videoId : MutableLiveData<String> = MutableLiveData()
     val nowPosition : MutableLiveData<Int> = MutableLiveData(0)
 
     val youtubePlayer : MutableLiveData<YouTubePlayer> = MutableLiveData()
-    val listEntry : ArrayList<Entry> = arrayListOf(Entry(0f, 0f))
+    private val listEntry : ArrayList<Entry> = arrayListOf(Entry(0f, 0f))
 
-    val listChartData : ArrayList<Entry> = arrayListOf(Entry(0f, 0f))
+
     val listChartLiveData : MutableLiveData<ArrayList<Entry>> = MutableLiveData(arrayListOf(Entry(0f, 0f)))
 
     var nowChartIndex : Int = 1
@@ -71,29 +72,35 @@ class AnalyzeViewModel @Inject constructor(val tracker: YouTubePlayerTracker) : 
             val secondList = clickInfoToSecondList()
             while(true){
                 if(tracker.state == PlayerConstants.PlayerState.PLAYING){
+//                    val second = String.format("%.1f", tracker.currentSecond.toDouble()).toDouble()
+//
+//                    val checkList_ : ArrayList<Entry> = ArrayList()
+//
+//                    for(i in nowChartIndex..<listEntry.size){
+//                        if(listEntry[i].x <= second && !checkEntry[i]){
+//                            checkList_.add(listEntry[i])
+//                        }
+//                    }
+//                    checkList = checkList_
+//
+//                    if(checkList.size != 0){
+//                        for(i in nowChartIndex..<nowChartIndex + checkList.size){
+//                            checkEntry[i] = true
+//                        }
+//                        Log.d(TAG, "startAddDataEntry: ${checkEntry}")
+//                        nowChartIndex += checkList.size
+//                    }
+//                    Log.d(TAG, "startAddDataEntry: ${nowChartIndex} ${checkList}")
+//
+//                    listChartData.addAll(checkList)
+//                    listChartLiveData.postValue(checkList)
+
                     val second = String.format("%.1f", tracker.currentSecond.toDouble()).toDouble()
 
-                    val checkList_ : ArrayList<Entry> = ArrayList()
 
-                    for(i in nowChartIndex..<listEntry.size){
-                        if(listEntry[i].x <= second && !checkEntry[i]){
-                            checkList_.add(listEntry[i])
-                        }
-                    }
-                    checkList = checkList_
+                    val result = lowerBound(clickInfo.value!!.map { it.clickSecond }, second.toFloat())
 
-                    if(checkList.size != 0){
-                        for(i in nowChartIndex..<nowChartIndex + checkList.size){
-                            checkEntry[i] = true
-                        }
-                        Log.d(TAG, "startAddDataEntry: ${checkEntry}")
-                        nowChartIndex += checkList.size
-                    }
-                    Log.d(TAG, "startAddDataEntry: ${nowChartIndex} ${checkList}")
-
-                    listChartData.addAll(checkList)
-                    listChartLiveData.postValue(checkList)
-
+                    Log.d(TAG, "startAddDataEntry: ${result}")
                     delay(300L)
                 }
             }

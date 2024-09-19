@@ -37,7 +37,7 @@ class StatisticsFragment : Fragment() {
 
         viewModel.videoInfo?.observe(viewLifecycleOwner, Observer {
             binding.yourChartName.apply {
-                val dataset = LineDataSet(viewModel.listChartData,"Score")
+                val dataset = LineDataSet(viewModel.listChartLiveData.value,"Score")
                 dataset.apply {
                     color = Color.WHITE
                     setCircleColor(Color.rgb(208, 187, 254))

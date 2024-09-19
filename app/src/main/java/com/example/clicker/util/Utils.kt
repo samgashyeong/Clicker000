@@ -26,3 +26,22 @@ sealed class Mode(){
     data class Default(val name : String = "Default") : Mode()
     data class Ranking(val name : String = "Ranking") : Mode()
 }
+
+fun lowerBound(list : List<Float>, data : Float) : Int{
+    var left = 0
+    var right = list.size-1
+    var answer = list.size-1;
+    while(left<=right){
+        val mid = (left+right)/2;
+
+        if(list[mid] >= data){
+            right = mid-1;
+            answer = mid;
+        }
+        else{
+            left = mid+1;
+        }
+    }
+
+    return answer
+}
