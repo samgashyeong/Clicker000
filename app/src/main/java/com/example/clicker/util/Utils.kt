@@ -27,7 +27,7 @@ sealed class Mode(){
     data class Ranking(val name : String = "Ranking") : Mode()
 }
 
-fun lowerBound(list : List<Float>, data : Float) : Int{
+fun lowerBound(list : List<Double>, data : Double) : Int{
     var left = 0
     var right = list.size-1
     var answer = list.size-1;

@@ -62,7 +62,9 @@ class AnalyzeViewModel @Inject constructor(val tracker: YouTubePlayerTracker) : 
             while(true){
                 val second = String.format("%.1f", tracker.currentSecond.toDouble()).toDouble()
                 if(tracker.state == PlayerConstants.PlayerState.PLAYING && secondList.contains(second)){
-                    _nowPosition.postValue(secondList.indexOf(second))
+                    val result = lowerBound(secondList, second)
+                    //_nowPosition.postValue(secondList.indexOf(second))
+                    _nowPosition.postValue(result)
                 }
                 delay(100L)
             }
@@ -99,7 +101,7 @@ class AnalyzeViewModel @Inject constructor(val tracker: YouTubePlayerTracker) : 
                     val second = String.format("%.1f", tracker.currentSecond.toDouble()).toDouble()
 
 
-                    var result = lowerBound(clickInfo.value!!.map { it.clickSecond }, second.toFloat())
+                    var result = lowerBound(clickInfo.value!!.map { it.clickSecond.toDouble() }, second)
 
                     Log.d(TAG, "startAddDataEntry: ${result} ${clickInfo}")
                     if(result == clickInfo.value!!.size-1){
