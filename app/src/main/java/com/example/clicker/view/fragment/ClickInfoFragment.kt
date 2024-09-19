@@ -1,6 +1,8 @@
 package com.example.clicker.view.fragment
 
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,12 +15,11 @@ import com.example.clicker.databinding.FragmentClickInfoBinding
 import com.example.clicker.view.adapter.ClickInfoAdapter
 import com.example.clicker.view.dialog.EditTextDialog
 import com.example.clicker.viewmodel.analyze.AnalyzeViewModel
-import com.example.clicker.viewmodel.analyze.MainDatabaseViewModel
 
 class ClickInfoFragment : Fragment() {
     private lateinit var binding: FragmentClickInfoBinding
     private val viewModel: AnalyzeViewModel by activityViewModels()
-    private val databaseViewModel : MainDatabaseViewModel by activityViewModels()
+    //private val databaseViewModel : MainDatabaseViewModel by activityViewModels()
     private lateinit var editTextDialog: EditTextDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +44,7 @@ class ClickInfoFragment : Fragment() {
         viewModel.videoInfo?.observe(viewLifecycleOwner, Observer {
             binding.recycler.apply {
                 layoutManager = LinearLayoutManager(context)
-                adapter = ClickInfoAdapter(databaseViewModel, requireContext() , viewModel.videoInfo.value!!){
+                adapter = ClickInfoAdapter(viewModel, requireContext() , viewModel.videoInfo.value!!){
                     dataChangeIndex = it
                 }
             }
@@ -70,9 +71,11 @@ class ClickInfoFragment : Fragment() {
             binding.recycler.layoutManager?.startSmoothScroll(smoothScroller)
         })
 
-        databaseViewModel.readAllData.observe(viewLifecycleOwner, Observer {
+        viewModel.readAllData.observe(viewLifecycleOwner, Observer {
             binding.recycler.apply {
-                dataChangeIndex?.let { it1 -> adapter?.notifyItemChanged(it1) }
+                Log.d(TAG, "onViewCreated: ${dataChangeIndex}")
+                //dataChangeIndex?.let { it1 -> adapter?.notifyItemChanged(it1) }
+                adapter!!.notifyDataSetChanged()
             }
         })
     }

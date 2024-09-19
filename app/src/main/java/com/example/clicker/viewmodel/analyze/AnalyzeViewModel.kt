@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.clicker.data.database.ClickInfo
 import com.example.clicker.data.database.ClickVideoListWithClickInfo
+import com.example.clicker.data.repository.ClickVideoRepository
 import com.example.clicker.util.lowerBound
 import com.github.mikephil.charting.data.Entry
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
@@ -22,11 +23,9 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class AnalyzeViewModel @Inject constructor(val tracker: YouTubePlayerTracker) : ViewModel() {
-
-    val videoInfo: MutableLiveData<ClickVideoListWithClickInfo?> = MutableLiveData(null)
-    val clickInfo : MutableLiveData<List<ClickInfo>> = MutableLiveData(listOf())
-    val videoId : MutableLiveData<String> = MutableLiveData()
+class AnalyzeViewModel @Inject constructor(val tracker: YouTubePlayerTracker,
+                                           private val databaseRepository: ClickVideoRepository
+) : ViewModel() {
 
     val youtubePlayer : MutableLiveData<YouTubePlayer> = MutableLiveData()
 
@@ -38,11 +37,37 @@ class AnalyzeViewModel @Inject constructor(val tracker: YouTubePlayerTracker) : 
     val _listChartLiveData : MutableLiveData<ArrayList<Entry>> = MutableLiveData(arrayListOf(Entry(0f, 0f)))
     val listChartLiveData : LiveData<ArrayList<Entry>> get() = _listChartLiveData
 
-    //var nowChartIndex : Int = 1
-    //val checkEntry : ArrayList<Boolean> = arrayListOf(true)
-    //var checkList : ArrayList<Entry> = ArrayList()
 
     val scoredText : MutableLiveData<String> =  MutableLiveData()
+    val videoInfo: MutableLiveData<ClickVideoListWithClickInfo?> = MutableLiveData(null)
+    val clickInfo : MutableLiveData<List<ClickInfo>> = MutableLiveData(listOf())
+    val videoId : MutableLiveData<String> = MutableLiveData()
+
+    private val _readAllData:MutableLiveData<List<ClickVideoListWithClickInfo>> = MutableLiveData();
+    val readAllData:LiveData<List<ClickVideoListWithClickInfo>> get() = _readAllData
+
+    init {
+        //val userDao = ClickVideoDatabase.getInstance(application)!!.clickVideoDao()
+        //repository = ClickVideoRepository(userDao)
+        getAll()
+    }
+
+    private fun getAll() {
+        viewModelScope.launch(Dispatchers.IO) {
+            databaseRepository.getAll().collect{
+                withContext(Dispatchers.Main){
+                    Log.d(TAG, "getAll: ${it.last().clickInfoList}")
+                    _readAllData.value = it
+                }
+            }
+        }
+    }
+
+    fun update(clickVideoListWithClickInfo: ClickVideoListWithClickInfo){
+        viewModelScope.launch(Dispatchers.IO) {
+            databaseRepository.update(clickVideoListWithClickInfo)
+        }
+    }
 
     fun dataToEntry(){
         for(i in clickInfo.value!!){
