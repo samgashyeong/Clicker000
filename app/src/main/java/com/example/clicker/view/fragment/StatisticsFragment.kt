@@ -10,7 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.example.clicker.R
 import com.example.clicker.databinding.FragmentStatisticsBinding
-import com.example.clicker.viewmodel.AnalyzeViewModel
+import com.example.clicker.viewmodel.analyze.AnalyzeViewModel
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet

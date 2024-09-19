@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.LinearSmoothScroller
 import com.example.clicker.databinding.FragmentClickInfoBinding
 import com.example.clicker.view.adapter.ClickInfoAdapter
 import com.example.clicker.view.dialog.EditTextDialog
-import com.example.clicker.viewmodel.AnalyzeViewModel
-import com.example.clicker.viewmodel.MainDatabaseViewModel
+import com.example.clicker.viewmodel.analyze.AnalyzeViewModel
+import com.example.clicker.viewmodel.analyze.MainDatabaseViewModel
 
 class ClickInfoFragment : Fragment() {
     private lateinit var binding: FragmentClickInfoBinding

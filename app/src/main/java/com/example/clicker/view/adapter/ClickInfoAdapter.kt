@@ -12,10 +12,10 @@ import com.example.clicker.data.database.ClickVideoListWithClickInfo
 import com.example.clicker.databinding.LayoutClickInfoBinding
 import com.example.clicker.view.dialog.EditTextDialog
 import com.example.clicker.view.dialog.EditTextDialogDto
-import com.example.clicker.viewmodel.MainDatabaseViewModel
+import com.example.clicker.viewmodel.analyze.MainDatabaseViewModel
 
 class ClickInfoAdapter(private val databaseViewModel: MainDatabaseViewModel, private val context: Context,
-    private var data : ClickVideoListWithClickInfo, private val clickListener: (position : Int) -> Unit) :
+                       private var data : ClickVideoListWithClickInfo, private val clickListener: (position : Int) -> Unit) :
     RecyclerView.Adapter<ClickInfoAdapter.ClickInfoViewHolder>() {
 
 

@@ -1,21 +1,11 @@
 package com.example.clicker.view.activity
 
-import android.Manifest
 import android.app.Activity
-import android.content.ContentResolver
-import android.content.ContentUris
-import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.content.Intent
-import android.content.IntentSender.SendIntentException
-import android.content.pm.PackageManager
-import android.media.MediaScannerConnection
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
-import android.os.Environment.DIRECTORY_DOWNLOADS
-import android.provider.MediaStore
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -23,34 +13,25 @@ import android.view.View
 import android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView.OnEditorActionListener
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.atwa.filepicker.core.FilePicker
 import com.example.clicker.R
-import com.example.clicker.data.database.ClickVideoListWithClickInfo
 import com.example.clicker.databinding.ActivityClickVideoListBinding
 import com.example.clicker.util.PermissionHelper
-import com.example.clicker.util.PermissionHelper.Companion.REQUEST_CODE
 import com.example.clicker.view.adapter.ClickVideoAdapter
-import com.example.clicker.viewmodel.SearchVideoListViewModel
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.example.clicker.viewmodel.score_list.SearchVideoListViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.DataInputStream
 import java.io.FileInputStream
-import java.io.OutputStream
-import kotlin.random.Random
 
 
 @AndroidEntryPoint

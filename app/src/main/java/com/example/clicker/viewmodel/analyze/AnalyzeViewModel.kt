@@ -1,4 +1,4 @@
-package com.example.clicker.viewmodel
+package com.example.clicker.viewmodel.analyze
 
 import android.content.ContentValues.TAG
 import android.util.Log
@@ -19,8 +19,7 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class AnalyzeViewModel @Inject constructor(
-                                           val tracker: YouTubePlayerTracker) : ViewModel() {
+class AnalyzeViewModel @Inject constructor(val tracker: YouTubePlayerTracker) : ViewModel() {
 
     val videoInfo: MutableLiveData<ClickVideoListWithClickInfo?> = MutableLiveData(null)
     val clickInfo : MutableLiveData<List<ClickInfo>> = MutableLiveData()
@@ -40,7 +39,6 @@ class AnalyzeViewModel @Inject constructor(
     val scoredText : MutableLiveData<String> =  MutableLiveData()
 
     fun dataToEntry(){
-
         for(i in clickInfo.value!!){
             listEntry.add(Entry(i.clickSecond, i.total.toFloat()))
             checkEntry.add(false)

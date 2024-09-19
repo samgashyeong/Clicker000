@@ -5,8 +5,6 @@ import android.content.ClipboardManager
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ApplicationInfo
-import android.content.pm.PackageManager
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Bundle
@@ -22,9 +20,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.example.clicker.R
-import com.example.clicker.data.database.ClickVideoListWithClickInfo
 import com.example.clicker.databinding.ActivityMainBinding
-import com.example.clicker.util.CLICKER000_EXTERNAL_FILE_NAME
 import com.example.clicker.util.Mode
 import com.example.clicker.util.RankingDto
 import com.example.clicker.view.dialog.DefaultDialog
@@ -36,8 +32,6 @@ import com.example.clicker.view.dialog.RankingDialog
 import com.example.clicker.view.dialog.SaveDialog
 import com.example.clicker.view.dialog.SavePlayerEditTextDialog
 import com.example.clicker.view.dialog.SettingDialog
-import com.example.clicker.viewmodel.MainDatabaseViewModel
-import com.example.clicker.viewmodel.SettingDataStoreViewModel
 import com.example.clicker.viewmodel.main.MainActivityViewModel
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
@@ -333,6 +327,7 @@ class MainActivity : AppCompatActivity() {
                     youtubePlayerView.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
                         override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
                             youtubePlayer = youTubePlayer
+                            Log.d(TAG, "onYouTubePlayer: ${viewModel.videoScoreUiModel.value!!.videoId}")
                             youTubePlayer.loadVideo(
                                 viewModel.videoScoreUiModel.value!!.videoId,
                                 viewModel.stopActivityVideoSecond.value!!.toFloat()

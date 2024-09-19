@@ -14,8 +14,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.clicker.R
 import com.example.clicker.data.database.ClickVideoListWithClickInfo
 import com.example.clicker.databinding.ActivityAnalyzeBinding
-import com.example.clicker.viewmodel.AnalyzeViewModel
-import com.example.clicker.viewmodel.MainDatabaseViewModel
+import com.example.clicker.viewmodel.analyze.AnalyzeViewModel
 import com.google.android.material.tabs.TabLayout
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener

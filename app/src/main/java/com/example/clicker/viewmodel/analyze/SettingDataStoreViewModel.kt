@@ -1,4 +1,4 @@
-package com.example.clicker.viewmodel
+package com.example.clicker.viewmodel.analyze
 
 import android.content.ContentValues
 import android.content.ContentValues.TAG

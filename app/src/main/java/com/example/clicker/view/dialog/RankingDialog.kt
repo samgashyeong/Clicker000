@@ -1,25 +1,14 @@
 package com.example.clicker.view.dialog
 
 import android.app.Dialog
-import android.content.ContentValues.TAG
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
-import android.view.View
-import android.widget.AdapterView
-import android.widget.CheckBox
 import android.widget.ImageView
-import android.widget.Spinner
 import android.widget.TextView
-import android.widget.Toast
-import androidx.lifecycle.Observer
 import com.example.clicker.R
 import com.example.clicker.util.RankingDto
-import com.example.clicker.util.intToMode
-import com.example.clicker.util.modeToInt
-import com.example.clicker.viewmodel.SettingDataStoreViewModel
 
 
 class RankingDialog(

@@ -1,4 +1,4 @@
-package com.example.clicker.viewmodel
+package com.example.clicker.viewmodel.score_list
 
 import android.content.ContentValues.TAG
 import android.util.Log
