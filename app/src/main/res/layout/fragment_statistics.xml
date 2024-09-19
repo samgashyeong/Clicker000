@@ -22,7 +22,7 @@
             android:layout_height="match_parent">
 
             <com.github.mikephil.charting.charts.LineChart
-                android:id="@+id/your_chart_name"
+                android:id="@+id/chart"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1.5"/>

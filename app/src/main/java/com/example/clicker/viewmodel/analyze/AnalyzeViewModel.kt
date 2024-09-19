@@ -2,6 +2,7 @@ package com.example.clicker.viewmodel.analyze
 
 import android.content.ContentValues.TAG
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,6 +17,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -25,24 +27,27 @@ class AnalyzeViewModel @Inject constructor(val tracker: YouTubePlayerTracker) : 
     val videoInfo: MutableLiveData<ClickVideoListWithClickInfo?> = MutableLiveData(null)
     val clickInfo : MutableLiveData<List<ClickInfo>> = MutableLiveData(listOf())
     val videoId : MutableLiveData<String> = MutableLiveData()
-    val nowPosition : MutableLiveData<Int> = MutableLiveData(0)
 
     val youtubePlayer : MutableLiveData<YouTubePlayer> = MutableLiveData()
+
     private val listEntry : ArrayList<Entry> = arrayListOf(Entry(0f, 0f))
 
+    private val _nowPosition : MutableLiveData<Int> = MutableLiveData(0)
+    val nowPosition : LiveData<Int> get() = _nowPosition
 
-    val listChartLiveData : MutableLiveData<ArrayList<Entry>> = MutableLiveData(arrayListOf(Entry(0f, 0f)))
+    val _listChartLiveData : MutableLiveData<ArrayList<Entry>> = MutableLiveData(arrayListOf(Entry(0f, 0f)))
+    val listChartLiveData : LiveData<ArrayList<Entry>> get() = _listChartLiveData
 
-    var nowChartIndex : Int = 1
-    val checkEntry : ArrayList<Boolean> = arrayListOf(true)
-    var checkList : ArrayList<Entry> = ArrayList()
+    //var nowChartIndex : Int = 1
+    //val checkEntry : ArrayList<Boolean> = arrayListOf(true)
+    //var checkList : ArrayList<Entry> = ArrayList()
 
     val scoredText : MutableLiveData<String> =  MutableLiveData()
 
     fun dataToEntry(){
         for(i in clickInfo.value!!){
             listEntry.add(Entry(i.clickSecond, i.total.toFloat()))
-            checkEntry.add(false)
+            //checkEntry.add(false)
         }
     }
 
@@ -50,9 +55,6 @@ class AnalyzeViewModel @Inject constructor(val tracker: YouTubePlayerTracker) : 
         String.format("%.1f", it.clickSecond.toDouble()).toDouble()
     }
 
-    private fun clickInfoToSecondIntList() = clickInfo.value!!.map {
-        it.clickSecond.toInt()
-    }
 
     fun startTracking() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -60,7 +62,7 @@ class AnalyzeViewModel @Inject constructor(val tracker: YouTubePlayerTracker) : 
             while(true){
                 val second = String.format("%.1f", tracker.currentSecond.toDouble()).toDouble()
                 if(tracker.state == PlayerConstants.PlayerState.PLAYING && secondList.contains(second)){
-                    nowPosition.postValue(secondList.indexOf(second))
+                    _nowPosition.postValue(secondList.indexOf(second))
                 }
                 delay(100L)
             }
@@ -69,7 +71,6 @@ class AnalyzeViewModel @Inject constructor(val tracker: YouTubePlayerTracker) : 
 
     fun startAddDataEntry(){
         viewModelScope.launch(Dispatchers.IO) {
-            val secondList = clickInfoToSecondList()
             while(true){
                 if(tracker.state == PlayerConstants.PlayerState.PLAYING){
 //                    val second = String.format("%.1f", tracker.currentSecond.toDouble()).toDouble()
@@ -98,9 +99,15 @@ class AnalyzeViewModel @Inject constructor(val tracker: YouTubePlayerTracker) : 
                     val second = String.format("%.1f", tracker.currentSecond.toDouble()).toDouble()
 
 
-                    val result = lowerBound(clickInfo.value!!.map { it.clickSecond }, second.toFloat())
+                    var result = lowerBound(clickInfo.value!!.map { it.clickSecond }, second.toFloat())
 
-                    Log.d(TAG, "startAddDataEntry: ${result}")
+                    Log.d(TAG, "startAddDataEntry: ${result} ${clickInfo}")
+                    if(result == clickInfo.value!!.size-1){
+                        result += 1
+                    }
+                    withContext(Dispatchers.Main){
+                        _listChartLiveData.value = ArrayList(listEntry.subList(0, result+1))
+                    }
                     delay(300L)
                 }
             }

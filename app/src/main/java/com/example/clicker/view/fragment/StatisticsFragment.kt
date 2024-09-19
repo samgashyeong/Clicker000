@@ -36,7 +36,7 @@ class StatisticsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.videoInfo?.observe(viewLifecycleOwner, Observer {
-            binding.yourChartName.apply {
+            binding.chart.apply {
                 val dataset = LineDataSet(viewModel.listChartLiveData.value,"Score")
                 dataset.apply {
                     color = Color.WHITE
@@ -50,17 +50,24 @@ class StatisticsFragment : Fragment() {
 
         })
         viewModel.listChartLiveData.observe(viewLifecycleOwner, Observer {
-            binding.yourChartName.apply {
-                val dataSetIndex : ILineDataSet = data.getDataSetByIndex(0)
+            binding.chart.apply {
                 //val dataset = LineDataSet(viewModel.listChartLiveData.value)
-                if(viewModel.listChartLiveData.value!!.size != 0){
-                    //Log.d(TAG, "onViewCreated: ${dataSetIndex.label} ${viewModel.listChartLiveData.value?.size!!}")
-                    for(i in 0..viewModel.listChartLiveData.value?.size!!.minus(1)){
-                        data.addEntry(viewModel.listChartLiveData.value!![i], 0)
-                    }
+//                if(viewModel.listChartLiveData.value!!.size != 0){
+//                    //Log.d(TAG, "onViewCreated: ${dataSetIndex.label} ${viewModel.listChartLiveData.value?.size!!}")
+//                    for(i in 0..viewModel.listChartLiveData.value?.size!!.minus(1)){
+//                        data.addEntry(viewModel.listChartLiveData.value!![i], 0)
+//                    }
+//                }
+                val lineDataSet = LineDataSet(viewModel.listChartLiveData.value, "Label") // Create a new dataset with entries
+                val lineData = LineData(lineDataSet)
+                data = lineData
+                invalidate()
+                lineDataSet.apply {
+                    color = Color.WHITE
+                    setCircleColor(Color.rgb(208, 187, 254))
                 }
                 data.notifyDataChanged()
-                binding.yourChartName.notifyDataSetChanged()
+                binding.chart.notifyDataSetChanged()
                 invalidate()
                 setChart()
                 description = null
@@ -71,23 +78,23 @@ class StatisticsFragment : Fragment() {
 
 
     fun setChart(){
-        binding.yourChartName.xAxis.apply {
+        binding.chart.xAxis.apply {
             textColor = Color.WHITE
             axisLineColor = R.color.default_text_color
         }
-        binding.yourChartName.axisRight.apply {
+        binding.chart.axisRight.apply {
             textColor = Color.WHITE
             axisLineColor = R.color.default_text_color
         }
-        binding.yourChartName.axisLeft.apply {
+        binding.chart.axisLeft.apply {
             textColor = Color.WHITE
             axisLineColor = R.color.default_text_color
         }
-        binding.yourChartName.legend.apply {
+        binding.chart.legend.apply {
             textColor = Color.WHITE
         }
 
-        binding.yourChartName.data.apply {
+        binding.chart.data.apply {
             setValueTextColor(Color.WHITE)
         }
     }
