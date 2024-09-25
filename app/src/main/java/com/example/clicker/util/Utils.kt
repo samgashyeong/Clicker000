@@ -42,6 +42,5 @@ fun lowerBound(list : List<Double>, data : Double) : Int{
             left = mid+1;
         }
     }
-
     return answer
 }

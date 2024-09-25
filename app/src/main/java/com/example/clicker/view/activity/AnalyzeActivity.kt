@@ -32,26 +32,17 @@ class AnalyzeActivity : AppCompatActivity() {
         viewModel.videoInfo.value = data
         binding.data = viewModel
 
-        viewModel.videoInfo.value = data!!
-        viewModel.videoInfo.observe(this, Observer {
-            if(viewModel.videoInfo.value != null){
-                viewModel.scoredText.value = viewModel.videoInfo.value!!.plusScore.toString() + " " + viewModel.videoInfo.value!!.minusScore.toString() + " " + viewModel.videoInfo.value!!.totalScore.toString()
-                viewModel.clickInfo.value = data.clickInfoList
-                viewModel.videoId.value = data.videoId
-                viewModel.dataToEntry()
-                binding.analyzeYoutubePlayer.initialize(object : AbstractYouTubePlayerListener() {
-                    override fun onReady(youTubePlayer: YouTubePlayer) {
-                        super.onReady(youTubePlayer)
-                        viewModel.youtubePlayer.value = youTubePlayer
-                        youTubePlayer.loadVideo(
-                            viewModel.videoId.value!!,
-                            viewModel.videoInfo.value!!.startPoint.toFloat()
-                        )
-                        youTubePlayer.addListener(viewModel.tracker)
-                    }
-                })
-                viewModel.startTracking()
-                viewModel.startAddDataEntry()
+        viewModel.setVideo(data!!)
+
+        binding.analyzeYoutubePlayer.initialize(object : AbstractYouTubePlayerListener() {
+            override fun onReady(youTubePlayer: YouTubePlayer) {
+                super.onReady(youTubePlayer)
+                viewModel.youtubePlayer.value = youTubePlayer
+                youTubePlayer.loadVideo(
+                    viewModel.videoId.value!!,
+                    viewModel.videoInfo.value!!.startPoint.toFloat()
+                )
+                youTubePlayer.addListener(viewModel.tracker)
             }
         })
 
