@@ -7,7 +7,7 @@
 
 2. clicker000의 목표는 **그 누구나 간단하고 쉽고 빠르게** 요요 경기 영상들을 채점하고 채점한 데이터들을 기반으로 분석을 할 수 있는 것을 목표로 하고 있습니다.
 
-3. github-realease에서 앱을 배포하고 있으며, 현재 인스타그램 @clicker._.000에서 사용자들에게 업데이트 내역을 알리고 있습니다.
+3. github-release에서 앱을 배포하고 있으며, 현재 인스타그램 [@clicker._.000](https://www.instagram.com/clicker._.000/)에서 사용자들에게 업데이트 내역을 알리고 있습니다.
 
 ## 업데이트 내역
 - 베타테스트 1차(2024.02.12)
@@ -28,9 +28,9 @@
 | ------------ | -------------------------- |
 | Language | Kotlin |
 | Architecture | MVVM  |
-| AAC | Data binding, ViewModel, LiveData, 
+| AAC | Data binding, ViewModel, LiveData
 | Dependency Injection | Hilt  |
 | Network | Retrofit, OkHttp  |
 | Local Storage | Room, DataStore |
 | Asynchronous Processing | Coroutine(+ Flow)  |
-| Third Party Library | Glide ,[Youtube Player](https://github.com/PierfrancescoSoffritti), [FilePicker](https://github.com/Atwa/filepicker)  |
+| Third Party Library | Glide ,[Youtube Player](https://github.com/PierfrancescoSoffritti/android-youtube-player), [FilePicker](https://github.com/Atwa/filepicker), [MPAndroidChart](https://github.com/PhilJay/MPAndroidChart)  |
