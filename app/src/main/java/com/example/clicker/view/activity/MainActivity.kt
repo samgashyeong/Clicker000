@@ -101,6 +101,13 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        if (savedInstanceState == null) {
+            settingIntent(intent)
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
         settingIntent(intent)
     }
 
@@ -410,14 +417,9 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        settingIntent(intent)
-    }
-
     private fun settingIntent(intent : Intent?) {
         Log.d(TAG, "settingIntent: ${intent!!.getStringExtra(Intent.EXTRA_TEXT)}")
-        if (intent != null) {
+        if (intent.getStringExtra(Intent.EXTRA_TEXT) != null) {
             if (intent.getAction()
                     .equals(Intent.ACTION_SEND) && "text/plain".equals(intent.getType())
             ) {
@@ -469,6 +471,9 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
+        binding.viewModel1 = viewModel
+        binding.lifecycleOwner = this
     }
 
     override fun onStop() {

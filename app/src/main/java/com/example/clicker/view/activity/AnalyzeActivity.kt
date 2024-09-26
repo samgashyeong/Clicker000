@@ -33,7 +33,6 @@ class AnalyzeActivity : AppCompatActivity() {
         binding.data = viewModel
 
         viewModel.setVideo(data!!)
-
         binding.analyzeYoutubePlayer.initialize(object : AbstractYouTubePlayerListener() {
             override fun onReady(youTubePlayer: YouTubePlayer) {
                 super.onReady(youTubePlayer)
