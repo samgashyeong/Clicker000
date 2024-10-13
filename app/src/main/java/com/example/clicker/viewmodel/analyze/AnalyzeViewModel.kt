@@ -36,12 +36,17 @@ class AnalyzeViewModel @Inject constructor(
     private val _nowPosition: MutableLiveData<Int> = MutableLiveData(0)
     val nowPosition: LiveData<Int> get() = _nowPosition
 
-    val _listChartLiveData: MutableLiveData<ArrayList<Entry>> =
+    private val _listChartLiveData: MutableLiveData<ArrayList<Entry>> =
         MutableLiveData(arrayListOf(Entry(0f, 0f)))
     val listChartLiveData: LiveData<ArrayList<Entry>> get() = _listChartLiveData
 
 
-    val scoredText: MutableLiveData<String> = MutableLiveData()
+    private val _stopActivityVideoSecond: MutableLiveData<Int> = MutableLiveData(0)
+    val stopActivityVideoSecond: LiveData<Int> get() = _stopActivityVideoSecond
+
+    private val _scoredText: MutableLiveData<String> = MutableLiveData()
+    val scoredText: LiveData<String> get() = _scoredText
+
     val videoInfo: MutableLiveData<ClickVideoListWithClickInfo?> = MutableLiveData(null)
     val clickInfo: MutableLiveData<List<ClickInfo>> = MutableLiveData(listOf())
     val videoId: MutableLiveData<String> = MutableLiveData()
@@ -87,12 +92,15 @@ class AnalyzeViewModel @Inject constructor(
             val secondList = clickInfoToSecondList()
             while (true) {
                 val second = String.format("%.1f", tracker.currentSecond.toDouble()).toDouble()
-                if (tracker.state == PlayerConstants.PlayerState.PLAYING && secondList.contains(
-                        second
-                    )
+                if (tracker.state == PlayerConstants.PlayerState.PLAYING
                 ) {
                     val result = lowerBound(secondList, second)
+                    val currentIndex = videoInfo.value?.clickInfoList?.get(result)
                     _nowPosition.postValue(result)
+                    withContext(Dispatchers.Main){
+                        _scoredText.value = "${currentIndex?.plus} ${currentIndex?.minus} ${currentIndex?.total}"
+                        Log.d(TAG, "startTracking: ${scoredText.value}")
+                    }
                 }
                 delay(100L)
             }
@@ -125,8 +133,7 @@ class AnalyzeViewModel @Inject constructor(
 
     fun setVideo(data: ClickVideoListWithClickInfo) {
         videoInfo.value = data!!
-        scoredText.value =
-            videoInfo.value!!.plusScore.toString() + " " + videoInfo.value!!.minusScore.toString() + " " + videoInfo.value!!.totalScore.toString()
+        //_scoredText.value = videoInfo.value!!.plusScore.toString() + " " + videoInfo.value!!.minusScore.toString() + " " + videoInfo.value!!.totalScore.toString()
         clickInfo.value = data.clickInfoList
         videoId.value = data.videoId
         dataToEntry()

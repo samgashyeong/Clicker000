@@ -45,6 +45,8 @@ class AnalyzeActivity : AppCompatActivity() {
             }
         })
 
+        setObserve()
+
 
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Score Information"))
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Statistics"))
@@ -79,6 +81,12 @@ class AnalyzeActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    private fun setObserve() {
+        viewModel.scoredText.observe(this) {
+            binding.toolbarTotal.text = it
+        }
     }
 
     private fun Intent.intentSerializable(key: String, data: Class<ClickVideoListWithClickInfo>): ClickVideoListWithClickInfo? {
