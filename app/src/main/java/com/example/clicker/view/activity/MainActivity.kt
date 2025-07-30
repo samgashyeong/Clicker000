@@ -16,13 +16,17 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.example.clicker.R
 import com.example.clicker.databinding.ActivityMainBinding
 import com.example.clicker.util.Mode
 import com.example.clicker.util.RankingDto
+import com.example.clicker.view.activity.AnalyzeActivity
+import com.example.clicker.view.activity.ClickVideoListActivity
 import com.example.clicker.view.dialog.DefaultDialog
 import com.example.clicker.view.dialog.DefaultDialogDto
 import com.example.clicker.view.dialog.DialogManager
@@ -33,6 +37,7 @@ import com.example.clicker.view.dialog.SaveDialog
 import com.example.clicker.view.dialog.SavePlayerEditTextDialog
 import com.example.clicker.view.dialog.SettingDialog
 import com.example.clicker.viewmodel.main.MainActivityViewModel
+import com.google.android.material.navigation.NavigationView
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
@@ -42,7 +47,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private lateinit var binding: ActivityMainBinding
     private val viewModel : MainActivityViewModel by viewModels()
 
@@ -104,6 +109,20 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             settingIntent(intent)
         }
+
+        // NavigationView 설정
+        binding.navigationView?.setNavigationItemSelectedListener(this)
+        
+        // BackPressedCallback 설정
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (binding.drawerLayout?.isDrawerOpen(GravityCompat.END) == true) {
+                    binding.drawerLayout?.closeDrawer(GravityCompat.END)
+                } else {
+                    finish()
+                }
+            }
+        })
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -379,36 +398,58 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.SettingButton -> {
-                settingDialog.show()
-            }
-
-            R.id.save -> {
-                when (viewModel.settingUiModel.value!!.mode) {
+            R.id.modeToggle -> {
+                // 모드 토글 기능
+                val currentMode = viewModel.settingUiModel.value!!.mode
+                when (currentMode) {
                     is Mode.Default -> {
-                        saveDialog.show()
+                        viewModel.setMode(Mode.Ranking())
+                        Toast.makeText(this, "Ranking Mode", Toast.LENGTH_SHORT).show()
                     }
-
                     is Mode.Ranking -> {
-                        savePlayerEditTextDialog.show()
+                        viewModel.setMode(Mode.Default())
+                        Toast.makeText(this, "Default Mode", Toast.LENGTH_SHORT).show()
                     }
-
                 }
             }
 
-            R.id.list -> {
-                when (viewModel.settingUiModel.value!!.mode) {
-                    is Mode.Default -> {
-                        startActivity(Intent(this, ClickVideoListActivity::class.java))
-                    }
+            R.id.resetData -> {
+                // 리셋 기능
+                viewModel.clearScoreData()
+                viewModel.clearClickInfo()
+                Toast.makeText(this, "데이터가 리셋되었습니다", Toast.LENGTH_SHORT).show()
+            }
 
-                    is Mode.Ranking -> {
-                        rankingDialog.show()
-                    }
+            R.id.chartView -> {
+                // 차트 보기 - Analyze 화면으로 이동
+                val analysisData = viewModel.getCurrentAnalysisData()
+                if (analysisData != null) {
+                    startActivity(Intent(this, AnalyzeActivity::class.java).putExtra("data", analysisData))
+                } else {
+                    Toast.makeText(this, "분석할 동영상 데이터가 없습니다", Toast.LENGTH_SHORT).show()
                 }
+            }
+
+            R.id.menuMore -> {
+                // 사이드바 열기
+                binding.drawerLayout?.openDrawer(GravityCompat.END)
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.nav_settings -> {
+                settingDialog.show()
+                binding.drawerLayout?.closeDrawer(GravityCompat.END)
+            }
+            R.id.nav_video_list -> {
+                startActivity(Intent(this, ClickVideoListActivity::class.java))
+                binding.drawerLayout?.closeDrawer(GravityCompat.END)
+            }
+        }
+        return true
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

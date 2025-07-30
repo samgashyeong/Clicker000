@@ -158,6 +158,11 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
+    fun setMode(mode: Mode) {
+        _settingUiModel.value = _settingUiModel.value!!.copy(mode = mode)
+        saveMode(mode)
+    }
+
     fun changeStartPoint(startPoint: Float) {
         _videoScoreUiModel.value = _videoScoreUiModel.value?.copy(startPoint = startPoint)
     }
@@ -276,20 +281,27 @@ class MainActivityViewModel @Inject constructor(
         _videoScoreUiModel.value = _videoScoreUiModel.value?.copy(isVideoStart = data)
     }
 
+    fun getCurrentAnalysisData(): ClickVideoListWithClickInfo? {
+        return if (videoScoreUiModel.value!!.videoId.isNotEmpty()) {
+            ClickVideoListWithClickInfo(
+                videoScoreUiModel.value!!.videoInfo!!,
+                videoScoreUiModel.value!!.startPoint.toInt(),
+                videoScoreUiModel.value!!.videoId,
+                videoScoreUiModel.value!!.plus,
+                videoScoreUiModel.value!!.minus,
+                videoScoreUiModel.value!!.total,
+                videoScoreUiModel.value!!.clickInfoList,
+            )
+        } else {
+            null
+        }
+    }
+
     fun insertVideoData(success: () -> Unit, failed: () -> Unit) {
-        if (videoScoreUiModel.value!!.videoId.isNotEmpty()) {
+        val analysisData = getCurrentAnalysisData()
+        if (analysisData != null) {
             viewModelScope.launch {
-                clickVideoRepository.insert(
-                    ClickVideoListWithClickInfo(
-                        videoScoreUiModel.value!!.videoInfo!!,
-                        videoScoreUiModel.value!!.startPoint.toInt(),
-                        videoScoreUiModel.value!!.videoId,
-                        videoScoreUiModel.value!!.plus,
-                        videoScoreUiModel.value!!.minus,
-                        videoScoreUiModel.value!!.total,
-                        videoScoreUiModel.value!!.clickInfoList,
-                    )
-                )
+                clickVideoRepository.insert(analysisData)
                 writeDataFile(settingUiModel.value!!.externalFileDate)
             }
             success()

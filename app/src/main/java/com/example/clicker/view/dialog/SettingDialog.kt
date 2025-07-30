@@ -13,6 +13,7 @@ import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.lifecycle.Observer
 import com.example.clicker.R
 import com.example.clicker.util.intToMode
@@ -66,7 +67,7 @@ class SettingDialog(
             this.cancel()
         }
 
-        findViewById<LinearLayout>(R.id.newButton).setOnClickListener{
+        findViewById<androidx.cardview.widget.CardView>(R.id.newButton).setOnClickListener{
             onClickInit()
         }
 

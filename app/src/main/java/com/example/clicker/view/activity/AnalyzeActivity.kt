@@ -32,7 +32,14 @@ class AnalyzeActivity : AppCompatActivity() {
         viewModel.videoInfo.value = data
         binding.data = viewModel
 
-        viewModel.setVideo(data!!)
+        if (data != null) {
+            // MainActivity에서 데이터를 전달받은 경우
+            viewModel.setVideo(data)
+        } else {
+            // 데이터가 없는 경우 데이터베이스에서 가져오기
+            viewModel.initializeFromDatabase()
+        }
+        
         binding.analyzeYoutubePlayer.initialize(object : AbstractYouTubePlayerListener() {
             override fun onReady(youTubePlayer: YouTubePlayer) {
                 super.onReady(youTubePlayer)

@@ -2,29 +2,33 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-
-
+    <!-- 모드 변경하기 - 토글 버튼 -->
     <item
-        android:title="saveButton"
-        android:id="@+id/save"
-        android:icon="@drawable/baseline_save_24"
-        app:showAsAction="always"
-        />
+        android:id="@+id/modeToggle"
+        android:title="모드 변경하기"
+        android:icon="@drawable/ic_mode_toggle"
+        app:showAsAction="always" />
 
+    <!-- 리셋 기능 -->
     <item
-        android:title="listButton"
-        android:id="@+id/list"
-        android:icon="@drawable/baseline_view_list_24"
-        app:showAsAction="ifRoom"
-        />
+        android:id="@+id/resetData"
+        android:title="리셋"
+        android:icon="@drawable/ic_reset"
+        app:showAsAction="always" />
 
-
+    <!-- 차트 보기 -->
     <item
-        android:title="Setting"
-        android:id="@+id/SettingButton"
-        android:icon="@drawable/baseline_settings_24"
-        app:showAsAction="always"
-        />
+        android:id="@+id/chartView"
+        android:title="차트 보기"
+        android:icon="@drawable/ic_chart"
+        app:showAsAction="always" />
+
+    <!-- 여러 기능 보기 - 사이드바 메뉴 -->
+    <item
+        android:id="@+id/menuMore"
+        android:title="여러 기능 보기"
+        android:icon="@drawable/ic_menu"
+        app:showAsAction="always" />
 <!--    <item-->
 <!--        android:title="settingButton"-->
 <!--        android:id="@+id/setting"-->

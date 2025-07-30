@@ -56,6 +56,11 @@ class AnalyzeViewModel @Inject constructor(
     val readAllData: LiveData<List<ClickVideoListWithClickInfo>> get() = _readAllData
 
     init {
+        // MainActivity에서 데이터를 전달받지 않은 경우에만 데이터베이스에서 가져오기
+        // setVideo 메서드에서 데이터가 설정되면 데이터베이스 조회는 필요하지 않음
+    }
+
+    fun initializeFromDatabase() {
         getAll()
     }
 
@@ -63,7 +68,11 @@ class AnalyzeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             databaseRepository.getAll().collect {
                 withContext(Dispatchers.Main) {
-                    Log.d(TAG, "getAll: ${it.last().clickInfoList}")
+                    if (it.isNotEmpty()) {
+                        Log.d(TAG, "getAll: ${it.last().clickInfoList}")
+                    } else {
+                        Log.d(TAG, "getAll: No data in database")
+                    }
                     _readAllData.value = it
                 }
             }
