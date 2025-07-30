@@ -2,14 +2,15 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#00FFFFFF"
+    android:background="#80000000"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="300dp"
+        android:layout_width="320dp"
         android:layout_height="wrap_content"
         android:background="@drawable/dialog_round"
-        android:paddingBottom="10dp"
+        android:padding="20dp"
+        android:elevation="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -19,9 +20,8 @@
             android:id="@+id/mainTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:fontFamily="sans-serif"
-            android:text="Save"
+            android:fontFamily="sans-serif-medium"
+            android:text="Score Data Management"
             android:textColor="@color/default_text_color"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -29,94 +29,125 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
-            android:id="@+id/linearLayout3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="10dp"
-            android:orientation="horizontal"
-            android:layout_marginTop="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
+        <!-- Save option card -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/saveCardView"
+            android:layout_width="0dp"
+            android:layout_height="130dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="20dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/default_color"
+            app:layout_constraintBottom_toTopOf="@+id/cancelButtonCard"
+            app:layout_constraintEnd_toStartOf="@+id/initializeCardView"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/mainTv">
 
-            <ImageView
-                android:id="@+id/saveButton"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginRight="30dp"
-                android:src="@drawable/baseline_save_24" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="12dp">
 
-            <ImageView
-                android:id="@+id/InitializeButton"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:src="@drawable/baseline_rotate_left_24" />
-        </LinearLayout>
+                <ImageView
+                    android:id="@+id/saveButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginBottom="12dp"
+                    android:src="@drawable/baseline_save_24"
+                    app:tint="@color/white" />
 
+                <TextView
+                    android:id="@+id/saveScoredDataTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Save Data"
+                    android:textColor="@color/white"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
-        <TextView
-            android:id="@+id/saveScoredDataTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
-            android:text="Save scored data"
-            android:textColor="@color/default_text_color"
-            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-            app:layout_constraintEnd_toStartOf="@+id/InitializeTextView"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
-
-        <TextView
-            android:id="@+id/InitializeTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Initialize scored data"
-            android:textColor="@color/default_text_color"
-            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        <!-- Initialize option card -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/initializeCardView"
+            android:layout_width="0dp"
+            android:layout_height="130dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="20dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/default_color"
+            app:layout_constraintBottom_toTopOf="@+id/cancelButtonCard"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/saveScoredDataTextView"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
+            app:layout_constraintStart_toEndOf="@+id/saveCardView"
+            app:layout_constraintTop_toBottomOf="@+id/mainTv">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <ImageView
+                    android:id="@+id/InitializeButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginBottom="12dp"
+                    android:src="@drawable/baseline_rotate_left_24"
+                    app:tint="#FF4444" />
+
+                <TextView
+                    android:id="@+id/InitializeTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Reset Data"
+                    android:textColor="@color/white"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
 
-        <!--        <androidx.appcompat.widget.AppCompatButton-->
-        <!--            android:layout_width="200dp"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:background="@drawable/button_round"-->
-        <!--            android:text="Initializing Scored Video"-->
-        <!--            android:textSize="12sp"-->
-        <!--            app:layout_constraintBottom_toTopOf="@+id/linearLayout"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toBottomOf="@+id/checkBox" />-->
-
-
-        <LinearLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:orientation="horizontal"
+        <!-- Close button -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cancelButtonCard"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="12dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="@color/default_color"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/vibrateButton">
+            app:layout_constraintStart_toStartOf="parent">
 
             <TextView
                 android:id="@+id/cancelBtn"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginHorizontal="100dp"
-                android:layout_weight="1"
                 android:gravity="center"
                 android:text="Close"
-                android:textColor="@color/default_text_color"
-                android:textSize="15sp" />
-
-
-        </LinearLayout>
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </androidx.cardview.widget.CardView>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
