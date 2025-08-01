@@ -12,6 +12,9 @@
         <action
             android:id="@+id/action_clickInfoFragment2_to_statisticsFragment2"
             app:destination="@id/statisticsFragment2" />
+        <action
+            android:id="@+id/action_clickInfoFragment2_to_popFragment"
+            app:destination="@id/popFragment" />
     </fragment>
     <action
         android:id="@+id/action_clickInfoFragment2"
@@ -24,5 +27,20 @@
         <action
             android:id="@+id/action_statisticsFragment2_to_clickInfoFragment2"
             app:destination="@id/clickInfoFragment2" />
+        <action
+            android:id="@+id/action_statisticsFragment2_to_popFragment"
+            app:destination="@id/popFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/popFragment"
+        android:name="com.example.clicker.view.fragment.PopFragment"
+        android:label="fragment_pop"
+        tools:layout="@layout/fragment_pop" >
+        <action
+            android:id="@+id/action_popFragment_to_clickInfoFragment2"
+            app:destination="@id/clickInfoFragment2" />
+        <action
+            android:id="@+id/action_popFragment_to_statisticsFragment2"
+            app:destination="@id/statisticsFragment2" />
     </fragment>
 </navigation>

@@ -30,10 +30,6 @@ class ClickInfoFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentClickInfoBinding.inflate(inflater, container, false)
-//        editTextDialog = EditTextDialog(requireContext()){
-//            databaseViewModel.update()
-//        }
-        // Inflate the layout for this fragment
         return binding.root
     }
 

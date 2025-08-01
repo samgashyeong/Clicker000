@@ -96,7 +96,7 @@ class AnalyzeViewModel @Inject constructor(
     }
 
 
-    fun startTracking() {
+    private fun startTracking() {
         viewModelScope.launch(Dispatchers.IO) {
             val secondList = clickInfoToSecondList()
             while (true) {
