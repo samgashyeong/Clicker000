@@ -41,14 +41,37 @@
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.appcompat.widget.Toolbar>
 
-        <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
-            android:id="@+id/analyzeYoutubePlayer"
+        <!-- YouTube 플레이어 컨테이너 -->
+        <RelativeLayout
+            android:id="@+id/playerContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:enableAutomaticInitialization="false"
+            android:layout_margin="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+            app:layout_constraintTop_toBottomOf="@+id/toolbar">
+
+            <!-- YouTube 플레이어 (고정) -->
+            <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+                android:id="@+id/analyzeYoutubePlayer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:enableAutomaticInitialization="false" />
+
+            <!-- 애니메이션 테두리 레이어 (YouTube 플레이어 위에 오버레이) -->
+            <View
+                android:id="@+id/borderOverlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignTop="@id/analyzeYoutubePlayer"
+                android:layout_alignBottom="@id/analyzeYoutubePlayer"
+                android:layout_alignStart="@id/analyzeYoutubePlayer"
+                android:layout_alignEnd="@id/analyzeYoutubePlayer"
+                android:background="@drawable/player_border_default"
+                android:clickable="false"
+                android:focusable="false" />
+
+        </RelativeLayout>
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
@@ -57,7 +80,7 @@
             android:background="@color/default_color"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/analyzeYoutubePlayer" />
+            app:layout_constraintTop_toBottomOf="@+id/playerContainer" />
 
 
         <androidx.fragment.app.FragmentContainerView

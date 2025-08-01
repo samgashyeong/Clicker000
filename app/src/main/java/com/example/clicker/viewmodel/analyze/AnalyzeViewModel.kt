@@ -103,12 +103,51 @@ class AnalyzeViewModel @Inject constructor(
                 val second = String.format("%.1f", tracker.currentSecond.toDouble()).toDouble()
                 if (tracker.state == PlayerConstants.PlayerState.PLAYING
                 ) {
-                    val result = lowerBound(secondList, second)
-                    val currentIndex = videoInfo.value?.clickInfoList?.get(result)
-                    _nowPosition.postValue(result)
-                    withContext(Dispatchers.Main){
-                        _scoredText.value = "${currentIndex?.plus} ${currentIndex?.minus} ${currentIndex?.total}"
-                        Log.d(TAG, "startTracking: ${scoredText.value}")
+                    val clickInfoList = videoInfo.value?.clickInfoList
+                    if (clickInfoList != null && secondList.isNotEmpty()) {
+                        val finalIndex = if (second < secondList[0]) {
+                            // 첫 번째 클릭 전인 경우
+                            -1
+                        } else {
+                            // 현재 시간이 어느 클릭 시간에 해당하는지 직접 계산
+                            var index = -1
+                            for (i in secondList.indices) {
+                                if (second >= secondList[i]) {
+                                    index = i // 현재 시간 이하인 마지막 클릭 인덱스
+                                } else {
+                                    break
+                                }
+                            }
+                            index
+                        }
+                        
+                        if (finalIndex == -1) {
+                            // 첫 번째 클릭 전 상태 - 초기값 유지
+                            _nowPosition.postValue(-1)
+                            withContext(Dispatchers.Main){
+                                _scoredText.value = "0 0 0"
+                            }
+                            Log.d(TAG, "startTracking: Before first click, second=$second, showing initial state")
+                        } else if (finalIndex >= 0 && finalIndex < clickInfoList.size) {
+                            val currentIndex = clickInfoList[finalIndex]
+                            
+                            Log.d(TAG, "startTracking: second=$second, finalIndex=$finalIndex, total_size=${clickInfoList.size}, isLast=${finalIndex == clickInfoList.size - 1}")
+                            Log.d(TAG, "startTracking: clickSecond=${currentIndex.clickSecond}, scores=${currentIndex.plus} ${currentIndex.minus} ${currentIndex.total}")
+                            
+                            _nowPosition.postValue(finalIndex)
+                            withContext(Dispatchers.Main){
+                                _scoredText.value = "${currentIndex.plus} ${currentIndex.minus} ${currentIndex.total}"
+                            }
+                        } else {
+                            Log.e(TAG, "startTracking: Index out of bounds! finalIndex=$finalIndex, listSize=${clickInfoList.size}")
+                        }
+                    } else {
+                        // 클릭 정보가 없거나 비어있는 경우
+                        _nowPosition.postValue(-1)
+                        withContext(Dispatchers.Main){
+                            _scoredText.value = "0 0 0"
+                        }
+                        Log.d(TAG, "startTracking: No click info available")
                     }
                 }
                 delay(100L)

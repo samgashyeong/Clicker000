@@ -21,6 +21,7 @@ class ClickInfoFragment : Fragment() {
     private val viewModel: AnalyzeViewModel by activityViewModels()
     //private val databaseViewModel : MainDatabaseViewModel by activityViewModels()
     private lateinit var editTextDialog: EditTextDialog
+    private var previousScrollPosition = -2 // 초기값을 -2로 설정하여 -1과 구분
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -44,27 +45,38 @@ class ClickInfoFragment : Fragment() {
                     dataChangeIndex = it
                 }
             }
+            // 새로운 비디오 로드 시 스크롤 위치 초기화
+            previousScrollPosition = -2
+            Log.d(TAG, "VideoInfo changed - reset scroll position")
         })
 
         viewModel.nowPosition.observe(viewLifecycleOwner, Observer { position ->
-            val smoothScroller = object : LinearSmoothScroller(context) {
-                override fun getVerticalSnapPreference(): Int {
-                    return SNAP_TO_START
-                }
-
-                override fun calculateDyToMakeVisible(view: View, snapPreference: Int): Int {
-                    val layoutManager = layoutManager as? LinearLayoutManager
-                    return if (layoutManager != null) {
-                        super.calculateDyToMakeVisible(view, snapPreference)
-                    } else {
-                        super.calculateDyToMakeVisible(view, snapPreference)
+            // position이 실제로 변경되었고, 유효한 범위에 있을 때만 스크롤
+            val clickInfoList = viewModel.clickInfo.value
+            if (position != previousScrollPosition && position >= 0 && clickInfoList != null && position < clickInfoList.size) {
+                val smoothScroller = object : LinearSmoothScroller(context) {
+                    override fun getVerticalSnapPreference(): Int {
+                        return SNAP_TO_START
                     }
-                }
-            }.apply {
-                targetPosition = position
-            }
 
-            binding.recycler.layoutManager?.startSmoothScroll(smoothScroller)
+                    override fun calculateDyToMakeVisible(view: View, snapPreference: Int): Int {
+                        val layoutManager = layoutManager as? LinearLayoutManager
+                        return if (layoutManager != null) {
+                            super.calculateDyToMakeVisible(view, snapPreference)
+                        } else {
+                            super.calculateDyToMakeVisible(view, snapPreference)
+                        }
+                    }
+                }.apply {
+                    targetPosition = position
+                }
+
+                binding.recycler.layoutManager?.startSmoothScroll(smoothScroller)
+                Log.d(TAG, "Scrolling to position: $position (previous: $previousScrollPosition)")
+                previousScrollPosition = position // 이전 position 업데이트
+            } else {
+                Log.d(TAG, "Skipping scroll - position: $position, previous: $previousScrollPosition, listSize: ${clickInfoList?.size}")
+            }
         })
 
         viewModel.readAllData.observe(viewLifecycleOwner, Observer {

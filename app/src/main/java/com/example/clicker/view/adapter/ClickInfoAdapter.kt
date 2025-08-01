@@ -39,7 +39,6 @@ class ClickInfoAdapter(private val databaseViewModel: AnalyzeViewModel, private 
 
         viewHolder.binding.memoEditText.setOnClickListener {
             editScoreInfoPosition = viewHolder.adapterPosition
-            Log.d(TAG, "onCreateViewHolder: 포지션뭐시기 ${editScoreInfoPosition}")
             clickListener.invoke(editScoreInfoPosition!!)
             //clickListener.invoke(items) //views.adapterposition
             dialog.show()
