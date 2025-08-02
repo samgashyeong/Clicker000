@@ -2,6 +2,8 @@ package com.example.clicker.view.fragment
 
 import android.graphics.Color
 import android.os.Bundle
+import android.service.controls.ControlsProviderService.TAG
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -35,19 +37,29 @@ class StatisticsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.videoInfo?.observe(viewLifecycleOwner, Observer {
-            binding.chart.apply {
-                val dataset = LineDataSet(viewModel.listChartLiveData.value,"Score")
-                dataset.apply {
-                    color = Color.WHITE
-                    setCircleColor(Color.rgb(208, 187, 254))
+        viewModel.videoInfo?.observe(viewLifecycleOwner, Observer { videoInfo ->
+            if (videoInfo != null) {
+                // 비디오 정보가 있는 경우 정상적으로 차트 설정
+                binding.chart.apply {
+                    val dataset = LineDataSet(viewModel.listChartLiveData.value, "Score")
+                    dataset.apply {
+                        color = Color.WHITE
+                        setCircleColor(Color.rgb(208, 187, 254))
+                    }
+                    data = LineData(dataset)
+                    setChart()
+                    invalidate()
+                    description = null
                 }
-                data = LineData(dataset)
-                setChart()
-                invalidate()
-                description = null
+            } else {
+                // 비디오 정보가 없는 경우 빈 차트 또는 기본 차트 설정
+                binding.chart.apply {
+                    data = null
+                    invalidate()
+                    description = null
+                }
+                Log.d(TAG, "VideoInfo is null - cleared chart data")
             }
-
         })
         viewModel.listChartLiveData.observe(viewLifecycleOwner, Observer {
             binding.chart.apply {

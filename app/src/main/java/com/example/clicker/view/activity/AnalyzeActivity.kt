@@ -3,19 +3,37 @@ package com.example.clicker.view.activity
 import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Build
+import android.os.Environment
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.atwa.filepicker.core.FilePicker
 import com.example.clicker.R
 import com.example.clicker.data.database.ClickVideoListWithClickInfo
 import com.example.clicker.databinding.ActivityAnalyzeBinding
+import com.example.clicker.util.PermissionHelper
+import com.example.clicker.view.adapter.SidebarVideoAdapter
+import com.example.clicker.view.dialog.DefaultDialog
+import com.example.clicker.view.dialog.DefaultDialogDto
 import com.example.clicker.viewmodel.analyze.AnalyzeViewModel
+import com.example.clicker.viewmodel.score_list.SearchVideoListViewModel
 import com.google.android.material.tabs.TabLayout
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
@@ -25,6 +43,20 @@ import dagger.hilt.android.AndroidEntryPoint
 class AnalyzeActivity : AppCompatActivity() {
     private lateinit var binding : ActivityAnalyzeBinding
     private val viewModel: AnalyzeViewModel by viewModels()
+    private val searchViewModel: SearchVideoListViewModel by viewModels()
+    private lateinit var saveDataDialog: DefaultDialog
+    
+    // 사이드바 관련 변수들
+    private lateinit var sidebarAdapter: SidebarVideoAdapter
+    private var allVideos: List<ClickVideoListWithClickInfo> = emptyList()
+    
+    // 파일 관련 변수들
+    private lateinit var permissionHelper: PermissionHelper
+    private lateinit var filePicker: FilePicker
+    private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
+    
+    // 검색 상태 관리
+    private var isSearchMode = false
     
     // 초기 기준점 (영상 시작 시점의 점수)
     private var initialPlusScore = 0
@@ -45,22 +77,11 @@ class AnalyzeActivity : AppCompatActivity() {
         if (data != null) {
             // MainActivity에서 데이터를 전달받은 경우
             viewModel.setVideo(data)
+            setupVideoPlayer()
         } else {
-            // 데이터가 없는 경우 데이터베이스에서 가져오기
-            viewModel.initializeFromDatabase()
+            // 데이터가 없는 경우 - 에러 메시지 표시
+            showNoVideoInfoMessage()
         }
-        
-        binding.analyzeYoutubePlayer.initialize(object : AbstractYouTubePlayerListener() {
-            override fun onReady(youTubePlayer: YouTubePlayer) {
-                super.onReady(youTubePlayer)
-                viewModel.youtubePlayer.value = youTubePlayer
-                youTubePlayer.loadVideo(
-                    viewModel.videoId.value!!,
-                    viewModel.videoInfo.value!!.startPoint.toFloat()
-                )
-                youTubePlayer.addListener(viewModel.tracker)
-            }
-        })
 
         setObserve()
 
@@ -99,6 +120,49 @@ class AnalyzeActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        
+        // 저장 다이얼로그 초기화
+        initializeSaveDialog()
+        
+        // 사이드바 초기화
+        initializeSidebar()
+        
+        // 파일 관련 초기화
+        initializeFileHandlers()
+        
+        // BackPressed 콜백 설정
+        setupBackPressedCallback()
+    }
+    
+    private fun initializeSaveDialog() {
+        saveDataDialog = DefaultDialog(
+            this,
+            DefaultDialogDto(
+                "Save Video",
+                "Do you want to save the video?",
+                "Yes",
+                "No"
+            )
+        ) {
+            // 비디오 정보가 있는 경우에만 저장
+            val videoInfo = viewModel.videoInfo.value
+            if (videoInfo != null) {
+                viewModel.insertVideoData(
+                    success = {
+                        Toast.makeText(this, "Video has been saved.", Toast.LENGTH_SHORT).show()
+                        saveDataDialog.cancel() // 다이얼로그 즉시 닫기
+                        refreshSidebarData() // 사이드바 데이터 새로고침
+                    },
+                    failed = {
+                        Toast.makeText(this, "Failed to save video data.", Toast.LENGTH_SHORT).show()
+                        saveDataDialog.cancel() // 실패해도 다이얼로그 닫기
+                    }
+                )
+            } else {
+                Toast.makeText(this, "No video data to save.", Toast.LENGTH_SHORT).show()
+                saveDataDialog.cancel() // 데이터가 없어도 다이얼로그 닫기
+            }
+        }
     }
 
     private fun setObserve() {
@@ -266,14 +330,326 @@ class AnalyzeActivity : AppCompatActivity() {
             this.getSerializableExtra(key) as ClickVideoListWithClickInfo
         }
     }
+    
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.analyze_menu, menu)
+        return true
+    }
+    
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             android.R.id.home->{
                 finish()
                 return true
             }
+            R.id.saveVideo -> {
+                saveDataDialog.show()
+                return true
+            }
+            R.id.videoList -> {
+                binding.drawerLayout.openDrawer(GravityCompat.END)
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun setupVideoPlayer() {
+        // YouTube 플레이어 표시 및 초기화
+        binding.analyzeYoutubePlayer.visibility = android.view.View.VISIBLE
+        binding.noVideoInfoText.visibility = android.view.View.GONE
+        binding.borderOverlay.visibility = android.view.View.VISIBLE
+        
+        binding.analyzeYoutubePlayer.initialize(object : AbstractYouTubePlayerListener() {
+            override fun onReady(youTubePlayer: YouTubePlayer) {
+                super.onReady(youTubePlayer)
+                viewModel.youtubePlayer.value = youTubePlayer
+                youTubePlayer.loadVideo(
+                    viewModel.videoId.value!!,
+                    viewModel.videoInfo.value!!.startPoint.toFloat()
+                )
+                youTubePlayer.addListener(viewModel.tracker)
+            }
+        })
+    }
+    
+    private fun showNoVideoInfoMessage() {
+        // 비디오 정보가 없을 때 메시지 표시
+        binding.analyzeYoutubePlayer.visibility = android.view.View.GONE
+        binding.noVideoInfoText.visibility = android.view.View.VISIBLE
+        binding.borderOverlay.visibility = android.view.View.GONE
+        
+        // 기본 초기 상태로 툴바 설정
+        binding.toolbarTotal.text = "+0 -0 0"
+        
+        Log.d(TAG, "No video information available - showing error message")
+    }
+    
+    private fun initializeSidebar() {
+        // 사이드바 RecyclerView 설정
+        sidebarAdapter = SidebarVideoAdapter(emptyList()) { clickedVideo ->
+            // 비디오 클릭 시 해당 비디오로 분석 화면 갱신
+            loadVideoFromSidebar(clickedVideo)
+            binding.drawerLayout.closeDrawer(GravityCompat.END)
+        }
+        
+        binding.sidebarRecyclerView.apply {
+            layoutManager = LinearLayoutManager(this@AnalyzeActivity)
+            adapter = sidebarAdapter
+        }
+        
+        // 저장된 비디오 목록 로드
+        loadSavedVideos()
+        
+        // 검색 기능 설정
+        setupSearchFunctionality()
+        
+        // 툴바 버튼 리스너 설정
+        setupSidebarToolbar()
+    }
+    
+    private fun setupBackPressedCallback() {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                when {
+                    isSearchMode -> {
+                        // 검색 모드일 때는 검색 모드 종료
+                        toggleSearchMode()
+                    }
+                    binding.drawerLayout.isDrawerOpen(GravityCompat.END) -> {
+                        // 사이드바가 열려있을 때는 사이드바 닫기
+                        binding.drawerLayout.closeDrawer(GravityCompat.END)
+                    }
+                    else -> {
+                        // 그 외에는 액티비티 종료
+                        finish()
+                    }
+                }
+            }
+        })
+    }
+    
+    private fun loadSavedVideos() {
+        // SearchViewModel의 LiveData 관찰
+        searchViewModel.searchList.observe(this) { videos ->
+            videos?.let {
+                allVideos = it
+                updateSidebarList(it)
+            }
+        }
+    }
+    
+    private fun refreshSidebarData() {
+        // SearchViewModel에서 데이터베이스로부터 최신 데이터를 다시 로드
+        searchViewModel.refreshData()
+    }
+    
+    private fun updateSidebarList(videos: List<ClickVideoListWithClickInfo>) {
+        if (videos.isEmpty()) {
+            binding.noDataText.visibility = View.VISIBLE
+            binding.sidebarRecyclerView.visibility = View.GONE
+        } else {
+            binding.noDataText.visibility = View.GONE
+            binding.sidebarRecyclerView.visibility = View.VISIBLE
+            sidebarAdapter.updateData(videos)
+        }
+    }
+    
+    private fun setupSearchFunctionality() {
+        binding.searchEditText.addTextChangedListener { text ->
+            val query = text.toString().trim()
+            if (query.isEmpty()) {
+                searchViewModel.getAllVideos()
+            } else {
+                searchViewModel.findVideo(query)
+            }
+        }
+        
+        binding.searchEditText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                // 키보드 숨기기
+                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(binding.searchEditText.windowToken, 0)
+                true
+            } else {
+                false
+            }
+        }
+        
+        // 포커스 리스너 추가
+        binding.searchEditText.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus && isSearchMode && binding.searchEditText.text.toString().isEmpty()) {
+                toggleSearchMode()
+            }
+        }
+    }
+    
+    private fun loadVideoFromSidebar(clickedVideo: ClickVideoListWithClickInfo) {
+        Log.d(TAG, "Loading video from sidebar: ${clickedVideo.videoInfo?.snippet?.title}")
+        Log.d(TAG, "Video data - ID: ${clickedVideo.videoId}, StartPoint: ${clickedVideo.startPoint}")
+        Log.d(TAG, "ClickInfo count: ${clickedVideo.clickInfoList.size}")
+        
+        // 대안 방법: 새로운 AnalyzeActivity 시작
+        val intent = Intent(this, AnalyzeActivity::class.java)
+        intent.putExtra("data", clickedVideo)
+        startActivity(intent)
+        finish() // 현재 Activity 종료
+        
+        // 원래 방법 (주석 처리)
+        /*
+        // 선택된 비디오로 분석 화면 갱신
+        viewModel.videoInfo.value = clickedVideo
+        viewModel.setVideo(clickedVideo)
+        
+        Log.d(TAG, "ViewModel videoId after setVideo: ${viewModel.videoId.value}")
+        
+        // 새로운 비디오로 플레이어 재설정
+        if (clickedVideo.videoInfo != null && clickedVideo.videoId.isNotEmpty()) {
+            // 플레이어 재초기화
+            reinitializeVideoPlayer(clickedVideo)
+        } else {
+            Log.w(TAG, "Video info is null or video ID is empty")
+            showNoVideoInfoMessage()
+        }
+        */
+        
+        Toast.makeText(this, "Loading video: ${clickedVideo.videoInfo?.snippet?.title ?: "Unknown"}", Toast.LENGTH_SHORT).show()
+    }
+    
+    private fun reinitializeVideoPlayer(videoData: ClickVideoListWithClickInfo) {
+        Log.d(TAG, "Reinitializing video player for: ${videoData.videoInfo?.snippet?.title}")
+        Log.d(TAG, "Video ID: ${videoData.videoId}, Start Point: ${videoData.startPoint}")
+        
+        // MainActivity의 방식을 정확히 따라해보기
+        val container = binding.playerContainer
+        
+        // 기존 플레이어 완전히 제거
+        binding.analyzeYoutubePlayer.release()
+        container.removeView(binding.analyzeYoutubePlayer)
+        
+        // 새로운 YouTubePlayerView 생성 (MainActivity와 동일한 방식)
+        val newYouTubePlayerView = com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView(this)
+        newYouTubePlayerView.enableAutomaticInitialization = false
+        
+        // 컨테이너에 추가
+        container.addView(newYouTubePlayerView, 0)
+        
+        // 가시성 설정
+        newYouTubePlayerView.visibility = View.VISIBLE
+        binding.noVideoInfoText.visibility = View.GONE
+        binding.borderOverlay.visibility = View.VISIBLE
+        
+        // MainActivity와 동일한 초기화 방식
+        newYouTubePlayerView.initialize(object : AbstractYouTubePlayerListener() {
+            override fun onReady(youTubePlayer: YouTubePlayer) {
+                super.onReady(youTubePlayer)
+                Log.d(TAG, "New YouTube player ready")
+                viewModel.youtubePlayer.value = youTubePlayer
+                youTubePlayer.addListener(viewModel.tracker)
+            }
+            
+            override fun onError(youTubePlayer: YouTubePlayer, error: com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants.PlayerError) {
+                super.onError(youTubePlayer, error)
+                Log.e(TAG, "YouTube player error: $error")
+                Toast.makeText(this@AnalyzeActivity, "Error loading video: $error", Toast.LENGTH_SHORT).show()
+            }
+        })
+        
+        // MainActivity와 동일한 비디오 로드 방식
+        newYouTubePlayerView.getYouTubePlayerWhenReady(object : com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback {
+            override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
+                val videoId = videoData.videoId
+                val startPoint = videoData.startPoint.toFloat()
+                
+                Log.d(TAG, "onYouTubePlayer callback: loading $videoId at $startPoint")
+                
+                if (videoId.isNotEmpty()) {
+                    youTubePlayer.loadVideo(videoId, startPoint)
+                } else {
+                    Log.e(TAG, "Video ID is empty")
+                    Toast.makeText(this@AnalyzeActivity, "Video ID is missing", Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
+        
+        Log.d(TAG, "Video player reinitialization completed")
+    }
+    
+    private fun initializeFileHandlers() {
+        permissionHelper = PermissionHelper(this)
+        filePicker = FilePicker.getInstance(this)
+        
+        activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                // 파일 선택 결과 처리
+                Log.d(TAG, "File selection result: ${result.data}")
+            }
+        }
+    }
+    
+    private fun setupSidebarToolbar() {
+        binding.searchButton.setOnClickListener {
+            toggleSearchMode()
+        }
+        
+        binding.moreButton.setOnClickListener {
+            showMoreOptions()
+        }
+    }
+    
+    private fun toggleSearchMode() {
+        isSearchMode = !isSearchMode
+        
+        if (isSearchMode) {
+            // 검색 모드 활성화
+            binding.sidebarTitle.visibility = View.INVISIBLE
+            binding.searchEditText.visibility = View.VISIBLE
+            
+            binding.searchEditText.postDelayed({
+                binding.searchEditText.requestFocus()
+                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.showSoftInput(binding.searchEditText, InputMethodManager.SHOW_IMPLICIT)
+            }, 100)
+        } else {
+            // 검색 모드 비활성화
+            binding.sidebarTitle.visibility = View.VISIBLE
+            binding.searchEditText.visibility = View.INVISIBLE
+            binding.searchEditText.setText("")
+            
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(binding.searchEditText.windowToken, 0)
+            
+            // 전체 목록 표시
+            searchViewModel.getAllVideos()
+        }
+    }
+    
+    private fun showMoreOptions() {
+        // 더보기 옵션 메뉴 표시
+        val popup = androidx.appcompat.widget.PopupMenu(this, binding.moreButton)
+        popup.menuInflater.inflate(R.menu.sidebar_more_menu, popup.menu)
+        
+        popup.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.import_data -> {
+                    importDataFromFile()
+                    true
+                }
+                else -> false
+            }
+        }
+        
+        popup.show()
+    }
+    
+    private fun importDataFromFile() {
+        filePicker.pickMimeFile("application/json") { fileMeta ->
+            fileMeta?.let {
+                Log.d(TAG, "Selected file: ${it.file?.readText()}")
+                searchViewModel.insertAll(it)
+                Toast.makeText(this, "Data imported successfully", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
 }

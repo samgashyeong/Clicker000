@@ -188,4 +188,31 @@ class AnalyzeViewModel @Inject constructor(
         startTracking()
         startAddDataEntry()
     }
+    
+    fun insertVideoData(success: () -> Unit, failed: () -> Unit) {
+        val currentVideoInfo = videoInfo.value
+        if (currentVideoInfo != null && videoId.value?.isNotEmpty() == true) {
+            viewModelScope.launch {
+                try {
+                    // 현재 상태의 데이터로 업데이트하여 저장
+                    val updatedVideoInfo = currentVideoInfo.copy(
+                        clickInfoList = clickInfo.value ?: emptyList()
+                    )
+                    
+                    databaseRepository.insert(updatedVideoInfo)
+                    
+                    withContext(Dispatchers.Main) {
+                        success()
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to insert video data", e)
+                    withContext(Dispatchers.Main) {
+                        failed()
+                    }
+                }
+            }
+        } else {
+            failed()
+        }
+    }
 }

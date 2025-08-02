@@ -83,4 +83,8 @@ class SearchVideoListViewModel @Inject constructor(
     fun getAllVideos() {
         _searchList.value = databaseScoredList.value
     }
+    
+    fun refreshData() {
+        getAll()
+    }
 }

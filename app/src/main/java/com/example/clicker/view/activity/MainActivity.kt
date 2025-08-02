@@ -421,13 +421,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
 
             R.id.chartView -> {
-                // 차트 보기 - Analyze 화면으로 이동
+                // 차트 보기 - Analyze 화면으로 이동 (비디오 정보가 없어도 진입 가능)
                 val analysisData = viewModel.getCurrentAnalysisData()
-                if (analysisData != null) {
-                    startActivity(Intent(this, AnalyzeActivity::class.java).putExtra("data", analysisData))
-                } else {
-                    Toast.makeText(this, "분석할 동영상 데이터가 없습니다", Toast.LENGTH_SHORT).show()
-                }
+                startActivity(Intent(this, AnalyzeActivity::class.java).putExtra("data", analysisData))
             }
 
             R.id.menuMore -> {

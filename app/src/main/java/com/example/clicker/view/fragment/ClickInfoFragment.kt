@@ -38,19 +38,36 @@ class ClickInfoFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         var dataChangeIndex : Int? = null
-        viewModel.videoInfo?.observe(viewLifecycleOwner, Observer {
-            binding.recycler.apply {
-                layoutManager = LinearLayoutManager(context)
-                adapter = ClickInfoAdapter(viewModel, requireContext() , viewModel.videoInfo.value!!){
-                    dataChangeIndex = it
+        viewModel.videoInfo?.observe(viewLifecycleOwner, Observer { videoInfo ->
+            if (videoInfo != null) {
+                // 비디오 정보가 있는 경우 정상적으로 RecyclerView 설정
+                binding.recycler.apply {
+                    layoutManager = LinearLayoutManager(context)
+                    adapter = ClickInfoAdapter(viewModel, requireContext(), videoInfo) {
+                        dataChangeIndex = it
+                    }
                 }
+                // 새로운 비디오 로드 시 스크롤 위치 초기화
+                previousScrollPosition = -2
+                Log.d(TAG, "VideoInfo changed - reset scroll position")
+            } else {
+                // 비디오 정보가 없는 경우 빈 어댑터 설정
+                binding.recycler.apply {
+                    layoutManager = LinearLayoutManager(context)
+                    adapter = null // 또는 빈 어댑터
+                }
+                Log.d(TAG, "VideoInfo is null - cleared recycler adapter")
             }
-            // 새로운 비디오 로드 시 스크롤 위치 초기화
-            previousScrollPosition = -2
-            Log.d(TAG, "VideoInfo changed - reset scroll position")
         })
 
         viewModel.nowPosition.observe(viewLifecycleOwner, Observer { position ->
+            // 비디오 정보가 없는 경우 스크롤 처리 스킵
+            val videoInfo = viewModel.videoInfo.value
+            if (videoInfo == null) {
+                Log.d(TAG, "Skipping scroll - no video info available")
+                return@Observer
+            }
+            
             // position이 실제로 변경되었고, 유효한 범위에 있을 때만 스크롤
             val clickInfoList = viewModel.clickInfo.value
             if (position != previousScrollPosition && position >= 0 && clickInfoList != null && position < clickInfoList.size) {
