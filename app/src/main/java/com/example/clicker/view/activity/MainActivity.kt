@@ -18,6 +18,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -298,6 +299,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     }
                 }
             }
+            
+            // 모드가 변경될 때마다 메뉴 아이콘을 업데이트
+            invalidateOptionsMenu()
         })
 
         viewModel.ranking.observe(this) {
@@ -414,16 +418,34 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
 
             R.id.resetData -> {
-                // 리셋 기능
-                viewModel.clearScoreData()
-                viewModel.clearClickInfo()
-                Toast.makeText(this, "데이터가 리셋되었습니다", Toast.LENGTH_SHORT).show()
+                // 모드에 따라 다른 동작
+                when (viewModel.settingUiModel.value!!.mode) {
+                    is Mode.Default -> {
+                        // 기본 모드일 때는 리셋 기능
+                        viewModel.clearScoreData()
+                        viewModel.clearClickInfo()
+                        Toast.makeText(this, "데이터가 리셋되었습니다", Toast.LENGTH_SHORT).show()
+                    }
+                    is Mode.Ranking -> {
+                        // 랭킹 모드일 때는 플레이어 추가 기능
+                        savePlayerEditTextDialog.show()
+                    }
+                }
             }
 
             R.id.chartView -> {
-                // 차트 보기 - Analyze 화면으로 이동 (비디오 정보가 없어도 진입 가능)
-                val analysisData = viewModel.getCurrentAnalysisData()
-                startActivity(Intent(this, AnalyzeActivity::class.java).putExtra("data", analysisData))
+                // 모드에 따라 다른 동작
+                when (viewModel.settingUiModel.value?.mode) {
+                    is Mode.Ranking -> {
+                        // 랭킹 모드일 때는 랭킹 다이얼로그 표시
+                        rankingDialog.show()
+                    }
+                    else -> {
+                        // 디폴트 모드일 때는 Analyze 화면으로 이동
+                        val analysisData = viewModel.getCurrentAnalysisData()
+                        startActivity(Intent(this, AnalyzeActivity::class.java).putExtra("data", analysisData))
+                    }
+                }
             }
 
             R.id.menuMore -> {
@@ -451,6 +473,33 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater = menuInflater
         inflater.inflate(com.example.clicker.R.menu.main_menu, menu)
+        return true
+    }
+    
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        super.onPrepareOptionsMenu(menu)
+        
+        // 설정 아이콘 흰색으로 변경
+        val settingsItem = menu?.findItem(R.id.nav_settings)
+        settingsItem?.icon?.setTint(ContextCompat.getColor(this, R.color.white))
+        
+        // 랭킹 모드일 때 리셋 아이콘을 플러스 아이콘으로 변경
+        val resetItem = menu?.findItem(R.id.resetData)
+        resetItem?.let { item ->
+            when (viewModel.settingUiModel.value?.mode) {
+                is Mode.Ranking -> {
+                    // 랭킹 모드일 때는 플러스 아이콘으로 변경
+                    item.icon = ContextCompat.getDrawable(this, R.drawable.ic_add_white)
+                    item.title = "Add Player"
+                }
+                else -> {
+                    // 기본 모드일 때는 리셋 아이콘
+                    item.icon = ContextCompat.getDrawable(this, R.drawable.ic_reset)
+                    item.title = "리셋"
+                }
+            }
+        }
+        
         return true
     }
 
