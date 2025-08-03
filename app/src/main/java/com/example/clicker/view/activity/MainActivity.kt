@@ -424,7 +424,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         // 기본 모드일 때는 리셋 기능
                         viewModel.clearScoreData()
                         viewModel.clearClickInfo()
-                        Toast.makeText(this, "데이터가 리셋되었습니다", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Data reset", Toast.LENGTH_SHORT).show()
                     }
                     is Mode.Ranking -> {
                         // 랭킹 모드일 때는 플레이어 추가 기능
