@@ -448,9 +448,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
             }
 
-            R.id.menuMore -> {
-                // 사이드바 열기
-                binding.drawerLayout?.openDrawer(GravityCompat.END)
+            R.id.settings -> {
+                // 설정 다이얼로그 표시
+                settingDialog.show()
             }
         }
         return super.onOptionsItemSelected(item)
@@ -480,7 +480,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onPrepareOptionsMenu(menu)
         
         // 설정 아이콘 흰색으로 변경
-        val settingsItem = menu?.findItem(R.id.nav_settings)
+        val settingsItem = menu?.findItem(R.id.settings)
         settingsItem?.icon?.setTint(ContextCompat.getColor(this, R.color.white))
         
         // 랭킹 모드일 때 리셋 아이콘을 플러스 아이콘으로 변경
