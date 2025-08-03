@@ -25,7 +25,26 @@ class ClickInfoAdapter(private val databaseViewModel: AnalyzeViewModel, private 
     init {
         dialog = EditTextDialog(context, EditTextDialogDto("Enter a description of the score.", "description")){
             data.clickInfoList[editScoreInfoPosition!!].clickDescription = it
-            databaseViewModel.update(data)
+            
+            // 데이터베이스에 저장되지 않은 영상인 경우 자동으로 저장
+            if (data.clickVideoListID == 0) {
+                Log.d(TAG, "Auto-saving video data before updating memo")
+                // 새로운 영상 데이터를 먼저 저장
+                databaseViewModel.insertVideoData(
+                    success = {
+                        Log.d(TAG, "Video data saved successfully")
+                    },
+                    failed = {
+                        Log.e(TAG, "Failed to save video data")
+                    }
+                )
+            } else {
+                // 이미 저장된 영상인 경우 바로 업데이트
+                databaseViewModel.update(data)
+            }
+            
+            // UI 갱신을 위해 notifyItemChanged 호출
+            notifyItemChanged(editScoreInfoPosition!!)
             dialog.cancel()
         }
         items = data.clickInfoList
